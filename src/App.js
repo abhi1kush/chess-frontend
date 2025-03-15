@@ -3,6 +3,11 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import "./styles/ChessGame.css"; // Import CSS file
 import "./styles/themes.css"; // Import CSS file
+import moveSound from "./sounds/move.mp3";
+import captureSound from "./sounds/capture.mp3";
+import checkSound from "./sounds/capture.mp3";
+import checkmateSound from "./sounds/capture.mp3";
+import wrongSound from "./sounds/wrong.mp3"
 
 const ChessGame = () => {
   const gameRef = useRef(new Chess()); // Persist game instance
@@ -16,6 +21,7 @@ const ChessGame = () => {
   const [lastMove, setLastMove] = useState(null); // Store last move
   const [theme, setTheme] =  useState(localStorage.getItem("chessTheme") || "classic");     // Load theme from localStorage or use default "classic"
   const [showSettings, setShowSettings] = useState(false);
+  const [enableSound, setEnableSound] = useState(true);
 
     // Save theme to localStorage whenever it changes
     useEffect(() => {
@@ -39,20 +45,48 @@ const ChessGame = () => {
   }, [gameStarted, position]); // Depend on game start and position updates
 
   const handleMove = ({ from, to }) => {
-    const game = gameRef.current;
+    const game = gameRef.current; // Ensure we're using the correct instance
+    console.log(`Attempting move: ${from} to ${to}`);
+    try {
     const move = game.move({ from, to, promotion: "q" });
 
-    if (move) {
+    console.log("Valid move:", move); // 🔍 Log successful move
+    setInvalidMove(false);
+   
+    // Refresh game state
+    // gameRef.current = new Chess(game.fen()); 
+
+      
       if (!gameStarted) {
         setGameStarted(true); // Start the game on the first move
+      }
+
+      // Check if the game has ended
+      if (game.isCheckmate()) {
+        console.log("Checkmate! Game Over.");
+      } else if (game.isDraw()) {
+        console.log("Draw! Game Over.");
       }
       setPosition(game.fen());
       setMoveHistory((prev) => [...prev, move.san]); // Append move
       setLastMove({ from, to }); // Store last move squares
       // setTurn(game.turn()); // Update turn ('w' or 'b')
-      setInvalidMove(false);
-    } else {
+      if (move.flags.includes("c")) {
+        playSound("capture");
+      } else if (game.isCheckmate()) {
+        playSound("checkmate");
+      } else if (game.inCheck()) {
+        playSound("check");
+      } else {
+        playSound("move");
+      }
+    }catch(error) {
+      var wrong = new Audio(wrongSound);
+      wrong.play()
+      console.warn("Invalid move detected:", { from, to });
+      console.error("Error making move:", error);
       setInvalidMove(true);
+      setTimeout(() => setInvalidMove(false), 1000);
     }
   };
 
@@ -63,6 +97,28 @@ const ChessGame = () => {
         [lastMove.from]: { backgroundColor: "rgba(255, 255, 0, 0.5)" }, // Light Yellow
         [lastMove.to]: { backgroundColor: "rgba(0, 255, 0, 0.5)" }, // Light Green
       };
+    };
+
+    const playSound = (type) => {
+      if (!enableSound) return;
+      let sound;
+      switch (type) {
+        case "move":
+          sound = new Audio(moveSound);
+          break;
+        case "capture":
+          sound = new Audio(captureSound);
+          break;
+        case "check":
+          sound = new Audio(checkSound);
+          break;
+        case "checkmate":
+          sound = new Audio(checkmateSound);
+          break;
+        default:
+          return;
+      }
+      sound.play();
     };
 
   return (
@@ -88,6 +144,14 @@ const ChessGame = () => {
         <option value="marble">Marble</option>
         <option value="dark">Dark Mode</option>
       </select>
+      <label>
+              <input
+                type="checkbox"
+                checked={enableSound}
+                onChange={(e) => setEnableSound(e.target.checked)}
+              />
+              Enable Move Sound
+            </label>
     </div>
   )}
       </div>
@@ -113,7 +177,8 @@ const ChessGame = () => {
           customDarkSquareStyle={{ backgroundColor: "var(--dark-square)" }}
           customLightSquareStyle={{ backgroundColor: "var(--light-square)" }}
         />
-        {invalidMove && <p className="invalid-move">Invalid move!</p>}
+        {/* Show invalid move message */}
+        {/* {invalidMove && <p className="invalid-move">Invalid move!</p>} */}
       </div>
 
       {/* Right Panel: Move History */}
