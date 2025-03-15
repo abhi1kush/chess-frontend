@@ -2,13 +2,7 @@ import React, { useState, useRef , useEffect} from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import "./styles/ChessGame.css"; // Import CSS file
-
-const themes = {
-  classic: { light: "#EEEED2", dark: "#769656" },
-  wood: { light: "#EED3B7", dark: "#A77B5A" },
-  marble: { light: "#F0D9B5", dark: "#B58863" },
-  dark: { light: "#B0B0B0", dark: "#444444" },
-};
+import "./styles/themes.css"; // Import CSS file
 
 const ChessGame = () => {
   const gameRef = useRef(new Chess()); // Persist game instance
@@ -20,16 +14,13 @@ const ChessGame = () => {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Track whose turn it is
   const [gameStarted, setGameStarted] = useState(false); // Track if the game has started
   const [lastMove, setLastMove] = useState(null); // Store last move
-  const [selectedTheme, setSelectedTheme] = useState("classic");
+  const [theme, setTheme] =  useState(localStorage.getItem("chessTheme") || "classic");     // Load theme from localStorage or use default "classic"
+  const [showSettings, setShowSettings] = useState(false);
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("chessTheme");
-    if (storedTheme) setSelectedTheme(storedTheme);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("chessTheme", selectedTheme);
-  }, [selectedTheme]);
+    // Save theme to localStorage whenever it changes
+    useEffect(() => {
+      localStorage.setItem("chessTheme", theme);
+    }, [theme]);
 
   useEffect(() => {
     if (!gameStarted) return; // If the game hasn't started, don't run the timer
@@ -75,15 +66,30 @@ const ChessGame = () => {
     };
 
   return (
-      <div className="chess-container">
+      <div className={`chess-container ${theme}-theme`}>
  {/* Settings Dropdown */}
- <div className="settings">
-        <label>Theme:</label>
-        <select value={selectedTheme} onChange={(e) => setSelectedTheme(e.target.value)}>
-          {Object.keys(themes).map((theme) => (
-            <option key={theme} value={theme}>{theme.charAt(0).toUpperCase() + theme.slice(1)}</option>
-          ))}
-        </select>
+{/* Settings Button */}
+<div className="settings">
+<button className="settings-button" onClick={() => setShowSettings(!showSettings)}>
+    ⚙ Settings
+  </button>
+  {showSettings && (
+    <div className="settings-menu">
+      <h4>Select Theme:</h4>
+      <select
+        onChange={(e) => {
+          setTheme(e.target.value); // Change theme
+          setShowSettings(false); // Auto-hide dropdown
+        }}
+        value={theme}
+      >
+        <option value="classic">Classic</option>
+        <option value="wood">Wood</option>
+        <option value="marble">Marble</option>
+        <option value="dark">Dark Mode</option>
+      </select>
+    </div>
+  )}
       </div>
 
        {/* Left Panel: Clocks */}
@@ -104,9 +110,8 @@ const ChessGame = () => {
             borderRadius: "10px",
             boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
           }}
-          customBoardStyle={{ backgroundColor: themes[selectedTheme].light }}
-          customDarkSquareStyle={{ backgroundColor: themes[selectedTheme].dark }}
-          customLightSquareStyle={{ backgroundColor: themes[selectedTheme].light }}
+          customDarkSquareStyle={{ backgroundColor: "var(--dark-square)" }}
+          customLightSquareStyle={{ backgroundColor: "var(--light-square)" }}
         />
         {invalidMove && <p className="invalid-move">Invalid move!</p>}
       </div>
