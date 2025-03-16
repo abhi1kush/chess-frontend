@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/Clock.css" 
 
 const Clocks = ({ whiteTime, blackTime, isWhiteTurn }) => {
   return (

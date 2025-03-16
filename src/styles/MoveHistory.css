@@ -1,0 +1,19 @@
+.move-history {
+    width: 200px;
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .move-history ol {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .move-history li {
+    list-style-type: decimal;
+    font-size: 16px;
+    padding: 4px 0;
+  }

@@ -1,7 +1,8 @@
 import React from "react";
 import { Chessboard } from "react-chessboard";
-import playSound from "../utils/soundUtils";
-import getMoveType from "../utils/helpers"
+import "../styles/ChessBoard.css"
+// import playSound from "../utils/soundUtils";
+// import getMoveType from "../utils/helpers"
 
 const ChessboardComponent = ({ position, handleMove, lastMove }) => {
   const getSquareStyles = () => {

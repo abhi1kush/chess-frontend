@@ -6,7 +6,7 @@ import Settings from "./Settings";
 import { saveGameToStorage, loadGameFromStorage } from "../utils/storage";
 import playSound from "../utils/soundUtils";
 import "../styles/ChessGame.css"; 
-import "../styles/themes.css";
+import "../styles/global.css";
 import ChessboardComponent from "./ChessboardComponent";
 import { getMoveType } from "../utils/helpers";
 
