@@ -7,8 +7,8 @@ const ChessboardComponent = ({ position, handleMove, lastMove }) => {
   const getSquareStyles = () => {
     if (!lastMove) return {};
     return {
-      [lastMove.from]: { backgroundColor: "rgba(255, 255, 0, 0.5)" },
-      [lastMove.to]: { backgroundColor: "rgba(0, 255, 0, 0.5)" },
+      [lastMove.from]: { backgroundColor: "var(--last-move-from)" },
+      [lastMove.to]: { backgroundColor: "var(--last-move-to)" },
     };
   };
 

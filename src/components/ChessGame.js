@@ -12,7 +12,6 @@ import { getMoveType } from "../utils/helpers";
 
 const ChessGame = () => {
   const gameRef = useRef(new Chess());
-  const [data, setData] = useState(null);
   const [position, setPosition] = useState(gameRef.current.fen());
   const [moveHistory, setMoveHistory] = useState([]);
   const [whiteTime, setWhiteTime] = useState(600);
