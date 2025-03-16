@@ -1,22 +1,35 @@
-export const saveGameToStorage = (fen, history, whiteTime, blackTime) => {
-    localStorage.setItem("chessGame", fen);
-    localStorage.setItem("chessHistory", JSON.stringify(history));
-    localStorage.setItem("whiteTime", whiteTime);
-    localStorage.setItem("blackTime", blackTime);
+const chessGameKey = "chessGame"
+
+// class StorageManager {
+//     constructor(fen, moveHistory, whiteTime, blackTime) {
+//         this.fen
+//     }
+// }
+
+export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime) => {
+    const gameData = {
+      fen,
+      moveHistory,
+      whiteTime,
+      blackTime,
+    };
+    localStorage.setItem(chessGameKey, JSON.stringify(gameData));
   };
   
   export const loadGameFromStorage = (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime) => {
-    const savedGame = localStorage.getItem("chessGame");
-    const savedHistory = localStorage.getItem("chessHistory");
-    const savedWhiteTime = localStorage.getItem("whiteTime");
-    const savedBlackTime = localStorage.getItem("blackTime");
+    const savedGame = localStorage.getItem(chessGameKey);
+    if (!savedGame) return; // No saved game, exit early
   
-    if (savedGame) {
-      gameRef.current.load(savedGame);
-      setPosition(gameRef.current.fen());
+    try {
+        const gameData = JSON.parse(savedGame);
+        gameRef.current.load(gameData.fen); // ✅ Load saved FEN into the chess.js instance
+        setPosition(gameData.fen); // ✅ Update board position in React state
+        setMoveHistory(gameData.moveHistory || []); // ✅ Restore move history
+        setWhiteTime(gameData.whiteTime || 600); // ✅ Restore timer values
+        setBlackTime(gameData.blackTime || 600);
+    } catch (error) {
+        console.error("Error parsing JSON from localStorage:", error);
+        localStorage.removeItem(chessGameKey); // 🔥 Clear corrupted data to prevent errors
     }
-    if (savedHistory) setMoveHistory(JSON.parse(savedHistory));
-    if (savedWhiteTime) setWhiteTime(parseInt(savedWhiteTime, 10));
-    if (savedBlackTime) setBlackTime(parseInt(savedBlackTime, 10));
   };
   

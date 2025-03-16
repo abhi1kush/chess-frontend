@@ -12,6 +12,7 @@ import { getMoveType } from "../utils/helpers";
 
 const ChessGame = () => {
   const gameRef = useRef(new Chess());
+  const [data, setData] = useState(null);
   const [position, setPosition] = useState(gameRef.current.fen());
   const [moveHistory, setMoveHistory] = useState([]);
   const [whiteTime, setWhiteTime] = useState(600);
@@ -20,18 +21,25 @@ const ChessGame = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [lastMove, setLastMove] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("chessTheme") || "classic");
-  // const [showSettings, setShowSettings] = useState(false);
   const [enableSound, setEnableSound] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Load game state from localStorage
   useEffect(() => {
-    loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime);
+    async function fetchData() {
+      // (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime)
+      loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime);
+      setIsLoaded(true); // ✅ Only after loading is complete
+    }
+    fetchData();
   }, []);
 
-  // Save game state on updates
+  // Save game state on updates (Only after loading is complete)
   useEffect(() => {
+    if (!isLoaded) return;  // ✅ Prevent saving before loading is done
+    // (fen, moveHistory, whiteTime, blackTime)
     saveGameToStorage(gameRef.current.fen(), moveHistory, whiteTime, blackTime);
-  }, [position, moveHistory, whiteTime, blackTime]);
+  }, [position, moveHistory, whiteTime, blackTime, isLoaded]); 
 
   // Timer Logic
   useEffect(() => {

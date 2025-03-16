@@ -1,0 +1,11 @@
+.invalid-move {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+    animation: fadeOut 1s ease-in-out;
+  }
+  
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
