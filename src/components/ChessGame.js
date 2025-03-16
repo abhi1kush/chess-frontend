@@ -28,7 +28,8 @@ const ChessGame = () => {
   useEffect(() => {
     async function fetchData() {
       // (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime)
-      loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime);
+      await loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime);
+      setIsWhiteTurn(gameRef.current.turn() === "w");  // ✅ Update isWhiteTurn based on actual turn
       setIsLoaded(true); // ✅ Only after loading is complete
     }
     fetchData();

@@ -18,7 +18,8 @@ const ChessboardComponent = ({ position, handleMove, lastMove }) => {
       <Chessboard
         position={position}
         onPieceDrop={(source, target) => handleMove({ from: source, to: target })}
-        boardWidth={500}
+        boardWidth={window.innerHeight * 0.8}
+        customBoardStyle={{ maxWidth: "80vw" }}
         customSquareStyles={getSquareStyles()}
       />
     </div>

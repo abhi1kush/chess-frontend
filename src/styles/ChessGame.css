@@ -1,15 +1,40 @@
-.chess-container {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevents unwanted global scrolling */
     display: flex;
-    justify-content: center; /* Centers board in the middle */
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .chess-container {
+    display: flex; /* Ensures horizontal alignment */
+    justify-content: center;
     align-items: center;
     height: 100vh;
-    gap: 20px;
+    width: 100vw;
+    gap: 10px; /* Spacing between panels */
+    overflow: hidden;
   }
   
   .left-panel,
   .right-panel {
     width: 200px;
+    height: 80vh; /* Match chessboard height */
     display: flex;
     flex-direction: column;
+    justify-content: center; /* Align content vertically in center */
     align-items: center;
+    overflow-y: auto; /* Only move history scrolls internally */
+    padding: 10px;
+  }
+
+  h1 {
+    margin-top: 60px; /* Pushes it down to prevent overlap */
   }

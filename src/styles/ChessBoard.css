@@ -1,21 +1,6 @@
-.chess-container {
-  display: flex;
-  justify-content: center; /* Centers board in the middle */
-  align-items: center;
-  height: 100vh;
-  gap: 20px;
-}
-
-.left-panel,
-.right-panel {
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .chess-board {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
