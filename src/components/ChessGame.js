@@ -28,7 +28,7 @@ const ChessGame = () => {
   useEffect(() => {
     async function fetchData() {
       // (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime)
-      await loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime);
+      await loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime, setTheme);
       setIsWhiteTurn(gameRef.current.turn() === "w");  // ✅ Update isWhiteTurn based on actual turn
       setIsLoaded(true); // ✅ Only after loading is complete
     }
@@ -39,8 +39,8 @@ const ChessGame = () => {
   useEffect(() => {
     if (!isLoaded) return;  // ✅ Prevent saving before loading is done
     // (fen, moveHistory, whiteTime, blackTime)
-    saveGameToStorage(gameRef.current.fen(), moveHistory, whiteTime, blackTime);
-  }, [position, moveHistory, whiteTime, blackTime, isLoaded]); 
+    saveGameToStorage(gameRef.current.fen(), moveHistory, whiteTime, blackTime, theme);
+  }, [position, moveHistory, whiteTime, blackTime, theme, isLoaded]); 
 
   // Timer Logic
   useEffect(() => {

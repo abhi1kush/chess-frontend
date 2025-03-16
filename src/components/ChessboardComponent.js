@@ -1,8 +1,7 @@
 import React from "react";
 import { Chessboard } from "react-chessboard";
 import "../styles/ChessBoard.css"
-// import playSound from "../utils/soundUtils";
-// import getMoveType from "../utils/helpers"
+import "../styles/themes.css"
 
 const ChessboardComponent = ({ position, handleMove, lastMove }) => {
   const getSquareStyles = () => {
@@ -21,6 +20,8 @@ const ChessboardComponent = ({ position, handleMove, lastMove }) => {
         boardWidth={window.innerHeight * 0.8}
         customBoardStyle={{ maxWidth: "80vw" }}
         customSquareStyles={getSquareStyles()}
+        customDarkSquareStyle={{ backgroundColor: "var(--dark-square)" }}
+        customLightSquareStyle={{ backgroundColor: "var(--light-square)" }}
       />
     </div>
   );

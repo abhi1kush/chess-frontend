@@ -2,37 +2,37 @@
 :root {
     --light-square: #EEEED2;
     --dark-square: #769656;
-  }
-  
-  /* Classic Theme */
-  .classic-theme {
+}
+
+/* Classic Theme */
+.classic-theme {
     --light-square: #EEEED2;
     --dark-square: #769656;
-  }
-  
-  /* Wood Theme */
-  .wood-theme {
+}
+
+/* Wood Theme */
+.wood-theme {
     --light-square: #EED3B7;
     --dark-square: #A77B5A;
-  }
-  
-  /* Marble Theme */
-  .marble-theme {
+}
+
+/* Marble Theme */
+.marble-theme {
     --light-square: #F0D9B5;
     --dark-square: #B58863;
-  }
-  
-  /* Dark Theme */
-  .dark-theme {
+}
+
+/* Dark Theme */
+.dark-theme {
     --light-square: #B0B0B0;
     --dark-square: #444444;
-  }
-  
-  /* 🟦 Apply Colors to Chessboard Squares */
-  .chess-board .light-square {
+}
+
+/* Ensure chessboard picks up the theme */
+.chess-board .light-square {
     background-color: var(--light-square) !important;
-  }
-  
-  .chess-board .dark-square {
+}
+
+.chess-board .dark-square {
     background-color: var(--dark-square) !important;
-  }
+}

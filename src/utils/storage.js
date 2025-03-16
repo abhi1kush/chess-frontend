@@ -1,22 +1,17 @@
 const chessGameKey = "chessGame"
 
-// class StorageManager {
-//     constructor(fen, moveHistory, whiteTime, blackTime) {
-//         this.fen
-//     }
-// }
-
-export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime) => {
+export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime, theme) => {
     const gameData = {
       fen,
       moveHistory,
       whiteTime,
       blackTime,
+      theme,
     };
     localStorage.setItem(chessGameKey, JSON.stringify(gameData));
   };
   
-  export const loadGameFromStorage = (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime) => {
+  export const loadGameFromStorage = (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime, setTheme) => {
     const savedGame = localStorage.getItem(chessGameKey);
     if (!savedGame) return; // No saved game, exit early
   
@@ -27,6 +22,7 @@ export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime) => {
         setMoveHistory(gameData.moveHistory || []); // ✅ Restore move history
         setWhiteTime(gameData.whiteTime || 600); // ✅ Restore timer values
         setBlackTime(gameData.blackTime || 600);
+        setTheme(gameData.theme)
     } catch (error) {
         console.error("Error parsing JSON from localStorage:", error);
         localStorage.removeItem(chessGameKey); // 🔥 Clear corrupted data to prevent errors
