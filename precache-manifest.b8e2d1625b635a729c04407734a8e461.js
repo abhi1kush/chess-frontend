@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "4b24dd425af37a69474b23a80fb658f9",
+    "revision": "78c2a560dd7dba7ec7d9361d54e6b861",
     "url": "/chess-frontend/index.html"
   },
   {
-    "revision": "cd64f7e15801d9fcc0a2",
+    "revision": "fc9089d7f91c26710989",
     "url": "/chess-frontend/static/css/main.204eb41a.chunk.css"
   },
   {
@@ -20,20 +20,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/chess-frontend/static/js/3.28fbeb8b.chunk.js"
   },
   {
-    "revision": "cd64f7e15801d9fcc0a2",
-    "url": "/chess-frontend/static/js/main.4feb6d10.chunk.js"
+    "revision": "fc9089d7f91c26710989",
+    "url": "/chess-frontend/static/js/main.4d18a55f.chunk.js"
   },
   {
     "revision": "bf17dbbee9b84428b3a8",
     "url": "/chess-frontend/static/js/runtime-main.26c5df37.js"
   },
   {
-    "revision": "16a09c1c4a221742bfce4a77d468bf5f",
-    "url": "/chess-frontend/static/media/capture.16a09c1c.mp3"
+    "revision": "a2b149c4f98d37bd7863462fdc4539b0",
+    "url": "/chess-frontend/static/media/capture-move.a2b149c4.mp3"
   },
   {
-    "revision": "86644655480b78ea94e323841b33fe5b",
-    "url": "/chess-frontend/static/media/move.86644655.mp3"
+    "revision": "d9502a4de53f50cbb0147e25d2c172b2",
+    "url": "/chess-frontend/static/media/normal-move.d9502a4d.mp3"
   },
   {
     "revision": "9ee53a8db449017e972f785b3211a682",
