@@ -5,7 +5,8 @@
     flex-direction: column;
     overflow: hidden; /* Prevents outer scrolling */
     border-radius: 8px;
-    background-color: rgb(197, 211, 206);
+    background-color: var(--darkest);
+    color: var(--text-color);
     font-size: 1rem;
     text-align: center;
 }
@@ -23,7 +24,7 @@
 .move-history thead {
     position: sticky;
     top: 0;
-    background-color: white;
+    background-color: var(--dark);
     z-index: 2;
 }
 

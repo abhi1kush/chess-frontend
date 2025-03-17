@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import CONFIG from "../config";
+import { useConfig } from "../context/configContext";
 import { Chess } from "chess.js";
 import Clocks from "./Clocks";
 import MoveHistory from "./MoveHistory";
@@ -13,16 +15,15 @@ import "../styles/topContainer.css"
 
 const ChessGame = () => {
   const gameRef = useRef(new Chess());
+  // User Controlled Context Variables.
+  const { theme, setTheme, enableSound, setEnableSound, timerDuration, setTimerDuration, isFlipped, setIsFlipped} = useConfig();
   const [position, setPosition] = useState(gameRef.current.fen());
   const [moveHistory, setMoveHistory] = useState([]);
-  const [whiteTime, setWhiteTime] = useState(600);
-  const [blackTime, setBlackTime] = useState(600);
+  const [whiteTime, setWhiteTime] = useState(timerDuration);
+  const [blackTime, setBlackTime] = useState(timerDuration);
   const [gameStarted, setGameStarted] = useState(false);
   const [lastMove, setLastMove] = useState(null);
-  const [theme, setTheme] = useState(localStorage.getItem("chessTheme") || "classic");
-  const [enableSound, setEnableSound] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isFlipped, setIsFlipped] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
 
@@ -33,7 +34,7 @@ const ChessGame = () => {
   useEffect(() => {
     async function fetchData() {
       // (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime, setTheme)
-      await loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime, setTheme);
+      await loadGameFromStorage(gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime);
       setIsLoaded(true); // ✅ Only after loading is complete
     }
     fetchData();
@@ -43,8 +44,8 @@ const ChessGame = () => {
   useEffect(() => {
     if (!isLoaded) return;  // ✅ Prevent saving before loading is done
     // (fen, moveHistory, whiteTime, blackTime)
-    saveGameToStorage(gameRef.current.fen(), moveHistory, whiteTime, blackTime, theme);
-  }, [position, moveHistory, whiteTime, blackTime, theme, isLoaded]); 
+    saveGameToStorage(gameRef.current.fen(), moveHistory, whiteTime, blackTime);
+  }, [position, moveHistory, whiteTime, blackTime, isLoaded]); 
 
   // Timer Logic
   useEffect(() => {

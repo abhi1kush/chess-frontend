@@ -44,6 +44,7 @@
 
 /* Chess Container */
 .chess-container {
+    background: var(--bg-color);
     width: 80%;
     display: flex;
     position: relative;
@@ -87,6 +88,8 @@
     font-size: 2rem;
     font-weight: bold;
     color: black;
+    background-color: var(--darkest);
+    border: 3px solid var(--darkest);
 }
 
 /* Ensuring chessboard remains square by limiting height */

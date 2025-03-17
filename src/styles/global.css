@@ -3,12 +3,24 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+} 
+
+:root {
+  --darkest: #bbbbbb;  /* Deep Blue */
+  --dark: #cccccc;  /* Muted Blue */
+  --light: #eeeeee;  /* Soft Cyan */
+  --lightest: #ffffff;  /* Pale Mint */
+  --text-color: #000000;  
+  --global-light-square: #a3bad5;
+  --global-dark-square: #4F7BB0;
 }
 
 html, body {
+  background: linear-gradient(to bottom, #bbbbbb, #eeeeee);
+  color: white;
     height: 100%;
     width: 100%;
-    font-family: Arial, sans-serif;
+    font-family: "Inter", sans-serif;
     /* overflow: hidden; Prevents unwanted global scrolling */
   }
 
@@ -64,3 +76,4 @@ html, body {
   .restart-button:hover {
     background-color: #e64a19;
   }
+

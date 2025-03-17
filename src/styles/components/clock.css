@@ -5,10 +5,11 @@
     border: 2px solid black;
     text-align: center;
     border-radius: 5px;
+    color: var(--text-color);
     transition: background-color 0.3s ease-in-out;
   }
 
   .active-turn {
-    background-color: #ffcc00; /* Highlight active player's clock */
+    background-color: #ffff77; /* Highlight active player's clock */
     font-weight: bold;
   }

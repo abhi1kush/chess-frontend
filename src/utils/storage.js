@@ -1,18 +1,17 @@
-const chessGameKey = "chessGame"
+import CONFIG from "../config";
 
-export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime, theme) => {
+export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime) => {
     const gameData = {
       fen,
       moveHistory,
       whiteTime,
       blackTime,
-      theme,
     };
-    localStorage.setItem(chessGameKey, JSON.stringify(gameData));
+    localStorage.setItem(CONFIG.CHESS_GAME_KEY, JSON.stringify(gameData));
   };
   
-  export const loadGameFromStorage = (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime, setTheme) => {
-    const savedGame = localStorage.getItem(chessGameKey);
+  export const loadGameFromStorage = (gameRef, setPosition, setMoveHistory, setWhiteTime, setBlackTime) => {
+    const savedGame = localStorage.getItem(CONFIG.CHESS_GAME_KEY);
     if (!savedGame) return; // No saved game, exit early
   
     try {
@@ -20,12 +19,11 @@ export const saveGameToStorage = (fen, moveHistory, whiteTime, blackTime, theme)
         gameRef.current.load(gameData.fen); // ✅ Load saved FEN into the chess.js instance
         setPosition(gameData.fen); // ✅ Update board position in React state
         setMoveHistory(gameData.moveHistory || []); // ✅ Restore move history
-        setWhiteTime(gameData.whiteTime || 600); // ✅ Restore timer values
-        setBlackTime(gameData.blackTime || 600);
-        setTheme(gameData.theme)
+        setWhiteTime(gameData.whiteTime || CONFIG.TIMER_DURATION); // ✅ Restore timer values
+        setBlackTime(gameData.blackTime || CONFIG.TIMER_DURATION);
     } catch (error) {
         console.error("Error parsing JSON from localStorage:", error);
-        localStorage.removeItem(chessGameKey); // 🔥 Clear corrupted data to prevent errors
+        localStorage.removeItem(CONFIG.CHESS_GAME_KEY); // 🔥 Clear corrupted data to prevent errors
     }
   };
   

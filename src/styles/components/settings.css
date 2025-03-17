@@ -18,7 +18,7 @@
     top: 100%;
     right: 0;
     width: 220px;
-    background: white;
+    background: var(--dark);
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -34,6 +34,8 @@
   .dropdown-item {
     display: flex;
     flex-direction: column;
+    background: var(--dark);
+    color: var(--text-color);
     gap: 5px;
   }
   
@@ -41,8 +43,9 @@
     padding: 5px;
     font-size: 14px;
     border-radius: 3px;
-    border: 1px solid #ccc;
-    width: 100%;
+    /* border: 1px solid #ccc; */
+    background: var(--light);
+    width: 60%;
   }
   
   .settings-dropdown label {

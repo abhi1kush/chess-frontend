@@ -7,16 +7,38 @@
     padding: 10px;
 }
 
-.top-bar button {
-    background: #ffffff;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: 0.2s;
+/* Top Bar with White and Subtle Grey */
+.top-container {
+    background: #dddddd !important;/* White to light grey */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #E0E0E0; /* Subtle border */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05); /* Soft shadow for depth */
+    margin: 0;
+    padding: 12px 20px;
 }
 
-.top-bar button:hover {
-    background-color: #777;
+.action-button {
+    background: #eeeeee;
+    color: #444; /* Dark Grey */
+    border: 0px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-family: sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Hover Effect */
+.action-button:hover {
+    background: #ffffff;
+}
+
+/* Active Button Click Effect */
+.action-button:active {
+    background: #ffffff;
+    transform: scale(0.98);
 }

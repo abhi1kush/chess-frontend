@@ -6,13 +6,19 @@
     --last-move-to: #00FF0080;   /* Green with transparency */
 }
 
+/*Default*/ .default-theme {
+    --light-square: var(--global-light-square);
+    --dark-square: var(--global-dark-square);
+    --last-move-from: #FFFF0080;
+    --last-move-to: #00FF0080;
+}
+
 /* Classic Theme */
 .classic-theme {
     --light-square: #EEEED2;
     --dark-square: #769656;
     --last-move-from: #FFFF0080;
     --last-move-to: #00FF0080;
-
 }
 
 /* Wood Theme */

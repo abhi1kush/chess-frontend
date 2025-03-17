@@ -31,6 +31,7 @@ const Settings = ({ theme, setTheme, enableSound, setEnableSound }) => {
           <div className="dropdown-item">
             <h4>Theme:</h4>
             <select onChange={(e) => setTheme(e.target.value)} value={theme}>
+              <option value="default">Default</option>
               <option value="classic">Classic</option>
               <option value="wood">Wood</option>
               <option value="marble">Marble</option>
