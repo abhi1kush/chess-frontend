@@ -48,12 +48,30 @@ const ChessGame = () => {
 
   // Timer Logic
   useEffect(() => {
-    if (!gameStarted) return;
+    if (!gameStarted || gameOver) return;
+
     const timer = setInterval(() => {
       gameRef.current.turn() === "w"
-        ? setWhiteTime((prev) => Math.max(prev - 1, 0))
-        : setBlackTime((prev) => Math.max(prev - 1, 0));
+        ? setWhiteTime((prevWhiteTime) => {
+          if (prevWhiteTime <= 1) {
+            setGameResult("Black Won by Time");
+            setGameOver(true);
+            clearInterval(timer); // Stop timer
+            return 0; // Ensure whiteTime does not go negative
+          }
+          return prevWhiteTime - 1;
+        })
+        : setBlackTime((prevBlackTime) => {
+          if (prevBlackTime <= 1) {
+            setGameResult("White Won by Time");
+            setGameOver(true);
+            clearInterval(timer); // Stop timer
+            return 0; // Ensure blackTime does not go negative
+          }
+          return prevBlackTime - 1;
+        });
     }, 1000);
+
     return () => clearInterval(timer);
   }, [gameStarted, position, gameOver]);
 
@@ -82,8 +100,8 @@ const ChessGame = () => {
     gameRef.current.reset();
     setPosition(gameRef.current.fen());
     setMoveHistory([]);
-    setWhiteTime(100);
-    setBlackTime(100);
+    setWhiteTime(120);
+    setBlackTime(120);
     setGameStarted(false);
     setGameOver(false);
     setGameResult("");

@@ -1,8 +1,8 @@
 // utils/soundUtils.js
-import moveSound from "../sounds/move.mp3";
-import captureSound from "../sounds/capture.mp3";
-import checkSound from "../sounds/capture.mp3";
-import checkmateSound from "../sounds/capture.mp3";
+import moveSound from "../sounds/normal-move.mp3";
+import captureSound from "../sounds/capture-move.mp3";
+import checkSound from "../sounds/capture-move.mp3";
+import checkmateSound from "../sounds/capture-move.mp3";
 import wrongSound from "../sounds/wrong.mp3";
 
 const playSound = (type) => {
