@@ -82,27 +82,19 @@ const ChessGame = () => {
     gameRef.current.reset();
     setPosition(gameRef.current.fen());
     setMoveHistory([]);
-    setWhiteTime(600);
-    setBlackTime(600);
+    setWhiteTime(100);
+    setBlackTime(100);
     setGameStarted(false);
     setGameOver(false);
     setGameResult("");
+    setLastMove(null)
   };
   
 
   return (
     <div className="main-container">
       <TopContainer
-        resetGame={() => {
-          gameRef.current.reset();
-          setPosition(gameRef.current.fen());
-          setMoveHistory([]);
-          setWhiteTime(100);
-          setBlackTime(100);
-          setGameStarted(false);
-          setGameOver(false);
-          setGameResult("");
-        }}
+        resetGame={resetGameHandler}
         flipBoard={flipBoard}
         isFlipped={isFlipped}
         theme={theme}
@@ -115,7 +107,7 @@ const ChessGame = () => {
         </div>
         <div className={`chess-container ${theme}-theme`}>
           <div className="left-panel"> 
-            <Clocks whiteTime={whiteTime} blackTime={blackTime} isWhiteTurn={gameRef.current.turn() === "w"} />
+            <Clocks whiteTime={whiteTime} blackTime={blackTime} isWhiteTurn={gameRef.current.turn() === "w"} isFlipped={isFlipped}/>
           </div>
           <div className="centre-area">
             <ChessboardComponent position={position} handleMove={handleMove} lastMove={lastMove} isFlipped={isFlipped}/>
