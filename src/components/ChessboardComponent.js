@@ -1,9 +1,8 @@
 import React from "react";
 import { Chessboard } from "react-chessboard";
-import "../styles/ChessBoard.css"
 import "../styles/themes.css"
 
-const ChessboardComponent = ({ position, handleMove, lastMove }) => {
+const ChessboardComponent = ({ position, handleMove, lastMove , isFlipped}) => {
   const getSquareStyles = () => {
     if (!lastMove) return {};
     return {
@@ -17,8 +16,9 @@ const ChessboardComponent = ({ position, handleMove, lastMove }) => {
       <Chessboard
         position={position}
         onPieceDrop={(source, target) => handleMove({ from: source, to: target })}
-        boardWidth={window.innerHeight * 0.8}
-        customBoardStyle={{ maxWidth: "80vw" }}
+        boardOrientation={isFlipped ? "black" : "white"}
+        // boardWidth={window.innerHeight * 0.8}
+        // customBoardStyle={{ maxWidth: "80vw" }}
         customSquareStyles={getSquareStyles()}
         customDarkSquareStyle={{ backgroundColor: "var(--dark-square)" }}
         customLightSquareStyle={{ backgroundColor: "var(--light-square)" }}

@@ -1,12 +1,13 @@
 .move-history {
-    width: 200px;
-    height: 320px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    background-color: #f9f9f9;
+    width: 90%;
+    height: 60vh;
     display: flex;
     flex-direction: column;
     overflow: hidden; /* Prevents outer scrolling */
+    border-radius: 8px;
+    background-color: rgb(197, 211, 206);
+    font-size: 1rem;
+    text-align: center;
 }
 
 .move-history h3 {
@@ -15,7 +16,7 @@
 }
 
 .move-history table {
-    width: 100%;
+    width: 98%;
     border-collapse: collapse;
 }
 
@@ -28,7 +29,7 @@
 
 .move-history tbody {
     display: block;
-    height: 250px; /* Ensures tbody is scrollable */
+    height: 400px; /* Ensures tbody is scrollable */
     overflow-y: auto;
     padding-right: 5px;
 }

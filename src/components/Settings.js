@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../styles/Settings.css";
+import "../styles/components/settings.css";
 
 const Settings = ({ theme, setTheme, enableSound, setEnableSound }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -5,9 +5,7 @@ import checkSound from "../sounds/capture.mp3";
 import checkmateSound from "../sounds/capture.mp3";
 import wrongSound from "../sounds/wrong.mp3";
 
-const playSound = (type, enableSound) => {
-  if (!enableSound) return;
-
+const playSound = (type) => {
   let sound;
   switch (type) {
     case "move":

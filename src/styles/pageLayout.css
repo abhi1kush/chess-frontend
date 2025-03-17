@@ -1,0 +1,126 @@
+/* Main Layout Containers */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Top Section */
+.top-container {
+    height: 8%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Settings Always on Top Right */
+.settings-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Middle Section */
+.middle-container {
+    height: 89%;
+    width: 100%;
+    display: flex;
+}
+
+/* Left Menu */
+.left-menu-bar {
+    width: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: left;
+    font-size: 1.2rem;
+}
+
+/* Chess Container */
+.chess-container {
+    width: 80%;
+    display: flex;
+    position: relative;
+}
+
+/* Left Panel */
+.left-panel {
+    width: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Chessboard */
+.centre-area {
+    width: 65%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+}
+
+/* Right Panel */
+.right-panel {
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Chessboard with a fixed aspect ratio */
+.chess-board {
+    width: 95%; /* Make it responsive */
+    aspect-ratio: 1 / 1; /* Maintain a square */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+}
+
+/* Ensuring chessboard remains square by limiting height */
+@media (max-aspect-ratio: 1/1) { 
+    .chess-board {
+        height: 80%; /* Adjust height when window gets too narrow */
+        width: auto;
+    }
+}
+
+@media (min-aspect-ratio: 1/1) { 
+    .chess-board {
+        width: 80%; /* Adjust width when window gets too wide */
+        height: auto;
+    }
+}
+
+/* Ad Banner */
+.ad-banner {
+    position: relative;
+    width: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: left;
+    font-size: 1.2rem;
+}
+
+/* Bottom Section */
+.bottom-container {
+    height: 3%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+

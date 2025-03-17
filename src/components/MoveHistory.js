@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "../styles/MoveHistory.css";
+import "../styles/components/moveHistory.css";
 
 const MoveHistory = ({ moveHistory }) => {
   const scrollRef = useRef(null);
@@ -12,7 +12,6 @@ const MoveHistory = ({ moveHistory }) => {
   }, [moveHistory]);
 
   return (
-    <div className="right-panel">
       <div className="move-history">
         <h3>Move History</h3>
         <table>
@@ -36,7 +35,6 @@ const MoveHistory = ({ moveHistory }) => {
           </tbody>
         </table>
       </div>
-    </div>
   );
 };
 

@@ -10,3 +10,27 @@ export const getMoveType = (move, game) => {
     } 
     return "move"
 }
+
+  // Reset Game
+ export const resetGame = (gameRef, setPosition, setMoveHistory) => {
+    gameRef.current.reset();
+    setPosition(gameRef.current.fen());
+    setMoveHistory([]);
+  };
+
+  // Handle Game Over
+export const checkGameOver = (gameRef, whiteTime, blackTime, setGameOver, setGameResult) => {
+        if (gameRef.current.isCheckmate()) {
+          setGameOver(true);
+          setGameResult(gameRef.current.turn() === "w" ? "Black Wins by Checkmate!" : "White Wins by Checkmate!");
+        } else if (gameRef.current.isDraw()) {
+          setGameOver(true);
+          setGameResult("Game Drawn!");
+        } else if (whiteTime === 0) {
+          setGameOver(true);
+          setGameResult("Black Wins on Time!");
+        } else if (blackTime === 0) {
+          setGameOver(true);
+          setGameResult("White Wins on Time!");
+        }
+      };

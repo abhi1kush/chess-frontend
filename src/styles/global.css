@@ -1,3 +1,17 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    /* overflow: hidden; Prevents unwanted global scrolling */
+  }
+
 .invalid-move {
     color: red;
     font-weight: bold;
@@ -8,4 +22,45 @@
   @keyframes fadeOut {
     0% { opacity: 1; }
     100% { opacity: 0; }
+  }
+
+  .game-over-overlay {
+    position: fixed; /* Covers the entire screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Dark transparent background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Highest priority */
+  }
+  
+  .game-over-message {
+    background: white;
+    color: black;
+    padding: 20px 40px;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.3);
+    text-align: center;
+  }
+
+  .restart-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background-color: #ff5722;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .restart-button:hover {
+    background-color: #e64a19;
   }
