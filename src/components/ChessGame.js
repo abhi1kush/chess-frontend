@@ -21,9 +21,7 @@ const ChessGame = () => {
   const [lastMove, setLastMove] = useState(null);
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
-  const hasLoaded = useRef(false); // Prevent multiple loads
-  const [gameStarted, setGameStarted] = useState(false);
-  const timerRef = useRef(null); // Store the timer interval
+  const hasLoaded = useRef(false); 
 
     // ✅ Use callback to provide stable handlers (prevents unnecessary renders)
     const handleTimeUpdate = useCallback((turn, time) => {
@@ -67,7 +65,6 @@ const ChessGame = () => {
       if (!move) return;
 
       console.log("✅ Valid Move:", move.san);
-      setGameStarted(true);
       setLastMove({ from, to });
 
       // ✅ Prevent unnecessary re-renders
@@ -84,13 +81,12 @@ const ChessGame = () => {
     }
   }, [gameOver, enableSound]);
 
-  const resetGameHandler = () => {
+  const resetGameHandler = (timerDuration) => {
     console.log("🔄 Resetting game...");
     gameRef.current.reset();
     setMoveHistory([]);
-    whiteTimeRef.current = 200;
-    blackTimeRef.current = 200;
-    setGameStarted(false);
+    whiteTimeRef.current = timerDuration;
+    blackTimeRef.current = timerDuration;
     setGameOver(false);
     setGameResult("");
     setLastMove(null);
@@ -99,7 +95,7 @@ const ChessGame = () => {
   return (
     <div className="main-container">
       <TopContainer
-        resetGame={resetGameHandler}
+        resetGame={() => {resetGameHandler(timerDuration)}}
         flipBoard={() => setIsFlipped((prev) => !prev)}
         isFlipped={isFlipped}
         theme={theme}
@@ -108,10 +104,12 @@ const ChessGame = () => {
         setEnableSound={setEnableSound}
       />
       <div className="middle-container">
+        <div className="left-menu-bar"></div>
         <div className={`chess-container ${theme}-theme`}>
+        <div className="left-panel"> 
           {/*gameStarted, gameOver, getTurn, onTimeUpdate, onGameOver, isFlipped, timerDuration  */}
           <Clocks
-            gameStarted={gameStarted}
+            gameStarted={moveHistory.length > 0}
             gameOver={gameOver}
             setGameOver = {setGameOver}
             setGameResult = {setGameResult}
@@ -121,7 +119,8 @@ const ChessGame = () => {
             isFlipped={isFlipped} 
             timerDuration={timerDuration}
           />
-      
+          </div>
+          <div className="centre-area">
           <ChessboardComponent
             position={gameRef.current.fen()}
             handleMove={handleMove}
@@ -133,9 +132,12 @@ const ChessGame = () => {
               <p>
               {gameResult}
               </p>
-              <button className="restart-button" onClick={resetGameHandler}>Restart Game</button>
+              <button className="restart-button" onClick={() =>{resetGameHandler(timerDuration)}}>Restart Game</button>
               </div></div>}
+          </div>
+          <div className="right-panel">
           <MoveHistory moveHistory={moveHistory} />
+          </div>
         </div>
       </div>
     </div>
