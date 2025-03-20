@@ -7,12 +7,22 @@ const Clocks = React.memo((props) => {
   const [blackTime, setBlackTime] = useState(10);
   const timerRef = useRef(null);
 
+    // 🛠 Reset timers when the game starts or resets
+    useEffect(() => {
+      if (props.gameStarted) {
+        setWhiteTime(props.timerDuration); // Reset white time
+        setBlackTime(props.timerDuration); // Reset black time
+      }
+    }, [props.gameStarted, props.gameOver]);
+
   useEffect(() => {
-    if (!props.gameStarted || props.gameOver) {
+    if (!props.gameStarted || props.gameOver || props.isReset) {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      setWhiteTime(props.timerDuration);
+      setBlackTime(props.timerDuration);
       return;
     }
 
@@ -58,6 +68,8 @@ const Clocks = React.memo((props) => {
     if (blackTime === 0) props.onGameOver("White");
   }, [whiteTime, blackTime, props.onGameOver]);
 
+
+  console.log("🕒 Clocks rendered");
   return (
     <div className="left-panel">
       <div className="clocks-container">
@@ -87,4 +99,5 @@ Clocks.propTypes = {
   onGameOver: PropTypes.func.isRequired,
   isFlipped: PropTypes.bool.isRequired,
   timerDuration: PropTypes.number.isRequired,
+  isReset: PropTypes.bool.isRequired,
 };

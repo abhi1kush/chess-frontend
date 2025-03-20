@@ -22,6 +22,7 @@ const ChessGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
   const hasLoaded = useRef(false); 
+  const [isReset, setIsReset] = useState(false);
 
     // ✅ Use callback to provide stable handlers (prevents unnecessary renders)
     const handleTimeUpdate = useCallback((turn, time) => {
@@ -82,6 +83,7 @@ const ChessGame = () => {
   }, [gameOver, enableSound]);
 
   const resetGameHandler = (timerDuration) => {
+    setGameOver(true);
     console.log("🔄 Resetting game...");
     gameRef.current.reset();
     setMoveHistory([]);
@@ -118,6 +120,7 @@ const ChessGame = () => {
             onGameOver={handleGameOver} 
             isFlipped={isFlipped} 
             timerDuration={timerDuration}
+            isReset={isReset}
           />
           </div>
           <div className="centre-area">
