@@ -1,5 +1,5 @@
 const CONFIG = {
-    TIMER_DURATION: 300, // 10 minutes per player
+    TIMER_DURATION: 10, // 10 minutes per player
     THEME: "classic",
     ENABLE_SOUND: true,
     IS_FLIPPED: false,

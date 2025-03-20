@@ -22,7 +22,6 @@ export const ConfigProvider = ({ children }) => {
     useEffect(() => localStorage.setItem(CONFIG.TIMER_DURATION_KEY, JSON.stringify(timerDuration)), [timerDuration]);
     useEffect(() => localStorage.setItem(CONFIG.IS_FLIPPED_KEY, JSON.stringify(isFlipped)), [isFlipped]);
 
-
   return (
     <ConfigContext.Provider value={{ theme, setTheme, enableSound, setEnableSound , timerDuration, setTimerDuration, isFlipped, setIsFlipped}}>
       {children}

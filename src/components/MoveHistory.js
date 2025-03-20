@@ -10,7 +10,7 @@ const MoveHistory = ({ moveHistory }) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [moveHistory]);
-
+  console.log("🛠 MoveHistory rendered");
   return (
       <div className="move-history">
         <h3>Move History</h3>
@@ -22,15 +22,15 @@ const MoveHistory = ({ moveHistory }) => {
               <th>Black</th>
             </tr>
           </thead>
-          <tbody ref={scrollRef}> {/* Attach ref to tbody */}
+          <tbody ref={scrollRef}>
             {moveHistory.map((move, index) =>
-              index % 2 === 0 ? ( // Every even index is a new move row
+              index % 2 === 0 ? (
                 <tr key={index / 2}>
                   <td>{Math.floor(index / 2) + 1}.</td>
                   <td>{move}</td>
-                  <td>{moveHistory[index + 1] || ""}</td> {/* Handle missing black moves */}
+                  <td>{moveHistory[index + 1] || ""}</td>
                 </tr>
-              ) : null // Skip rendering odd indices separately
+              ) : null
             )}
           </tbody>
         </table>

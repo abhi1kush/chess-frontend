@@ -10,7 +10,7 @@ const ChessboardComponent = ({ position, handleMove, lastMove , isFlipped}) => {
       [lastMove.to]: { backgroundColor: "var(--last-move-to)" },
     };
   };
-
+  console.log("🛠 ChessboardComponent rendred");
   return (
     <div className="chess-board">
       <Chessboard
