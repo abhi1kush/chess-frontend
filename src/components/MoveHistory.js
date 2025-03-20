@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import "../styles/components/moveHistory.css";
+import PropTypes from "prop-types";
 
-const MoveHistory = ({ moveHistory }) => {
+const MoveHistory = (props) => {
   const scrollRef = useRef(null);
 
   // Auto-scroll to the latest move
@@ -9,7 +10,7 @@ const MoveHistory = ({ moveHistory }) => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [moveHistory]);
+  }, [props.moveHistory]);
   console.log("🛠 MoveHistory rendered");
   return (
       <div className="move-history">
@@ -23,12 +24,12 @@ const MoveHistory = ({ moveHistory }) => {
             </tr>
           </thead>
           <tbody ref={scrollRef}>
-            {moveHistory.map((move, index) =>
+            {props.moveHistory.map((move, index) =>
               index % 2 === 0 ? (
                 <tr key={index / 2}>
                   <td>{Math.floor(index / 2) + 1}.</td>
                   <td>{move}</td>
-                  <td>{moveHistory[index + 1] || ""}</td>
+                  <td>{props.moveHistory[index + 1] || ""}</td>
                 </tr>
               ) : null
             )}
@@ -39,3 +40,7 @@ const MoveHistory = ({ moveHistory }) => {
 };
 
 export default MoveHistory;
+
+MoveHistory.propTypes = {
+  moveHistory: PropTypes.array.isRequired,
+};

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, use } from "react";
 import { useConfig } from "../context/configContext";
 import { Chess } from "chess.js";
 import Clocks from "./Clocks";
@@ -14,14 +14,13 @@ import "../styles/topContainer.css";
 
 const ChessGame = () => {
   const gameRef = useRef(new Chess());
-  const { theme, setTheme, enableSound, setEnableSound, timerDuration, setTimerDuration, isFlipped, setIsFlipped} = useConfig();
+  const { theme, setTheme, enableSound, setEnableSound , timerDuration, setTimerDuration, isFlipped, setIsFlipped} = useConfig();
   const [moveHistory, setMoveHistory] = useState([]);
   const whiteTimeRef = useRef(timerDuration);
   const blackTimeRef = useRef(timerDuration);
   const [lastMove, setLastMove] = useState(null);
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
-  const renderCount = useRef(0); // 🛠️ Track renders
   const hasLoaded = useRef(false); // Prevent multiple loads
   const [gameStarted, setGameStarted] = useState(false);
   const timerRef = useRef(null); // Store the timer interval
@@ -37,8 +36,7 @@ const ChessGame = () => {
       setGameOver(true);
     }, []);
 
-  renderCount.current += 1;
-  console.log(`🎯 ChessGame rendered (${renderCount.current})`);
+  console.log(`🎯 ChessGame rendered`);
 
   // ✅ Load game state on mount (Only Once)
   useEffect(() => {
@@ -80,26 +78,28 @@ const ChessGame = () => {
       });
 
       if (enableSound) playSound(getMoveType(move, gameRef.current));
-      // checkGameOver(gameRef, whiteTime, blackTime, setGameOver, setGameResult);
+      checkGameOver(gameRef, whiteTimeRef.current, blackTimeRef.current, setGameOver, setGameResult);
     } catch (error) {
       console.warn("❌ Invalid move:", error);
     }
   }, [gameOver, enableSound]);
 
+  const resetGameHandler = () => {
+    console.log("🔄 Resetting game...");
+    gameRef.current.reset();
+    setMoveHistory([]);
+    whiteTimeRef.current = 200;
+    blackTimeRef.current = 200;
+    setGameStarted(false);
+    setGameOver(false);
+    setGameResult("");
+    setLastMove(null);
+  }
+
   return (
     <div className="main-container">
       <TopContainer
-        resetGame={() => {
-          console.log("🔄 Resetting game...");
-          gameRef.current.reset();
-          setMoveHistory([]);
-          whiteTimeRef.current = timerDuration;
-          blackTimeRef.current = timerDuration;
-          setGameStarted(false);
-          setGameOver(false);
-          setGameResult("");
-          setLastMove(null);
-        }}
+        resetGame={resetGameHandler}
         flipBoard={() => setIsFlipped((prev) => !prev)}
         isFlipped={isFlipped}
         theme={theme}
@@ -113,19 +113,28 @@ const ChessGame = () => {
           <Clocks
             gameStarted={gameStarted}
             gameOver={gameOver}
+            setGameOver = {setGameOver}
+            setGameResult = {setGameResult}
             getTurn={() => gameRef.current.turn()} 
             onTimeUpdate={handleTimeUpdate} 
             onGameOver={handleGameOver} 
             isFlipped={isFlipped} 
             timerDuration={timerDuration}
           />
-
+      
           <ChessboardComponent
             position={gameRef.current.fen()}
             handleMove={handleMove}
             lastMove={lastMove}
             isFlipped={isFlipped}
           />
+          {gameOver && <div className="game-over-overlay"><div className="game-over-message">
+              {() => {console.log("Game Over %s", gameResult) }}
+              <p>
+              {gameResult}
+              </p>
+              <button className="restart-button" onClick={resetGameHandler}>Restart Game</button>
+              </div></div>}
           <MoveHistory moveHistory={moveHistory} />
         </div>
       </div>

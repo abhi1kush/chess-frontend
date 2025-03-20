@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../styles/components/settings.css";
+import PropTypes from "prop-types";
 
-const Settings = ({ theme, setTheme, enableSound, setEnableSound }) => {
+const Settings = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const settingsRef = useRef(null);
 
@@ -30,7 +31,7 @@ const Settings = ({ theme, setTheme, enableSound, setEnableSound }) => {
         <div className="settings-dropdown">
           <div className="dropdown-item">
             <h4>Theme:</h4>
-            <select onChange={(e) => setTheme(e.target.value)} value={theme}>
+            <select onChange={(e) => props.setTheme(e.target.value)} value={props.theme}>
               <option value="default">Default</option>
               <option value="classic">Classic</option>
               <option value="wood">Wood</option>
@@ -40,7 +41,7 @@ const Settings = ({ theme, setTheme, enableSound, setEnableSound }) => {
           </div>
           <div className="dropdown-item">
             <label>
-              <input type="checkbox" checked={enableSound} onChange={(e) => setEnableSound(e.target.checked)} />
+              <input type="checkbox" checked={props.enableSound} onChange={(e) => props.setEnableSound(e.target.checked)} />
               Enable Move Sound
             </label>
           </div>
@@ -51,3 +52,10 @@ const Settings = ({ theme, setTheme, enableSound, setEnableSound }) => {
 };
 
 export default Settings;
+
+Settings.propTypes = {
+  theme: PropTypes.string.isRequired,
+  setTheme: PropTypes.func.isRequired,
+  enableSound: PropTypes.bool.isRequired,
+  setEnableSound: PropTypes.func.isRequired,
+};
