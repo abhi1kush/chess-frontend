@@ -10,19 +10,19 @@ export const saveGameToStorage = (fen, moveHistory) => {
     localStorage.setItem(CONFIG.CHESS_GAME_KEY, JSON.stringify(gameData));
   };
   
-  export const loadGameFromStorage = (gameRef, setMoveHistory) => {
+  export const loadGameFromStorage = () => {
     const savedGame = localStorage.getItem(CONFIG.CHESS_GAME_KEY);
-    if (!savedGame) return; // No saved game, exit early
-  
+    if (!savedGame) {
+      return { fen: CONFIG.START_FEN, moveHistory: [] }; // ✅ Ensure a default return value
+    }
+
     try {
         const gameData = JSON.parse(savedGame);
-        gameRef.current.load(gameData.fen); // ✅ Load saved FEN into the chess.js instance
-        setMoveHistory(gameData.moveHistory || []); // ✅ Restore move history
-        // setWhiteTime(gameData.whiteTime || CONFIG.TIMER_DURATION); // ✅ Restore timer values
-        // setBlackTime(gameData.blackTime || CONFIG.TIMER_DURATION);
+        return { fen: gameData.fen, moveHistory: gameData.moveHistory || [] };
     } catch (error) {
         console.error("Error parsing JSON from localStorage:", error);
-        localStorage.removeItem(CONFIG.CHESS_GAME_KEY); // 🔥 Clear corrupted data to prevent errors
+        localStorage.removeItem(CONFIG.CHESS_GAME_KEY); // 🔥 Clear corrupted data
+        return { fen: CONFIG.START_FEN, moveHistory: [] };
     }
   };
   

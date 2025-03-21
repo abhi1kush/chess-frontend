@@ -24,7 +24,7 @@ const ChessGame = ({onEnterAnalysis}) => {
   const hasLoaded = useRef(false); 
   const [isReset, setIsReset] = useState(false);
 
-    // ✅ Use callback to provide stable handlers (prevents unnecessary renders)
+    // Use callback to provide stable handlers (prevents unnecessary renders)
     const handleTimeUpdate = useCallback((turn, time) => {
       if (turn === "w") whiteTimeRef.current = time;
       else blackTimeRef.current = time;
@@ -37,21 +37,25 @@ const ChessGame = ({onEnterAnalysis}) => {
 
   console.log(`🎯 ChessGame rendered`);
 
-  // ✅ Load game state on mount (Only Once)
+  //Load game state on mount (Only Once)
   useEffect(() => {
     if (hasLoaded.current) return;
     console.log("🔥 useEffect -> Game Loaded");
 
     async function fetchData() {
-      const success = await loadGameFromStorage(gameRef, setMoveHistory);
-      if (success) console.log("✅ Game Loaded Successfully");
+      const savedData = await loadGameFromStorage();
+      if (savedData) {
+        gameRef.current.load(savedData.fen); // ✅ Load saved FEN into chess.js instance
+        setMoveHistory(savedData.moveHistory || []); // ✅ Ensure moveHistory is always an array
+        console.log("Game Loaded Successfully", savedData);
+      }
     }
 
     fetchData();
     hasLoaded.current = true;
   }, []);
 
-  // ✅ Save game state ONLY if moveHistory actually changes
+  // Save game state ONLY if moveHistory actually changes
   useEffect(() => {
     console.log("💾 useEffect -> Saving Game, moveHistory:", moveHistory);
     saveGameToStorage(gameRef.current.fen(), moveHistory);
@@ -65,13 +69,13 @@ const ChessGame = ({onEnterAnalysis}) => {
       const move = gameRef.current.move({ from, to, promotion: "q" });
       if (!move) return;
 
-      console.log("✅ Valid Move:", move.san);
+      console.log("Valid Move:", move.san);
       setLastMove({ from, to });
 
-      // ✅ Prevent unnecessary re-renders
+      // Prevent unnecessary re-renders
       setMoveHistory((prev) => {
         const newHistory = [...prev, move.san];
-        console.log("✅ Move History Updated:", newHistory);
+        console.log(" Move History Updated:", newHistory);
         return newHistory;
       });
 
@@ -96,14 +100,7 @@ const ChessGame = ({onEnterAnalysis}) => {
 
     // Save game state & switch to Analysis Mode
     const enterAnalysisMode = () => {
-      localStorage.setItem(
-        "gameState",
-        JSON.stringify({
-          fen: gameRef.current.fen(),
-          moveHistory,
-          timer: { white: whiteTimeRef.current, black: blackTimeRef.current },
-        })
-      );
+      saveGameToStorage(gameRef.current.fen(), moveHistory);
       onEnterAnalysis();
     };
 
@@ -120,7 +117,7 @@ const ChessGame = ({onEnterAnalysis}) => {
         enterAnalysisMode={enterAnalysisMode}
       />
       <div className="middle-container">
-        <div className="left-menu-bar"></div>
+        <div className="left-menu-bar"><h3>Chess Game</h3></div>
         <div className={`chess-container ${theme}-theme`}>
         <div className="left-panel"> 
           {/*gameStarted, gameOver, getTurn, onTimeUpdate, onGameOver, isFlipped, timerDuration  */}

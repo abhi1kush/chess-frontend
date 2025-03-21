@@ -16,12 +16,12 @@ const TopContainer = (props) => {
 export default TopContainer;
 
 TopContainer.propTypes = {
-  resetGame: PropTypes.func.isRequired,
+  resetGame: PropTypes.func,
   flipBoard: PropTypes.func.isRequired,
   isFlipped: PropTypes.bool.isRequired,
   theme: PropTypes.string.isRequired,
   setTheme: PropTypes.func.isRequired,
-  enableSound: PropTypes.bool.isRequired,
-  setEnableSound: PropTypes.func.isRequired,
+  enableSound: PropTypes.bool,
+  setEnableSound: PropTypes.func,
   enterAnalysisMode: PropTypes.func.isRequired
 }

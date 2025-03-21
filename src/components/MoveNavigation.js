@@ -1,76 +1,70 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef} from "react";
 import { Chess } from "chess.js";
 import "../styles/components/moveNavigation.css";
 import PropTypes from "prop-types";
+import CONFIG from "../config";
 
-const MoveNavigation = ({
-  isReplaying,
-  setIsReplaying,
-  replayGameRef,
-  replayMoveIndex,
-  setReplayMoveIndex,
-  moveHistory,
-  setReplayPosition
-}) => {
-  
-  // ✅ Sync replay board position when replayMoveIndex changes
-  useEffect(() => {
-    if (!isReplaying || replayMoveIndex < 0 || replayMoveIndex > moveHistory.length) return;
-
-    const newReplayGame = new Chess();
-    moveHistory.slice(0, replayMoveIndex).forEach((move) => newReplayGame.move(move));
-    setReplayPosition(newReplayGame.fen()); // Update board position in replay mode
-    replayGameRef.current = newReplayGame;
-  }, [isReplaying, replayMoveIndex, moveHistory, setReplayPosition]);
-
-  // 🔄 Move to the first move in history
+const MoveNavigation = ({ fenHistory, currentMoveIndex, setCurrentMoveIndex, setPosition }) => {
+  // ⏮️ Move to the first move
   const goToStart = () => {
-    setIsReplaying(true);
-    setReplayMoveIndex(0);
+    setCurrentMoveIndex(0);
+    setPosition(fenHistory[0]);
   };
+    useEffect(() => {
+        console.log("🛠 MoveNavigation goToStart", currentMoveIndex);
+    }, [currentMoveIndex]);
+
 
   // ⏪ Step back one move
   const prevMove = () => {
-    if (replayMoveIndex > 0) {
-      setIsReplaying(true);
-      setReplayMoveIndex((prev) => prev - 1);
+    if (currentMoveIndex > 0) {
+      setCurrentMoveIndex(prev => {
+        const newIndex = prev - 1;
+        setPosition(fenHistory[newIndex]);
+        return newIndex;
+      });
     }
   };
 
   // ⏩ Step forward one move
   const nextMove = () => {
-    if (replayMoveIndex < moveHistory.length) {
-      setIsReplaying(true);
-      setReplayMoveIndex((prev) => prev + 1);
+    if (currentMoveIndex < fenHistory.length - 1) {
+      setCurrentMoveIndex(prev => {
+        const newIndex = prev + 1;
+        setPosition(fenHistory[newIndex]);
+        return newIndex;
+      });
     }
   };
 
-  // 🔚 Exit replay mode and go to the latest position
-  const goToLatest = () => {
-    setIsReplaying(false);
-    setReplayMoveIndex(moveHistory.length);
-  };
 
+  // 🔚 Go to the latest move
+  const goToLatest = () => {
+    setCurrentMoveIndex(fenHistory.length - 1);
+    setPosition(fenHistory[fenHistory.length - 1]);
+  };
+  console.log("🛠 MoveNavigation rendered", currentMoveIndex, fenHistory.length);
   return (
     <div className="move-navigation">
-      <button onClick={goToStart} disabled={replayMoveIndex === 0}>⏮️ Start</button>
-      <button onClick={prevMove} disabled={replayMoveIndex === 0}>⬅️ Prev</button>
-      <button onClick={nextMove} disabled={replayMoveIndex >= moveHistory.length}>➡️ Next</button>
-      <button onClick={goToLatest} disabled={!isReplaying}>⏭️ Latest</button>
+      <button onClick={goToStart} disabled={currentMoveIndex === 0}>⏮️ Start</button>
+      <button onClick={prevMove} disabled={currentMoveIndex === 0}>⬅️ Prev</button>
+      <button onClick={nextMove} disabled={currentMoveIndex >= (fenHistory.length - 1)}>➡️ Next</button>
+      <button onClick={goToLatest} disabled={currentMoveIndex === (fenHistory.length - 1)}>⏭️ Latest</button>
     </div>
   );
 };
 
 export default MoveNavigation;
 
+MoveNavigation.defaultProps = {
+    fenHistory: [],
+};
 
-MoveNavigation.propTypes = { 
-    isReplaying: PropTypes.bool.isRequired,
-    setIsReplaying: PropTypes.func.isRequired,
-    replayGameRef: PropTypes.object.isRequired,
-    replayMoveIndex: PropTypes.number.isRequired,
-    setReplayMoveIndex: PropTypes.func.isRequired,
-    moveHistory: PropTypes.array.isRequired,
-    setReplayPosition: PropTypes.func.isRequired
+MoveNavigation.propTypes = {
+    gameRef: PropTypes.object.isRequired,
+    setPosition: PropTypes.func.isRequired,
+    currentMoveIndex: PropTypes.number.isRequired,
+    setCurrentMoveIndex: PropTypes.func.isRequired,
+    fenHistory: PropTypes.array.isRequired,
 };
 

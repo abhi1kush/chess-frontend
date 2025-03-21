@@ -12,8 +12,9 @@ const ChessboardComponent = (props) => {
     };
   };
   console.log("🛠 ChessboardComponent rendred");
+  console.log("isAnalysis:", props.isAnalysis);
   return (
-    <div className="chess-board">
+    <div className={props.isAnalysis ? "analysis-board": "chess-board" }>
       <Chessboard
         position={props.position}
         onPieceDrop={(source, target) => props.handleMove({ from: source, to: target })}
@@ -30,9 +31,14 @@ const ChessboardComponent = (props) => {
 
   export default ChessboardComponent;
 
+ChessboardComponent.defaultProps = {
+  isAnalysis: false,
+};
+
 ChessboardComponent.propTypes = {   
   position: PropTypes.string.isRequired,
   handleMove: PropTypes.func.isRequired,
   lastMove: PropTypes.object.isRequired,
   isFlipped: PropTypes.bool.isRequired,
+  isAnalysis: PropTypes.bool,
 };

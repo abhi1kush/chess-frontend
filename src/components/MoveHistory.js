@@ -11,7 +11,7 @@ const MoveHistory = (props) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [props.moveHistory]);
-  console.log("🛠 MoveHistory rendered");
+  console.log("🛠 MoveHistory rendered %d",MoveHistory.length);
   return (
       <div className="move-history">
         <h3>Move History</h3>

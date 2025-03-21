@@ -30,6 +30,8 @@
     height: 89%;
     width: 100%;
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Left Menu */
@@ -127,3 +129,26 @@
     font-size: 1.2rem;
 }
 
+.analysis-container {
+    width: 80%;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.analysis-board {
+    position: relative;
+    height: 80%;
+    aspect-ratio: 1 / 1; /* Maintain a square */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+    background-color: var(--dark);
+    border: 3px solid var(--darkest);
+}
