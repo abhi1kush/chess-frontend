@@ -1,0 +1,22 @@
+.move-navigation {
+    display: flex;
+    position: relative;
+    justify-content: space-around;
+    padding: 10px;
+  }
+  
+  .move-navigation button {
+    background-color: #333;
+    color: white;
+    padding: 8px;
+    margin: 2px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+  }
+  
+  .move-navigation button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }

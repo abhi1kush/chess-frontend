@@ -12,7 +12,7 @@ import "../styles/global.css";
 import "../styles/pageLayout.css";
 import "../styles/topContainer.css";
 
-const ChessGame = () => {
+const ChessGame = ({onEnterAnalysis}) => {
   const gameRef = useRef(new Chess());
   const { theme, setTheme, enableSound, setEnableSound , timerDuration, setTimerDuration, isFlipped, setIsFlipped} = useConfig();
   const [moveHistory, setMoveHistory] = useState([]);
@@ -94,6 +94,19 @@ const ChessGame = () => {
     setLastMove(null);
   }
 
+    // Save game state & switch to Analysis Mode
+    const enterAnalysisMode = () => {
+      localStorage.setItem(
+        "gameState",
+        JSON.stringify({
+          fen: gameRef.current.fen(),
+          moveHistory,
+          timer: { white: whiteTimeRef.current, black: blackTimeRef.current },
+        })
+      );
+      onEnterAnalysis();
+    };
+
   return (
     <div className="main-container">
       <TopContainer
@@ -104,6 +117,7 @@ const ChessGame = () => {
         setTheme={setTheme}
         enableSound={enableSound}
         setEnableSound={setEnableSound}
+        enterAnalysisMode={enterAnalysisMode}
       />
       <div className="middle-container">
         <div className="left-menu-bar"></div>

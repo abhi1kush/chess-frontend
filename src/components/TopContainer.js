@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 const TopContainer = (props) => {
   return (
     <div className="top-container">
-        <TopBar resetGame={props.resetGame} flipBoard={props.flipBoard} isFlipped={props.isFlipped}/>
+        <TopBar resetGame={props.resetGame} flipBoard={props.flipBoard} isFlipped={props.isFlipped} enterAnalysisMode={props.enterAnalysisMode}/>
         <Settings theme={props.theme} setTheme={props.setTheme} enableSound={props.enableSound} setEnableSound={props.setEnableSound} />
     </div>
   );
@@ -23,4 +23,5 @@ TopContainer.propTypes = {
   setTheme: PropTypes.func.isRequired,
   enableSound: PropTypes.bool.isRequired,
   setEnableSound: PropTypes.func.isRequired,
+  enterAnalysisMode: PropTypes.func.isRequired
 }

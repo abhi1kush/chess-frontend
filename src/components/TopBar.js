@@ -8,6 +8,7 @@ const TopBar = (props) => {
         <div className="top-bar">
             <button onClick={props.resetGame} className="action-button">Reset Board</button>
             <button onClick={props.flipBoard}className="action-button">{props.isFlipped ? "Unflip Board" : "Flip Board"}</button>
+            <button onClick={props.enterAnalysisMode} className="action-button">Enter Analysis Mode</button>
         </div>
   );
 };
