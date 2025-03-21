@@ -54,6 +54,7 @@ const AnalysisGame = ({ onExitAnalysis }) => {
             theme={theme}
             setTheme={setTheme}
             onExitAnalysis={onExitAnalysis}
+            isAnalysis={true}
           />
           <div className="middle-container">
             <div className={`analysis-container ${theme}-theme`}>
