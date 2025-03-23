@@ -1,44 +1,57 @@
-import React,{ useState } from "react";
-import "../styles/topContainer.css"; // Add styles for the top bar
-import Settings from "./Settings";
-import PropTypes from "prop-types";
+// src/components/TopBar.js
+import React, { useState } from 'react';
+import '../styles/topContainer.css';
+import PropTypes from 'prop-types';
 
-const TopBar = (props) => {
+const TopBar = ({ resetGame, flipBoard, isFlipped, enterAnalysisMode, isAnalysis, onLoadPGN, downloadPGN }) => {
   const [showPGNInput, setShowPGNInput] = useState(false);
-  const [pgnText, setPgnText] = useState("");
+  const [pgnText, setPgnText] = useState('');
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const pgnData = e.target.result;
-            props.onLoadPGN(pgnData); // 📌 Pass PGN data to AnalysisGame.js
-        };
-        reader.readAsText(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const pgnData = e.target.result;
+        onLoadPGN(pgnData);
+      };
+      reader.readAsText(file);
     }
   };
 
-const handlePastePGN = () => {
-    props.onLoadPGN(pgnText); // 📌 Load pasted PGN text
+  const handlePastePGN = () => {
+    onLoadPGN(pgnText);
     setShowPGNInput(false);
-    setPgnText("");
-};
+    setPgnText('');
+  };
+
   return (
-        <div className="top-bar">
-            {!props.isAnalysis && <button onClick={props.resetGame} className="action-button">Reset Board</button>}
-            <button onClick={props.flipBoard}className="action-button">{props.isFlipped ? "Unflip Board" : "Flip Board"}</button>
-            <button onClick={props.enterAnalysisMode} className="action-button">Enter Analysis Mode</button>
-            {props.isAnalysis && <label className="action-button upload-btn">
-                Upload PGN
-                <input type="file" accept=".pgn" onChange={handleFileUpload} hidden />
-            </label>}
-            {!props.isAnalysis && <button onClick={props.downloadPGN} className="action-button">Download PGN</button>}
-        </div>
+    <div className="top-bar">
+      {!isAnalysis && (
+        <button onClick={resetGame} className="action-button">
+          Reset Board
+        </button>
+      )}
+      <button onClick={flipBoard} className="action-button">
+        {isFlipped ? 'Unflip Board' : 'Flip Board'}
+      </button>
+      <button onClick={enterAnalysisMode} className="action-button">
+        Enter Analysis Mode
+      </button>
+      {isAnalysis && (
+        <label className="action-button upload-btn">
+          Upload PGN
+          <input type="file" accept=".pgn" onChange={handleFileUpload} hidden />
+        </label>
+      )}
+      {!isAnalysis && downloadPGN && (
+        <button onClick={downloadPGN} className="action-button">
+          Download PGN
+        </button>
+      )}
+    </div>
   );
 };
-
-export default TopBar;
 
 TopBar.defaultProps = {
   isAnalysis: false,
@@ -48,5 +61,10 @@ TopBar.propTypes = {
   resetGame: PropTypes.func.isRequired,
   flipBoard: PropTypes.func.isRequired,
   isFlipped: PropTypes.bool.isRequired,
+  enterAnalysisMode: PropTypes.func.isRequired,
   isAnalysis: PropTypes.bool,
-}
+  onLoadPGN: PropTypes.func,
+  downloadPGN: PropTypes.func,
+};
+
+export default TopBar;
