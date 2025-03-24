@@ -1,57 +1,100 @@
 // src/components/Clocks.js
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import '../styles/components/clock.css';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { setGameOver, setGameResult } from '../redux/actions/gameActions';
 
-const Clocks = ({ gameStarted, gameOver, getTurn, onTimeUpdate, onGameOver, isFlipped, timerDuration, setGameOver, setGameResult }) => {
+const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDuration }) => {
+  const dispatch = useDispatch();
   const [whiteTime, setWhiteTime] = useState(timerDuration);
   const [blackTime, setBlackTime] = useState(timerDuration);
   const timerRef = useRef(null);
-
-  const updateClocks = useCallback(() => {
-    const turn = getTurn();
-    if (turn === 'w') {
-      setWhiteTime((prev) => prev - 1);
-      onTimeUpdate('w', whiteTime - 1);
-    } else {
-      setBlackTime((prev) => prev - 1);
-      onTimeUpdate('b', blackTime - 1);
-    }
-  }, [getTurn, onTimeUpdate, whiteTime, blackTime]);
+  const currentTurn = useRef(getTurn());
 
   useEffect(() => {
-    if (gameStarted && !gameOver) {
-      timerRef.current = setInterval(updateClocks, 1000);
-    } else {
-      clearInterval(timerRef.current);
+    if (getTurn() !== currentTurn.current) {
+      currentTurn.current = getTurn();
     }
-    return () => clearInterval(timerRef.current);
-  }, [gameStarted, gameOver, updateClocks]);
+  }, [getTurn()]);
 
   useEffect(() => {
-    if (whiteTime < 0) {
-      clearInterval(timerRef.current);
-      onGameOver('Black');
-    } else if (blackTime < 0) {
-      clearInterval(timerRef.current);
-      onGameOver('White');
+    if (gameStarted) {
+      setWhiteTime(timerDuration);
+      setBlackTime(timerDuration);
     }
-  }, [whiteTime, blackTime, onGameOver]);
+  }, [gameStarted, gameOver, timerDuration]);
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
+  useEffect(() => {
+    if (!gameStarted || gameOver) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      setWhiteTime(timerDuration);
+      setBlackTime(timerDuration);
+      return;
+    }
+
+    if (timerRef.current) return;
+
+    timerRef.current = setInterval(() => {
+      if (currentTurn.current === 'w') {
+        setWhiteTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+            dispatch(setGameResult('Black Won by Time'));
+            dispatch(setGameOver(true));
+            return 0;
+          }
+          return prev - 1;
+        });
+      } else {
+        setBlackTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+            dispatch(setGameResult('White Won by Time'));
+            dispatch(setGameOver(true));
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
+  }, [gameStarted, gameOver, timerDuration, dispatch]);
 
   return (
-    <div className="clocks">
-      <div className={`clock ${isFlipped ? 'clock-black' : 'clock-white'}`}>
-        {formatTime(isFlipped ? blackTime : whiteTime)}
-      </div>
-      <div className={`clock ${isFlipped ? 'clock-white' : 'clock-black'}`}>
-        {formatTime(isFlipped ? whiteTime : blackTime)}
+    <div className="left-panel">
+      <div className="clocks-container">
+        {isFlipped ? (
+          <>
+            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}>⚪ {whiteTime}</div>
+            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}>⚫ {blackTime}</div>
+          </>
+        ) : (
+          <>
+            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}>⚫ {blackTime}</div>
+            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}>⚪ {whiteTime}</div>
+          </>
+        )}
       </div>
     </div>
   );
+});
+
+Clocks.propTypes = {
+  gameStarted: PropTypes.bool.isRequired,
+  gameOver: PropTypes.bool.isRequired,
+  getTurn: PropTypes.func.isRequired,
+  isFlipped: PropTypes.bool.isRequired,
+  timerDuration: PropTypes.number.isRequired,
 };
 
 export default Clocks;

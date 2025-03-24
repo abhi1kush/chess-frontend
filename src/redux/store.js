@@ -1,11 +1,26 @@
 // src/redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import gameReducer from './reducers/gameReducer';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import rootReducer from './reducers/reducers'; // Import your combined reducers
 
-const store = configureStore({
-  reducer: {
-    game: gameReducer,
-  },
+const persistConfig = {
+  key: 'root',
+  storage,
+  // Optionally, you can whitelist/blacklist reducers:
+  whitelist: ['game', 'settings'],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'], // Ignore persist actions
+      },
+    }),
 });
 
-export default store;
+export const persistor = persistStore(store);

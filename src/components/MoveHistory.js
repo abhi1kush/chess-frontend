@@ -1,12 +1,9 @@
 // src/components/MoveHistory.js
 import React, { useEffect, useRef } from 'react';
 import '../styles/components/moveHistory.css';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 
-const MoveHistory = () => {
+const MoveHistory = ({moveHistory}) => {
   const scrollRef = useRef(null);
-  const moveHistory = useSelector((state) => state.game.moveHistory);
 
   useEffect(() => {
     if (scrollRef.current) {

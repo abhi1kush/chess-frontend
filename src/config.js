@@ -10,6 +10,7 @@ const CONFIG = {
     CHESS_GAME_KEY: "chessGame",
     START_FEN: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     FINAL_FEN_KEY: "finalFen",
+    CHECKMATE_MESSAGE: "Wins by Checkmate!",
   };
   
   export default CONFIG;

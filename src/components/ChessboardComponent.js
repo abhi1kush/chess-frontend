@@ -2,16 +2,9 @@
 import React from 'react';
 import { Chessboard } from 'react-chessboard';
 import '../styles/themes.css';
-import { useSelector, useDispatch } from 'react-redux';
-import { movePiece } from '../redux/actions/gameActions';
-import { Chess } from 'chess.js';
+import PropTypes from 'prop-types';
 
-const ChessboardComponent = ({ isAnalysis }) => {
-  const dispatch = useDispatch();
-  const fen = useSelector((state) => state.game.fen);
-  const lastMove = useSelector((state) => state.game.lastMove);
-  const isFlipped = useSelector((state) => state.game.isFlipped);
-
+const ChessboardComponent = ({ isAnalysis, handleMove, fen, lastMove, isFlipped}) => {
   const getSquareStyles = () => {
     if (!lastMove) return {};
     return {
@@ -21,14 +14,14 @@ const ChessboardComponent = ({ isAnalysis }) => {
   };
 
   const handlePieceDrop = (source, target) => {
-    dispatch(movePiece({ from: source, to: target }));
+    handleMove({ from: source, to: target });
   };
 
-    const calcPossibleMoves = ({ square }) => {
-        const game = new Chess(fen);
-        const moves = game.moves({ square, verbose: true });
-        return moves.map((move) => move.to);
-    };
+    // const calcPossibleMoves = ({ square }) => {
+    //     const game = new Chess(fen);
+    //     const moves = game.moves({ square, verbose: true });
+    //     return moves.map((move) => move.to);
+    // };
 
   return (
     <div className={isAnalysis ? 'analysis-board' : 'chess-board'}>
@@ -40,10 +33,17 @@ const ChessboardComponent = ({ isAnalysis }) => {
         customSquareStyles={getSquareStyles()}
         customDarkSquareStyle={{ backgroundColor: 'var(--dark-square)' }}
         customLightSquareStyle={{ backgroundColor: 'var(--light-square)' }}
-        calcPossibleMoves = {calcPossibleMoves}
       />
     </div>
   );
 };
 
 export default ChessboardComponent;
+
+ChessboardComponent.prototype = {
+  isAnalysis: PropTypes.bool.isRequired,
+  handleMove: PropTypes.func.isRequired,
+  fen: PropTypes.string.isRequired,
+  lastMove: PropTypes.object.isRequired,
+  isFlipped: PropTypes.bool.isRequired,
+};

@@ -1,7 +1,8 @@
 // src/components/ChessGame.js
 import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { movePiece, resetGame, loadGame, updateTime, setGameOver, setGameResult, flipBoard, setTheme, setSound, setTimerDuration } from '../redux/actions/gameActions';
+import { movePiece, resetGame, loadGame, setGameOver, setGameResult, setTimerDuration } from '../redux/actions/gameActions';
+import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
 import Clocks from './Clocks';
 import MoveHistory from './MoveHistory';
 import { loadGameFromStorage, saveGameToStorage } from '../utils/storage';
@@ -16,7 +17,8 @@ import { Chess } from 'chess.js';
 
 const ChessGame = ({ onEnterAnalysis }) => {
   const dispatch = useDispatch();
-  const { fen, moveHistory, whiteTime, blackTime, lastMove, gameOver, gameResult, isFlipped, theme, enableSound, timerDuration } = useSelector((state) => state.game);
+  const { fen, moveHistory, lastMove, gameOver, gameResult, timerDuration } = useSelector((state) => state.game);
+  const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
 
   useEffect(() => {
     async function fetchData() {
@@ -35,23 +37,28 @@ const ChessGame = ({ onEnterAnalysis }) => {
   }, [moveHistory, fen]);
 
   const handleMove = useCallback(({ from, to }) => {
+    console.log('Move:', { from, to });
     if (gameOver) return;
-    dispatch(movePiece({ from, to }));
     const game = new Chess(fen);
-    const move = game.move({from, to, promotion: 'q'});
-    if(enableSound && move){
-      playSound(getMoveType(move, game));
+    try {
+      const move = game.move({from, to, promotion: 'q'});
+      if (!move) return;
+      dispatch(movePiece({ from, to }));
+      console.log('Enable sound:', enableSound);
+      if(enableSound && move){
+        playSound(getMoveType(move, game));
+      }
+      if (!gameOver){
+        checkGameOver(game, (value) => dispatch(setGameOver(value)), (result) => dispatch(setGameResult(result)));
+      }
+    } catch (error) {
+      console.error(error);
     }
-    checkGameOver(new Chess(fen), whiteTime, blackTime, (value) => dispatch(setGameOver(value)), (result) => dispatch(setGameResult(result)));
-  }, [gameOver, enableSound, dispatch, fen, whiteTime, blackTime]);
+  }, [gameOver, dispatch, fen]);
 
   const resetGameHandler = (duration) => {
     dispatch(resetGame(duration));
   };
-
-  const handleTimeUpdate = useCallback((turn, time) => {
-    dispatch(updateTime(turn, time));
-  }, [dispatch]);
 
   const handleGameOver = useCallback((winner) => {
     dispatch(setGameResult(`${winner} Won by Time`));
@@ -85,7 +92,6 @@ const ChessGame = ({ onEnterAnalysis }) => {
               setGameOver={(value) => dispatch(setGameOver(value))}
               setGameResult={(result) => dispatch(setGameResult(result))}
               getTurn={() => new Chess(fen).turn()}
-              onTimeUpdate={handleTimeUpdate}
               onGameOver={handleGameOver}
               isFlipped={isFlipped}
               timerDuration={timerDuration}
@@ -93,7 +99,8 @@ const ChessGame = ({ onEnterAnalysis }) => {
           </div>
           <div className="centre-area">
             <ChessboardComponent
-              position={fen}
+              isAnalysis={false}
+              fen={fen}
               handleMove={handleMove}
               lastMove={lastMove}
               isFlipped={isFlipped}
