@@ -47,7 +47,6 @@ const gameReducer = (state = initialState, action) => {
             moveHistory: action.payload.moveHistory || [],
         };
     case SET_GAME_OVER:
-      console.log('Game Over:', action.payload);
       return {
         ...state,
         gameOver: action.payload,

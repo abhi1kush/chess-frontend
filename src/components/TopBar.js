@@ -1,11 +1,11 @@
 // src/components/TopBar.js
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/topContainer.css';
 import PropTypes from 'prop-types';
 
 const TopBar = ({ resetGame, flipBoard, isFlipped, enterAnalysisMode, isAnalysis, onLoadPGN, downloadPGN }) => {
-  const [showPGNInput, setShowPGNInput] = useState(false);
-  const [pgnText, setPgnText] = useState('');
+  // const [showPGNInput, setShowPGNInput] = useState(false);
+  // const [pgnText, setPgnText] = useState('');
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -19,11 +19,11 @@ const TopBar = ({ resetGame, flipBoard, isFlipped, enterAnalysisMode, isAnalysis
     }
   };
 
-  const handlePastePGN = () => {
-    onLoadPGN(pgnText);
-    setShowPGNInput(false);
-    setPgnText('');
-  };
+  // const handlePastePGN = () => {
+  //   onLoadPGN(pgnText);
+  //   setShowPGNInput(false);
+  //   setPgnText('');
+  // };
 
   return (
     <div className="top-bar">

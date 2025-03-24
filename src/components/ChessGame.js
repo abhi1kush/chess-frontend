@@ -1,7 +1,7 @@
 // src/components/ChessGame.js
-import React, { useEffect, useCallback } from 'react';
+import React, {useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { movePiece, resetGame, loadGame, setGameOver, setGameResult, setTimerDuration } from '../redux/actions/gameActions';
+import { movePiece, resetGame, setGameOver, setGameResult } from '../redux/actions/gameActions';
 import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
 import Clocks from './Clocks';
 import MoveHistory from './MoveHistory';
@@ -9,6 +9,7 @@ import playSound from '../utils/soundUtils';
 import ChessboardComponent from './ChessboardComponent';
 import { getMoveType, checkGameOver } from '../utils/helpers';
 import TopContainer from './TopContainer';
+import GameOverComponent from './GameOverOverlay';
 import '../styles/global.css';
 import '../styles/pageLayout.css';
 import '../styles/topContainer.css';
@@ -18,26 +19,21 @@ const ChessGame = ({ onEnterAnalysis }) => {
   const dispatch = useDispatch();
   const { fen, moveHistory, lastMove, gameOver, gameResult, timerDuration } = useSelector((state) => state.game);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
+  // const gameRef = useRef(fen);
 
   const handleMove = useCallback(({ from, to }) => {
-    console.log('Move:', { from, to });
     if (gameOver) return;
     const game = new Chess(fen);
     try {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
       dispatch(movePiece({ from, to }));
-      console.log('Enable sound:', enableSound);
-      if(enableSound && move){
-        playSound(getMoveType(move, game));
-      }
-      if (!gameOver){
-        checkGameOver(game, (value) => dispatch(setGameOver(value)), (result) => dispatch(setGameResult(result)));
-      }
+      enableSound && playSound(getMoveType(move, game));
+      checkGameOver(game, (value) => dispatch(setGameOver(value)), (result) => dispatch(setGameResult(result)));
     } catch (error) {
       console.error(error);
     }
-  }, [gameOver, dispatch, fen]);
+  }, [gameOver, dispatch, fen, enableSound]);
 
   const resetGameHandler = (duration) => {
     dispatch(resetGame(duration));
@@ -87,16 +83,13 @@ const ChessGame = ({ onEnterAnalysis }) => {
               lastMove={lastMove}
               isFlipped={isFlipped}
             />
-            {gameOver && (
-              <div className="game-over-overlay">
-                <div className="game-over-message">
-                  <p>{gameResult}</p>
-                  <button className="restart-button" onClick={() => resetGameHandler(timerDuration)}>
-                    Restart Game
-                  </button>
-                </div>
-              </div>
-            )}
+            {
+              gameOver && <GameOverComponent
+              resetGameHandler={resetGameHandler}
+              timerDuration={timerDuration}
+              gameResult={gameResult}
+              />
+            }
           </div>
           <div className="right-panel">
             <MoveHistory moveHistory={moveHistory} />

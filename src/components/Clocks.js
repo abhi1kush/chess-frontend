@@ -16,7 +16,7 @@ const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDur
     if (getTurn() !== currentTurn.current) {
       currentTurn.current = getTurn();
     }
-  }, [getTurn()]);
+  }, [getTurn]);
 
   useEffect(() => {
     if (gameStarted) {
@@ -68,20 +68,20 @@ const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDur
       clearInterval(timerRef.current);
       timerRef.current = null;
     };
-  }, [gameStarted, gameOver, timerDuration, dispatch]);
+  }, [gameStarted, gameOver, timerDuration, dispatch, getTurn]);
 
   return (
     <div className="left-panel">
       <div className="clocks-container">
         {isFlipped ? (
           <>
-            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}>⚪ {whiteTime}</div>
-            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}>⚫ {blackTime}</div>
+            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="whitesymbol">⚪</span> {whiteTime}</div>
+            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="blacksymbol">⚫</span> {blackTime}</div>
           </>
         ) : (
           <>
-            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}>⚫ {blackTime}</div>
-            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}>⚪ {whiteTime}</div>
+            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="blacksymbol">⚫</span> {blackTime}</div>
+            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="whitesymbol">⚪</span> {whiteTime}</div>
           </>
         )}
       </div>

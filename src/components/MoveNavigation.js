@@ -1,8 +1,6 @@
-import React, { useEffect, useRef} from "react";
-import { Chess } from "chess.js";
+import React from "react";
 import "../styles/components/moveNavigation.css";
-import PropTypes from "prop-types";
-import CONFIG from "../config";
+import PropTypes from "prop-types";;
 
 const MoveNavigation = ({ fenHistory, currentMoveIndex, setCurrentMoveIndex, setPosition }) => {
   // ⏮️ Move to the first move
@@ -10,10 +8,6 @@ const MoveNavigation = ({ fenHistory, currentMoveIndex, setCurrentMoveIndex, set
     setCurrentMoveIndex(0);
     setPosition(fenHistory[0]);
   };
-    useEffect(() => {
-        console.log("🛠 MoveNavigation goToStart", currentMoveIndex);
-    }, [currentMoveIndex]);
-
 
   // ⏪ Step back one move
   const prevMove = () => {
@@ -43,13 +37,12 @@ const MoveNavigation = ({ fenHistory, currentMoveIndex, setCurrentMoveIndex, set
     setCurrentMoveIndex(fenHistory.length - 1);
     setPosition(fenHistory[fenHistory.length - 1]);
   };
-  console.log("🛠 MoveNavigation rendered", currentMoveIndex, fenHistory.length);
   return (
     <div className="move-navigation">
-      <button onClick={goToStart} disabled={currentMoveIndex === 0}>⏮️ Start</button>
-      <button onClick={prevMove} disabled={currentMoveIndex === 0}>⬅️ Prev</button>
-      <button onClick={nextMove} disabled={currentMoveIndex >= (fenHistory.length - 1)}>➡️ Next</button>
-      <button onClick={goToLatest} disabled={currentMoveIndex === (fenHistory.length - 1)}>⏭️ Latest</button>
+      <button onClick={goToStart} disabled={currentMoveIndex === 0}><span role="img" aria-label="gotostart">⏮️</span> Start</button>
+      <button onClick={prevMove} disabled={currentMoveIndex === 0}><span role="img" aria-label="previous">⬅️</span> Prev</button>
+      <button onClick={nextMove} disabled={currentMoveIndex >= (fenHistory.length - 1)}><span role="img" aria-label="next">➡️</span> Next</button>
+      <button onClick={goToLatest} disabled={currentMoveIndex === (fenHistory.length - 1)}><span role="img" aria-label="last">⏭️</span> Latest</button>
     </div>
   );
 };

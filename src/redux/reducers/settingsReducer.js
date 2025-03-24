@@ -20,7 +20,6 @@ const settingReducer = (state = initialState, action) => {
         theme: action.payload,
       };
     case SET_SOUND:
-      console.log('settingReducer SET_SOUND:', action.payload);
       return {
         ...state,
         enableSound: action.payload,

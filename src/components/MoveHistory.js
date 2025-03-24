@@ -11,8 +11,6 @@ const MoveHistory = ({moveHistory}) => {
     }
   }, [moveHistory]);
 
-  console.log('🛠 MoveHistory rendered %d', moveHistory.length);
-
   return (
     <div className="move-history">
       <h3>Move History</h3>

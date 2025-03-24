@@ -4,7 +4,7 @@ import '../styles/topContainer.css';
 import Settings from './Settings';
 import TopBar from './TopBar';
 import PropTypes from 'prop-types';
-import { useSelector, useDispatch } from 'react-redux';
+import {useDispatch } from 'react-redux';
 import { flipBoard, setTheme, setSound, resetGame } from '../redux/actions/gameActions';
 import CONFIG from '../config';
 

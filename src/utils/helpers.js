@@ -20,7 +20,6 @@ const getCheckMateMessage = (turn) => {
 
   // Handle Game Over
 export const checkGameOver = (game, setGameOver, setGameResult) => {
-        console.log("Checking game over...", );
         if (game.isCheckmate()) {
           setGameOver(true);
           setGameResult(getCheckMateMessage(game.turn()));
