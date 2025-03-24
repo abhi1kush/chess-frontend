@@ -29,11 +29,3 @@ export const checkGameOver = (game, setGameOver, setGameResult) => {
           setGameResult("Game Drawn!");
         } 
       };
-
-      // else if (whiteTime === 0 || whiteTime == null) {
-      //   setGameOver(true);
-      //   setGameResult("Black Wins on Time!");
-      // } else if (blackTime === 0 || blackTime == null) {
-      //   setGameOver(true);
-      //   setGameResult("White Wins on Time!");
-      // }

@@ -1,7 +1,6 @@
 // src/redux/reducers/gameReducer.js
 import { Chess } from 'chess.js';
 import { MOVE_PIECE, RESET_GAME, LOAD_GAME, SET_GAME_OVER, SET_GAME_RESULT, SET_TIMER_DURATION } from '../actions/gameActions';
-import { saveGameToStorage } from '../../utils/storage';
 import CONFIG from '../../config';
 
 const initialState = {
@@ -24,7 +23,6 @@ const gameReducer = (state = initialState, action) => {
             if (!move) return state;
     
             const newHistory = [...state.moveHistory, move.san];
-            saveGameToStorage(game.fen(), newHistory);
     
             return {
               ...state,
@@ -37,7 +35,6 @@ const gameReducer = (state = initialState, action) => {
             return state;
           }
     case RESET_GAME:
-        saveGameToStorage(CONFIG.START_FEN, []);
         return {
             ...initialState,
             moveHistory: [],

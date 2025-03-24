@@ -5,7 +5,6 @@ import MoveNavigation from "./MoveNavigation";
 import ChessboardComponent from "./ChessboardComponent";
 import MoveHistory from "./MoveHistory";
 import { useConfig } from "../context/configContext";
-import { saveGameToStorage, loadGameFromStorage } from "../utils/storage";
 
 
 const AnalysisGame = ({ onExitAnalysis }) => {
@@ -16,29 +15,6 @@ const AnalysisGame = ({ onExitAnalysis }) => {
   const [fenHistory, setFenHistory] = useState([analysisGameRef.current.fen()]);
   const { theme, setTheme, enableSound, setEnableSound , timerDuration, setTimerDuration, isFlipped, setIsFlipped} = useConfig();
   const hasLoaded = useRef(false); 
-
-    // ✅ Load game state on mount (Only Once)
-    useEffect(() => {
-      if (hasLoaded.current) return;
-      async function fetchData() {
-        const savedData = await loadGameFromStorage();
-        if (savedData) {
-          const game = new Chess();
-          const fens = [game.fen()];
-  
-          savedData.moveHistory.forEach((move) => {
-            game.move(move);
-            fens.push(game.fen()); // Store FEN for each move
-          });
-          setFenHistory(fens);
-          setPosition(fens[fens.length - 1]);
-          setCurrentMoveIndex(fens.length - 1);
-        }
-      }
-  
-      fetchData();
-      hasLoaded.current = true;  
-    }, []);
 
     useEffect(() => {
       setCurrentMoveIndex(moveHistory.length);

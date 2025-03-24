@@ -5,7 +5,6 @@ import { movePiece, resetGame, loadGame, setGameOver, setGameResult, setTimerDur
 import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
 import Clocks from './Clocks';
 import MoveHistory from './MoveHistory';
-import { loadGameFromStorage, saveGameToStorage } from '../utils/storage';
 import playSound from '../utils/soundUtils';
 import ChessboardComponent from './ChessboardComponent';
 import { getMoveType, checkGameOver } from '../utils/helpers';
@@ -19,22 +18,6 @@ const ChessGame = ({ onEnterAnalysis }) => {
   const dispatch = useDispatch();
   const { fen, moveHistory, lastMove, gameOver, gameResult, timerDuration } = useSelector((state) => state.game);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
-
-  useEffect(() => {
-    async function fetchData() {
-      const savedData = await loadGameFromStorage();
-      if (savedData) {
-        dispatch(loadGame(savedData));
-      }
-    }
-    fetchData();
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (moveHistory.length > 0) {
-      saveGameToStorage(fen, moveHistory);
-    }
-  }, [moveHistory, fen]);
 
   const handleMove = useCallback(({ from, to }) => {
     console.log('Move:', { from, to });
@@ -66,7 +49,6 @@ const ChessGame = ({ onEnterAnalysis }) => {
   }, [dispatch]);
 
   const enterAnalysisMode = () => {
-    saveGameToStorage(fen, moveHistory);
     onEnterAnalysis();
   };
 
