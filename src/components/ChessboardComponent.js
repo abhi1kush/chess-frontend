@@ -26,7 +26,7 @@ const ChessboardComponent = ({ isAnalysis, handleMove, fen, lastMove, isFlipped}
   return (
     <div className={isAnalysis ? 'analysis-board' : 'chess-board'}>
       <Chessboard
-        key={fen} // Force re-render when fen changes
+        // key={fen} // Force re-render when fen changes
         position={fen}
         onPieceDrop={handlePieceDrop}
         boardOrientation={isFlipped ? 'black' : 'white'}

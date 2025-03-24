@@ -1,5 +1,5 @@
 // src/components/ChessGame.js
-import React, {useCallback } from 'react';
+import React, {useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { movePiece, resetGame, setGameOver, setGameResult } from '../redux/actions/gameActions';
 import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
@@ -14,12 +14,13 @@ import '../styles/global.css';
 import '../styles/pageLayout.css';
 import '../styles/topContainer.css';
 import { Chess } from 'chess.js';
+import CONFIG from '../config';
 
 const ChessGame = ({ onEnterAnalysis }) => {
   const dispatch = useDispatch();
   const { fen, moveHistory, lastMove, gameOver, gameResult, timerDuration } = useSelector((state) => state.game);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
-  // const gameRef = useRef(fen);
+  const isWhiteTurn = useRef(true)
 
   const handleMove = useCallback(({ from, to }) => {
     if (gameOver) return;
@@ -27,6 +28,7 @@ const ChessGame = ({ onEnterAnalysis }) => {
     try {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
+      isWhiteTurn.current = !isWhiteTurn.current
       dispatch(movePiece({ from, to }));
       enableSound && playSound(getMoveType(move, game));
       checkGameOver(game, (value) => dispatch(setGameOver(value)), (result) => dispatch(setGameResult(result)));
@@ -65,11 +67,11 @@ const ChessGame = ({ onEnterAnalysis }) => {
         <div className={`chess-container ${theme}-theme`}>
           <div className="left-panel">
             <Clocks
-              gameStarted={moveHistory.length > 0}
+              gameStarted={fen !== CONFIG.START_FEN}
               gameOver={gameOver}
               setGameOver={(value) => dispatch(setGameOver(value))}
               setGameResult={(result) => dispatch(setGameResult(result))}
-              getTurn={() => new Chess(fen).turn()}
+              getTurn={() => isWhiteTurn.current ? 'w':'b'}
               onGameOver={handleGameOver}
               isFlipped={isFlipped}
               timerDuration={timerDuration}

@@ -23,7 +23,7 @@ const MoveHistory = ({moveHistory}) => {
           </tr>
         </thead>
         <tbody ref={scrollRef}>
-          {moveHistory.map((move, index) =>
+          {moveHistory && moveHistory.map((move, index) =>
             index % 2 === 0 ? (
               <tr key={index / 2}>
                 <td>{Math.floor(index / 2) + 1}.</td>
