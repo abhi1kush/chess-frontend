@@ -14,15 +14,15 @@ const playSound = (type) => {
     case "capture":
       sound = new Audio(captureSound);
       break;
-    case "check":
-      sound = new Audio(checkSound);
-      break;
-    case "checkmate":
-      sound = new Audio(checkmateSound);
-      break;
-    case "wrong":
-      sound = new Audio(wrongSound);
-      break;
+    // case "check":
+    //   sound = new Audio(checkSound);
+    //   break;
+    // case "checkmate":
+    //   sound = new Audio(checkmateSound);
+    //   break;
+    // case "wrong":
+    //   sound = new Audio(wrongSound);
+    //   break;
     default:
       return;
   }

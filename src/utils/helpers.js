@@ -19,12 +19,17 @@ const getCheckMateMessage = (turn) => {
 }
 
   // Handle Game Over
-export const checkGameOver = (game, setGameOver, setGameResult) => {
+export const checkGameOver = (game) => {
         if (game.isCheckmate()) {
-          setGameOver(true);
-          setGameResult(getCheckMateMessage(game.turn()));
+          return {
+            isGameOver: true, 
+            gameResult: getCheckMateMessage(game.turn())
+          }
         } else if (game.isDraw()) {
-          setGameOver(true);
-          setGameResult("Game Drawn!");
+          return {
+            isGameOver: true,
+            gameResult: "Game Drawn!"
+          }
         } 
+        return {isGameOver: false, gameResult: ""}
       };

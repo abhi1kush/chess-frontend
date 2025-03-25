@@ -1,7 +1,7 @@
 // src/components/ChessGame.js
 import React, {useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { movePiece, resetGame, setGameOver, setGameResult } from '../redux/actions/gameActions';
+import { movePiece, resetGame, setGameOver} from '../redux/actions/gameActions';
 import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
 import Clocks from './Clocks';
 import MoveHistory from './MoveHistory';
@@ -18,32 +18,30 @@ import CONFIG from '../config';
 
 const ChessGame = ({ onEnterAnalysis }) => {
   const dispatch = useDispatch();
-  const { fen, moveHistory, lastMove, gameOver, gameResult, timerDuration } = useSelector((state) => state.game);
+  const { fen, moveHistory, lastMove, isGameOver, gameResult, timerDuration, isWhiteTurn} = useSelector((state) => state.game);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
-  const isWhiteTurn = useRef(true)
 
   const handleMove = useCallback(({ from, to }) => {
-    if (gameOver) return;
+    if (isGameOver) return;
     const game = new Chess(fen);
     try {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
-      isWhiteTurn.current = !isWhiteTurn.current
       dispatch(movePiece({ from, to }));
       enableSound && playSound(getMoveType(move, game));
-      checkGameOver(game, (value) => dispatch(setGameOver(value)), (result) => dispatch(setGameResult(result)));
+      const {isGameOver, gameResult } = checkGameOver(game);
+      isGameOver && dispatch(setGameOver(isGameOver, gameResult))
     } catch (error) {
       console.error(error);
     }
-  }, [gameOver, dispatch, fen, enableSound]);
+  }, [isGameOver, dispatch, fen, enableSound]);
 
   const resetGameHandler = (duration) => {
     dispatch(resetGame(duration));
   };
 
   const handleGameOver = useCallback((winner) => {
-    dispatch(setGameResult(`${winner} Won by Time`));
-    dispatch(setGameOver(true));
+    dispatch(setGameOver(true, `${winner} Won by Time`));
   }, [dispatch]);
 
   const enterAnalysisMode = () => {
@@ -67,12 +65,9 @@ const ChessGame = ({ onEnterAnalysis }) => {
         <div className={`chess-container ${theme}-theme`}>
           <div className="left-panel">
             <Clocks
-              gameStarted={fen !== CONFIG.START_FEN}
-              gameOver={gameOver}
-              setGameOver={(value) => dispatch(setGameOver(value))}
-              setGameResult={(result) => dispatch(setGameResult(result))}
-              getTurn={() => isWhiteTurn.current ? 'w':'b'}
-              onGameOver={handleGameOver}
+              hasGameStarted={fen !== CONFIG.START_FEN}
+              isGameOver={isGameOver}
+              isWhiteTurn={isWhiteTurn}
               isFlipped={isFlipped}
               timerDuration={timerDuration}
             />
@@ -86,7 +81,7 @@ const ChessGame = ({ onEnterAnalysis }) => {
               isFlipped={isFlipped}
             />
             {
-              gameOver && <GameOverComponent
+              isGameOver && <GameOverComponent
               resetGameHandler={resetGameHandler}
               timerDuration={timerDuration}
               gameResult={gameResult}

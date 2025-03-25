@@ -5,9 +5,10 @@ import CONFIG from '../../config';
 
 const initialState = {
   fen: CONFIG.START_FEN,
+  isWhiteTurn: true, 
   moveHistory: [],
   lastMove: null,
-  gameOver: false,
+  isGameOver: false,
   gameResult: '',
   timerDuration: CONFIG.TIMER_DURATION,
 };
@@ -27,6 +28,7 @@ const gameReducer = (state = initialState, action) => {
             return {
               ...state,
               fen: game.fen(), // Store the new FEN string
+              isWhiteTurn: !state.isWhiteTurn,
               moveHistory: newHistory,
               lastMove: { from: action.payload.from, to: action.payload.to },
             };
@@ -47,14 +49,11 @@ const gameReducer = (state = initialState, action) => {
             moveHistory: action.payload.moveHistory || [],
         };
     case SET_GAME_OVER:
+      console.log("gameOver", action, action.payload)
       return {
         ...state,
-        gameOver: action.payload,
-      };
-    case SET_GAME_RESULT:
-      return {
-        ...state,
-        gameResult: action.payload,
+        isGameOver: action.payload.isGameOver,
+        gameResult: action.payload.gameResult
       };
     case SET_TIMER_DURATION:
       return {

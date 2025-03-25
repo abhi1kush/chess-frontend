@@ -30,14 +30,9 @@ export const updateTime = (turn, time) => ({
   payload: { turn, time },
 });
 
-export const setGameOver = (gameOver) => ({
+export const setGameOver = (isGameOver, gameResult) => ({
   type: SET_GAME_OVER,
-  payload: gameOver,
-});
-
-export const setGameResult = (result) => ({
-  type: SET_GAME_RESULT,
-  payload: result,
+  payload: {isGameOver, gameResult},
 });
 
 export const flipBoard = () => ({

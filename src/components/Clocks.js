@@ -3,30 +3,33 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../styles/components/clock.css';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { setGameOver, setGameResult } from '../redux/actions/gameActions';
+import { setGameOver } from '../redux/actions/gameActions';
 
-const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDuration }) => {
+const Clocks = React.memo(({ hasGameStarted, isGameOver, isWhiteTurn, isFlipped, timerDuration }) => {
   const dispatch = useDispatch();
   const [whiteTime, setWhiteTime] = useState(timerDuration);
   const [blackTime, setBlackTime] = useState(timerDuration);
   const timerRef = useRef(null);
-  const currentTurn = useRef(getTurn());
 
   useEffect(() => {
-    if (getTurn() !== currentTurn.current) {
-      currentTurn.current = getTurn();
-    }
-  }, [getTurn]);
-
-  useEffect(() => {
-    if (gameStarted) {
+    if (hasGameStarted) {
       setWhiteTime(timerDuration);
       setBlackTime(timerDuration);
     }
-  }, [gameStarted, gameOver, timerDuration]);
+  }, [hasGameStarted, isGameOver, timerDuration]);
 
   useEffect(() => {
-    if (!gameStarted || gameOver) {
+    if (isGameOver) return;
+    
+    if (whiteTime == 0) {
+      dispatch(setGameOver(true, 'Black Won by Time'));
+    } else if (blackTime == 0){
+      dispatch(setGameOver(true, 'White Won by Time'));
+    }
+  },[whiteTime, blackTime, isGameOver])
+
+  useEffect(() => {
+    if (!hasGameStarted || isGameOver) {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
@@ -39,13 +42,11 @@ const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDur
     if (timerRef.current) return;
 
     timerRef.current = setInterval(() => {
-      if (currentTurn.current === 'w') {
+      if (isWhiteTurn) {
         setWhiteTime((prev) => {
           if (prev <= 1) {
             clearInterval(timerRef.current);
             timerRef.current = null;
-            dispatch(setGameResult('Black Won by Time'));
-            dispatch(setGameOver(true));
             return 0;
           }
           return prev - 1;
@@ -55,8 +56,6 @@ const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDur
           if (prev <= 1) {
             clearInterval(timerRef.current);
             timerRef.current = null;
-            dispatch(setGameResult('White Won by Time'));
-            dispatch(setGameOver(true));
             return 0;
           }
           return prev - 1;
@@ -68,20 +67,22 @@ const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDur
       clearInterval(timerRef.current);
       timerRef.current = null;
     };
-  }, [gameStarted, gameOver, timerDuration, dispatch, getTurn]);
+  }, [hasGameStarted, isGameOver, timerDuration, dispatch, isWhiteTurn]);
 
+  const whiteClockClass = isWhiteTurn ? 'active-turn' : '';
+  const blackClockClass = !isWhiteTurn ? 'active-turn' : '';
   return (
     <div className="left-panel">
       <div className="clocks-container">
         {isFlipped ? (
           <>
-            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="whitesymbol">⚪</span> {whiteTime}</div>
-            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="blacksymbol">⚫</span> {blackTime}</div>
+            <div className={`clock ${whiteClockClass}`}><span role="img" aria-label="whitesymbol">⚪</span> {whiteTime}</div>
+            <div className={`clock ${blackClockClass}`}><span role="img" aria-label="blacksymbol">⚫</span> {blackTime}</div>
           </>
         ) : (
           <>
-            <div className={`clock ${currentTurn.current !== 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="blacksymbol">⚫</span> {blackTime}</div>
-            <div className={`clock ${currentTurn.current === 'w' ? 'active-turn' : ''}`}><span role="img" aria-label="whitesymbol">⚪</span> {whiteTime}</div>
+            <div className={`clock ${blackClockClass}`}><span role="img" aria-label="blacksymbol">⚫</span> {blackTime}</div>
+            <div className={`clock ${whiteClockClass}`}><span role="img" aria-label="whitesymbol">⚪</span> {whiteTime}</div>
           </>
         )}
       </div>
@@ -90,9 +91,9 @@ const Clocks = React.memo(({ gameStarted, gameOver, getTurn, isFlipped, timerDur
 });
 
 Clocks.propTypes = {
-  gameStarted: PropTypes.bool.isRequired,
-  gameOver: PropTypes.bool.isRequired,
-  getTurn: PropTypes.func.isRequired,
+  hasGameStarted: PropTypes.bool.isRequired,
+  isWhiteTurn: PropTypes.bool.isRequired,
+  isGameOver: PropTypes.bool.isRequired,
   isFlipped: PropTypes.bool.isRequired,
   timerDuration: PropTypes.number.isRequired,
 };

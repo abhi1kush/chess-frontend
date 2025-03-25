@@ -1,5 +1,5 @@
 const CONFIG = {
-    TIMER_DURATION: 200, 
+    TIMER_DURATION: 60*3, 
     THEME: "classic",
     ENABLE_SOUND: true,
     IS_FLIPPED: false,
