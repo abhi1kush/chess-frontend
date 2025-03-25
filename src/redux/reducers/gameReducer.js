@@ -20,7 +20,7 @@ const gameReducer = (state = initialState, action) => {
         try {
             const game = new Chess(state.fen); // Create Chess instance for move calculation
             // console.log('FEN before move:', state.fen); // Add this line
-            const move = game.move({ from: action.payload.from, to: action.payload.to, promotion: 'q' });
+            const move = game.move({ from: action.payload.from, to: action.payload.to, promotion: action.payload.promotionPiece });
             if (!move) return state;
     
             const newHistory = [...state.moveHistory, move.san];

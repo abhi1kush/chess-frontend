@@ -27,7 +27,7 @@ const ChessGame = ({ onEnterAnalysis }) => {
     try {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
-      dispatch(movePiece({ from, to }));
+      dispatch(movePiece({ from: from, to: to, promotionPiece: 'q'}));
       enableSound && playSound(getMoveType(move, game));
       const {isGameOver, gameResult } = checkGameOver(game);
       isGameOver && dispatch(setGameOver(isGameOver, gameResult))
