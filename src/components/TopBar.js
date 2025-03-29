@@ -41,10 +41,14 @@ const TopBar = ({ enterAnalysisMode, isAnalysis, downloadPGN }) => {
   } else {
     buttons.push(FlipButton);
   }
+  
   buttons.push(EnterAnalysisButton);
   if (isAnalysis) {
     buttons.push(PgnUploader);
+  }else {
+    
   }
+  
   if (!isAnalysis && downloadPGN) {
     buttons.push(DownloadPgnButton);
   }

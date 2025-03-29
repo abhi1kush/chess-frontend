@@ -77,3 +77,36 @@ html, body {
     background-color: #e64a19;
   }
 
+  .routes {
+    display: flex;
+    flex-direction: column; /* Stack links vertically */
+    width: 200px; /* Adjust as needed */
+    background-color: #f0f0f0; /* Optional: Background color for menu */
+    padding: 10px;
+    height: 100vh; /* Make it full height */
+    position: fixed; /* Fix it to the left */
+    top: 0;
+    left: 0;
+  }
+  
+  .routes div {
+    margin-bottom: 10px; /* Space between links */
+  }
+  
+  .routes .action-button {
+    display: block; /* Make links full width of their container */
+    width: 100%;
+    text-align: center; /* Align text to the left */
+    padding: 10px;
+    text-decoration: none; /* Remove underline from links */
+    background-color: #64676a;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box; /* Include padding in width calculation */
+  }
+  
+  .routes .action-button:hover {
+    background-color: #2c333a;
+  }
+  

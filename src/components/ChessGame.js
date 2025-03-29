@@ -55,7 +55,7 @@ const ChessGame = ({ onEnterAnalysis }) => {
         // Pass onLoadPGN and downloadPGN if needed
       />
       <div className="middle-container">
-        <div className="left-menu-bar"><h3>Chess Game</h3></div>
+        <div className="left-menu-bar"></div>
         <div className={`chess-container ${theme}-theme`}>
           <div className="left-panel">
             <Clocks
