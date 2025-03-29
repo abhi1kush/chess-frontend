@@ -8,7 +8,7 @@ const persistConfig = {
   key: 'root',
   storage,
   // Optionally, you can whitelist/blacklist reducers:
-  whitelist: ['game', 'settings', ],
+  whitelist: ['game', 'settings', 'analysis', 'pgn'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

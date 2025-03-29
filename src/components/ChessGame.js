@@ -8,7 +8,7 @@ import MoveHistory from './MoveHistory';
 import playSound from '../utils/soundUtils';
 import ChessboardComponent from './ChessboardComponent';
 import { getMoveType, checkGameOver } from '../utils/helpers';
-import TopContainer from './TopContainer';
+import GamePlayTopContainer from './GamePlayTopContainer';
 import GameOverComponent from './GameOverOverlay';
 import '../styles/global.css';
 import '../styles/pageLayout.css';
@@ -50,10 +50,7 @@ const ChessGame = ({ onEnterAnalysis }) => {
 
   return (
     <div className="main-container">
-      <TopContainer
-        enterAnalysisMode={enterAnalysisMode}
-        // Pass onLoadPGN and downloadPGN if needed
-      />
+      <GamePlayTopContainer/>
       <div className="middle-container">
         <div className="left-menu-bar"></div>
         <div className={`chess-container ${theme}-theme`}>
@@ -68,7 +65,7 @@ const ChessGame = ({ onEnterAnalysis }) => {
           </div>
           <div className="centre-area">
             <ChessboardComponent
-              isAnalysis={false}
+              className={'chess-board'}
               fen={fen}
               handleMove={handleMove}
               lastMove={lastMove}

@@ -5,8 +5,6 @@ import CONFIG from '../../config';
 
 const initialState = {
   finalFen: "",
-  moves: [],
-  fens:[],
   currentMoveIndex: 0
 };
 
@@ -40,17 +38,6 @@ const analysisReducer = (state = initialState, action) => {
             ...state,
             currentMoveIndex: state.moves.length()
         }
-    case LOAD_PGN:
-        const finalFen = ""
-        const moves = []
-        const fens = []
-        return {
-            ...state,
-            fen: finalFen,
-            moves: moves,
-            fens: fens,
-            currentMoveIndex: 0
-        };
     default:
       return state;
   }

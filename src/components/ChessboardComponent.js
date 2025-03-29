@@ -4,7 +4,7 @@ import { Chessboard } from 'react-chessboard';
 import '../styles/themes.css';
 import PropTypes from 'prop-types';
 
-const ChessboardComponent = ({ isAnalysis, handleMove, fen, lastMove, isFlipped}) => {
+const ChessboardComponent = ({ className, handleMove, fen, lastMove, isFlipped}) => {
   const getSquareStyles = () => {
     if (!lastMove) return {};
     return {
@@ -24,7 +24,7 @@ const ChessboardComponent = ({ isAnalysis, handleMove, fen, lastMove, isFlipped}
     // };
 
   return (
-    <div className={isAnalysis ? 'analysis-board' : 'chess-board'}>
+    <div className={className}>
       <Chessboard
         // key={fen} // Force re-render when fen changes
         position={fen}
