@@ -1,70 +1,65 @@
 // src/components/TopBar.js
 import React from 'react';
-import '../styles/topContainer.css';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { flipBoard, resetGame } from '../redux/actions/gameActions';
+import PgnUploader from './PgnUploader'; 
+import CONFIG from '../config';
+import NavigationBar from './NavigationBar';
 
-const TopBar = ({ resetGame, flipBoard, isFlipped, enterAnalysisMode, isAnalysis, onLoadPGN, downloadPGN }) => {
-  // const [showPGNInput, setShowPGNInput] = useState(false);
-  // const [pgnText, setPgnText] = useState('');
+const TopBar = ({ enterAnalysisMode, isAnalysis, downloadPGN }) => {
+  const dispatch = useDispatch();
+  const { isFlipped, timerDuration } = useSelector((state) => state.game);
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const pgnData = e.target.result;
-        onLoadPGN(pgnData);
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  // const handlePastePGN = () => {
-  //   onLoadPGN(pgnText);
-  //   setShowPGNInput(false);
-  //   setPgnText('');
-  // };
-
-  return (
-    <div className="top-bar">
-      {!isAnalysis && (
-        <button onClick={resetGame} className="action-button">
-          Reset Board
-        </button>
-      )}
-      <button onClick={flipBoard} className="action-button">
-        {isFlipped ? 'Unflip Board' : 'Flip Board'}
-      </button>
-      <button onClick={enterAnalysisMode} className="action-button">
-        Enter Analysis Mode
-      </button>
-      {isAnalysis && (
-        <label className="action-button upload-btn">
-          Upload PGN
-          <input type="file" accept=".pgn" onChange={handleFileUpload} hidden />
-        </label>
-      )}
-      {!isAnalysis && downloadPGN && (
-        <button onClick={downloadPGN} className="action-button">
-          Download PGN
-        </button>
-      )}
-    </div>
+  const ResetButton = () => (
+    <button onClick={() => dispatch(resetGame(timerDuration))} className="action-button">
+      Reset Board
+    </button>
   );
+
+  const FlipButton = () => (
+    <button onClick={() => dispatch(flipBoard())} className="action-button">
+      {isFlipped ? 'Unflip Board' : 'Flip Board'}
+    </button>
+  );
+
+  const EnterAnalysisButton = () => (
+    <button onClick={enterAnalysisMode} className="action-button">
+      Enter Analysis Mode
+    </button>
+  );
+
+  const DownloadPgnButton = () => (
+    <button onClick={downloadPGN} className="action-button">
+      Download PGN
+    </button>
+  );
+
+  const buttons = [];
+  if (!isAnalysis) {
+    buttons.push(ResetButton, FlipButton);
+  } else {
+    buttons.push(FlipButton);
+  }
+  buttons.push(EnterAnalysisButton);
+  if (isAnalysis) {
+    buttons.push(PgnUploader);
+  }
+  if (!isAnalysis && downloadPGN) {
+    buttons.push(DownloadPgnButton);
+  }
+
+  return <NavigationBar buttons={buttons} />;
+};
+
+TopBar.propTypes = {
+  enterAnalysisMode: PropTypes.func.isRequired,
+  isAnalysis: PropTypes.bool,
+  downloadPGN: PropTypes.func,
 };
 
 TopBar.defaultProps = {
   isAnalysis: false,
-};
-
-TopBar.propTypes = {
-  resetGame: PropTypes.func.isRequired,
-  flipBoard: PropTypes.func.isRequired,
-  isFlipped: PropTypes.bool.isRequired,
-  enterAnalysisMode: PropTypes.func.isRequired,
-  isAnalysis: PropTypes.bool,
-  onLoadPGN: PropTypes.func,
-  downloadPGN: PropTypes.func,
 };
 
 export default TopBar;

@@ -1,8 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
-import "../styles/components/settings.css";
-import PropTypes from "prop-types";
+// src/components/Settings.js
+import React from 'react';
+import { useState, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { setTheme, setSound } from '../redux/actions/gameActions';
+import PropTypes from 'prop-types';
+import "../styles/components/settings.css"
 
-const Settings = (props) => {
+const Settings = () => {
+  const dispatch = useDispatch();
+  const { theme, enableSound } = useSelector((state) => state.settings);
   const [isOpen, setIsOpen] = useState(false);
   const settingsRef = useRef(null);
 
@@ -21,6 +27,14 @@ const Settings = (props) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleThemeChange = (event) => {
+    dispatch(setTheme(event.target.value));
+  };
+
+  const handleSoundChange = (event) => {
+    dispatch(setSound(event.target.checked));
+  };
+
   return (
     <div className="settings-container" ref={settingsRef}>
       <button className="settings-button" onClick={toggleDropdown}>
@@ -28,34 +42,29 @@ const Settings = (props) => {
       </button>
 
       {isOpen && (
-        <div className="settings-dropdown">
-          <div className="dropdown-item">
-            <h4>Theme:</h4>
-            <select onChange={(e) => props.setTheme(e.target.value)} value={props.theme}>
-              <option value="default">Default</option>
-              <option value="classic">Classic</option>
-              <option value="wood">Wood</option>
-              <option value="marble">Marble</option>
-              <option value="dark">Dark Mode</option>
-            </select>
-          </div>
-          <div className="dropdown-item">
-            <label>
-              <input type="checkbox" checked={props.enableSound} onChange={(e) => props.setEnableSound(e.target.checked)} />
-              Enable Move Sound
-            </label>
-          </div>
+      <div className="settings-dropdown">
+        <div className="dropdown-item">
+          <label htmlFor="themeSelect">Theme:</label>
+          <select id="themeSelect" value={theme} onChange={handleThemeChange}>
+            <option value="default">Default</option>
+            <option value="classic">Classic</option>
+            <option value="marble">Marble</option>
+            <option value="wood">Wood</option>
+            <option value="dark">Dark</option>
+          </select>
         </div>
-      )}
+      <div className="dropdown-item"> 
+        <label htmlFor="soundToggle">Sound:</label>
+        <input
+          type="checkbox"
+          id="soundToggle"
+          checked={enableSound}
+          onChange={handleSoundChange}
+        />
+      </div>
+    </div>)}
     </div>
   );
 };
 
 export default Settings;
-
-Settings.propTypes = {
-  theme: PropTypes.string.isRequired,
-  setTheme: PropTypes.func.isRequired,
-  enableSound: PropTypes.bool.isRequired,
-  setEnableSound: PropTypes.func.isRequired,
-};

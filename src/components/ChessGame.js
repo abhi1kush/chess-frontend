@@ -51,14 +51,8 @@ const ChessGame = ({ onEnterAnalysis }) => {
   return (
     <div className="main-container">
       <TopContainer
-        resetGame={() => resetGameHandler(timerDuration)}
-        flipBoard={() => dispatch(flipBoard())}
-        isFlipped={isFlipped}
-        theme={theme}
-        setTheme={(theme) => dispatch(setTheme(theme))}
-        enableSound={enableSound}
-        setEnableSound={(sound) => dispatch(setSound(sound))}
         enterAnalysisMode={enterAnalysisMode}
+        // Pass onLoadPGN and downloadPGN if needed
       />
       <div className="middle-container">
         <div className="left-menu-bar"><h3>Chess Game</h3></div>
