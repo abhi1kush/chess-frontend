@@ -13,15 +13,12 @@ const pgnReducer = (state = initialState, action) => {
 //   console.log('gameReducer called with:', state, action);
   switch (action.type) {
     case LOAD_PGN:
-        console.log("analysisReducer LOAD_PGN", action.payload.pgn);
-        const finalFen = ""
-        const moves = []
-        const fens = []
+        console.log("pgnReducer LOAD_PGN", action.payload);
         return {
             ...state,
-            fen: finalFen,
-            moves: moves,
-            fens: fens,
+            finalFen: action.payload.finalPos,
+            moves: action.payload.moves,
+            fens: action.payload.fens,
         };
     default:
       return state;

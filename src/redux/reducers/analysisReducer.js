@@ -1,18 +1,17 @@
 // src/redux/reducers/gameReducer.js
-import { Chess } from 'chess.js';
 import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN} from '../actions/analysisActions';
-import CONFIG from '../../config';
 
 const initialState = {
   finalFen: "",
+  fenLength: 0, 
   currentMoveIndex: 0
 };
 
 const analysisReducer = (state = initialState, action) => {
-//   console.log('gameReducer called with:', state, action);
+  console.log("analysisReducer", action.type, action.payload, state.currentMoveIndex)
   switch (action.type) {
     case NEXT:
-        if (state.currentMoveIndex == moves.length() - 1) {
+        if (state.currentMoveIndex === (state.fenLength - 1)) {
             return state
         }
 
@@ -21,7 +20,7 @@ const analysisReducer = (state = initialState, action) => {
             currentMoveIndex: state.currentMoveIndex + 1
         }
     case PREV:
-        if (state.currentMoveIndex == 0) {
+        if (state.currentMoveIndex === 0) {
             return state
         }
         return {
@@ -36,7 +35,15 @@ const analysisReducer = (state = initialState, action) => {
     case FINAL_POS:
         return {
             ...state,
-            currentMoveIndex: state.moves.length()
+            currentMoveIndex: state.fenLength - 1
+        }
+    case LOAD_PGN:
+        console.log("pgnload", action.payload)
+        return {
+            ...state,
+            finalFen: action.payload.finalPos,
+            fenLength: action.payload.fens.length,
+            currentMoveIndex: 0
         }
     default:
       return state;

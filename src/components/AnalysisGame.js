@@ -5,13 +5,25 @@ import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
 import ChessboardComponent from "./ChessboardComponent";
+import CONFIG from "../config";
 
 const AnalysisGame = () => {
-  const analysisGameRef = useRef(new Chess());
-  const [position, setPosition] = useState(analysisGameRef.current.fen());
-  const dispatch = useDispatch();
+  const { fens } = useSelector((state) => state.pgn);
+  const { currentMoveIndex } = useSelector((state) => state.analysis);
+  const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
   
+  const handleMove = ({ from, to }) => {
+    console.log("handleMove in analyis")
+  };
+
+  useEffect(() => {
+    if (fens && fens.length > 0) {
+      console.log("Setting Position to", currentMoveIndex, fens[currentMoveIndex])
+      setPosition(fens[currentMoveIndex]);
+    }
+  }, [currentMoveIndex, fens]);
+
   return (
      <div className="main-container">
      <h2>Analysis Mode</h2>
@@ -20,8 +32,9 @@ const AnalysisGame = () => {
             <div className={`analysis-container ${theme}-theme`}>
                 <ChessboardComponent
                   className={'analysis-board'}
-                  position={position}
+                  fen={position}
                   isFlipped={isFlipped}
+                  handleMove={handleMove}
                 />
               <MoveNavigation 
                 setPosition={setPosition}

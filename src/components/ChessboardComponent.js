@@ -17,12 +17,6 @@ const ChessboardComponent = ({ className, handleMove, fen, lastMove, isFlipped})
     handleMove({ from: source, to: target });
   };
 
-    // const calcPossibleMoves = ({ square }) => {
-    //     const game = new Chess(fen);
-    //     const moves = game.moves({ square, verbose: true });
-    //     return moves.map((move) => move.to);
-    // };
-
   return (
     <div className={className}>
       <Chessboard

@@ -10,8 +10,8 @@ export const prev = () => ({type: PREV});
 export const next = () => ({type: NEXT});
 export const finalPosition = () => ({type: FINAL_POS});
 
-export const loadPgn = (pgn) => ({
+export const loadPgn = (finalPos, moves, fens) => ({
   type: LOAD_PGN,
-  payload: pgn,
+  payload: {finalPos, moves, fens},
 });
 
