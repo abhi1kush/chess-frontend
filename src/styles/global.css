@@ -94,7 +94,8 @@ html, body {
   }
   
   .routes .action-button {
-    display: block; /* Make links full width of their container */
+    display: flex; /* Make links full width of their container */
+    flex-direction: column;
     width: 100%;
     text-align: center; /* Align text to the left */
     padding: 10px;

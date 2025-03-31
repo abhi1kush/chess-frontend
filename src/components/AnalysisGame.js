@@ -6,9 +6,10 @@ import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
 import ChessboardComponent from "./ChessboardComponent";
 import CONFIG from "../config";
+import AnalysisMoveHistory from "./AnalysisMoveHistory";
 
 const AnalysisGame = () => {
-  const { fens } = useSelector((state) => state.pgn);
+  const { fens, moves } = useSelector((state) => state.pgn);
   const { currentMoveIndex } = useSelector((state) => state.analysis);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
@@ -28,19 +29,27 @@ const AnalysisGame = () => {
      <div className="main-container">
      <h2>Analysis Mode</h2>
           <AnalysisTopContainer/> 
-          { <div className="middle-container">
-            <div className={`analysis-container ${theme}-theme`}>
+          <div className="middle-container">
+            <div className={`chess-container ${theme}-theme`}>
+            <div className="left-panel">
+
+            </div>
+                <div className="centre-area">
                 <ChessboardComponent
                   className={'analysis-board'}
                   fen={position}
                   isFlipped={isFlipped}
                   handleMove={handleMove}
                 />
-              <MoveNavigation 
-                setPosition={setPosition}
-              />
+                </div>
+                <div className="right-panel">
+                  <AnalysisMoveHistory moveHistory={moves} />
+                  <MoveNavigation 
+                  setPosition={setPosition}
+                />
             </div>
-          </div> }
+            </div>
+          </div>
           <div className="bottumContainer"></div>
         </div>
   );

@@ -1,5 +1,5 @@
 // src/redux/reducers/gameReducer.js
-import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN} from '../actions/analysisActions';
+import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN, JUMP_TO_MOVE} from '../actions/analysisActions';
 
 const initialState = {
   finalFen: "",
@@ -36,6 +36,11 @@ const analysisReducer = (state = initialState, action) => {
         return {
             ...state,
             currentMoveIndex: state.fenLength - 1
+        }
+    case JUMP_TO_MOVE: 
+        return {
+            ...state,
+            currentMoveIndex: action.payload
         }
     case LOAD_PGN:
         console.log("pgnload", action.payload)
