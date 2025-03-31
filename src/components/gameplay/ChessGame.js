@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { movePiece, resetGame, setGameOver} from '../../redux/actions/gameActions';
 import Clocks from './Clocks';
 import MoveHistory from '../common/MoveHistory';
-import playSound from '../../utils/soundUtils';
+import { playMoveSound } from '../../utils/soundUtils';
 import ChessboardComponent from '../common/ChessboardComponent';
 import { getMoveType, checkGameOver } from '../../utils/helpers';
 import GamePlayTopContainer from './GamePlayTopContainer';
@@ -27,7 +27,7 @@ const ChessGame = () => {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
       dispatch(movePiece({ from: from, to: to, promotionPiece: 'q'}));
-      enableSound && playSound(getMoveType(move, game));
+      enableSound && playMoveSound(getMoveType(move, game));
       const {isGameOver, gameResult } = checkGameOver(game);
       isGameOver && dispatch(setGameOver(isGameOver, gameResult))
     } catch (error) {

@@ -4,7 +4,7 @@ import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
 import ChessboardComponent from "../common/ChessboardComponent";
 import CONFIG from "../../config";
-import AnalysisMoveHistory from "./AnalysisMoveHistory";
+import AnalysisMoveHistory from "./Moves";
 
 const AnalysisGame = () => {
   const { fens, moves } = useSelector((state) => state.pgn);

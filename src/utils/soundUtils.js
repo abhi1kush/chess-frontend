@@ -1,8 +1,9 @@
 // utils/soundUtils.js
 import moveSound from "../assets/sounds/normal-move.mp3";
 import captureSound from "../assets/sounds/capture-move.mp3";
+import boardStartSound from "../assets/sounds/board-start.mp3"
 
-const playSound = (type) => {
+export const playMoveSound = (type) => {
   let sound;
   switch (type) {
     case "move":
@@ -17,4 +18,7 @@ const playSound = (type) => {
   sound.play();
 };
 
-export default playSound;
+export const playBoardSetupSound = () => {
+    const sound = new Audio(boardStartSound);
+    sound.play();
+}

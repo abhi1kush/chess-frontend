@@ -1,19 +1,23 @@
 import React from "react";
 import "../../styles/components/moveNavigation.css";
 import PropTypes from "prop-types";import { useDispatch, useSelector } from "react-redux";
-import {startPos, prev, next, finalPosition} from "../../redux/actions/analysisActions";
+import { startPos, prev, next, finalPosition } from "../../redux/actions/analysisActions";
+import { playMoveSound, playBoardSetupSound} from "../../utils/soundUtils"
 
 const MoveNavigation = ({setPosition}) => {
   const {fens} = useSelector((state) => state.pgn);
   const {currentMoveIndex} = useSelector((state) => state.analysis);
   const dispatch = useDispatch();
+
   const goToStart = () => {
+    playBoardSetupSound();
     dispatch(startPos());
     setPosition(fens[0]);
   };
 
   const prevMove = () => {
     if (currentMoveIndex > 0) {
+      playMoveSound("move");
         dispatch(prev());
         setPosition(fens[currentMoveIndex - 1]);
       };
@@ -21,12 +25,14 @@ const MoveNavigation = ({setPosition}) => {
 
   const nextMove = () => {
     if (currentMoveIndex < fens.length - 1) {
+      playMoveSound("move");
       dispatch(next());
       setPosition(fens[currentMoveIndex + 1]);
     }
   };
 
   const goToLatest = () => {
+    playBoardSetupSound();
     dispatch(finalPosition());
     setPosition(fens[fens.length - 1]);
   };
