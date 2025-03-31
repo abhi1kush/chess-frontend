@@ -37,14 +37,6 @@ export const FlipButton = () => {
     )
 }
 
-export const EnterAnalysisButton = ({enterAnalysisModeHandler}) => {
-    return (
-        <button onClick={enterAnalysisModeHandler} className="action-button">
-            Enter Analysis Mode
-        </button>
-    )
-}
-
 export const DownloadPgnButton = ({downloadPgnHandler}) => {
     return (
         (

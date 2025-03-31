@@ -18,8 +18,8 @@ const App = () => {
             </div>
         </nav>
         <Routes>
-          <Route path="/" element={<ChessGame />} />
-          <Route path="/analysis" element={<AnalysisGame />} />
+          <Route path="/" element={<ChessGame/>} />
+          <Route path="/analysis" element={<AnalysisGame/>} />
         </Routes>
       </Router>
     </ConfigProvider>

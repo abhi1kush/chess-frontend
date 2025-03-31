@@ -21,12 +21,12 @@ const Clocks = React.memo(({ hasGameStarted, isGameOver, isWhiteTurn, isFlipped,
   useEffect(() => {
     if (isGameOver) return;
     
-    if (whiteTime == 0) {
+    if (whiteTime === 0) {
       dispatch(setGameOver(true, 'Black Won by Time'));
-    } else if (blackTime == 0){
+    } else if (blackTime === 0){
       dispatch(setGameOver(true, 'White Won by Time'));
     }
-  },[whiteTime, blackTime, isGameOver])
+  },[whiteTime, blackTime, isGameOver, dispatch])
 
   useEffect(() => {
     if (!hasGameStarted || isGameOver) {

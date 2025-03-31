@@ -1,7 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector} from 'react-redux';
-import { Chess } from "chess.js";
-import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
+import React, { useState, useEffect } from "react";
+import {useSelector} from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
 import ChessboardComponent from "./ChessboardComponent";
@@ -12,11 +10,7 @@ const AnalysisGame = () => {
   const { fens, moves } = useSelector((state) => state.pgn);
   const { currentMoveIndex } = useSelector((state) => state.analysis);
   const [position, setPosition] = useState(CONFIG.START_FEN);
-  const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
-  
-  const handleMove = ({ from, to }) => {
-    console.log("handleMove in analyis")
-  };
+  const { isFlipped, theme } = useSelector((state) => state.settings);
 
   useEffect(() => {
     if (fens && fens.length > 0) {
@@ -27,19 +21,17 @@ const AnalysisGame = () => {
 
   return (
      <div className="main-container">
-     <h2>Analysis Mode</h2>
           <AnalysisTopContainer/> 
           <div className="middle-container">
             <div className={`chess-container ${theme}-theme`}>
             <div className="left-panel">
-
             </div>
                 <div className="centre-area">
                 <ChessboardComponent
                   className={'analysis-board'}
                   fen={position}
                   isFlipped={isFlipped}
-                  handleMove={handleMove}
+                  handleMove={() => {}}
                 />
                 </div>
                 <div className="right-panel">
@@ -50,7 +42,6 @@ const AnalysisGame = () => {
             </div>
             </div>
           </div>
-          <div className="bottumContainer"></div>
         </div>
   );
 };

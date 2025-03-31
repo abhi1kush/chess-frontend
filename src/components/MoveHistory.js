@@ -38,8 +38,4 @@ const MoveHistory = ({moveHistory}) => {
   );
 };
 
-MoveHistory.propTypes = {
-  // moveHistory is now taken from redux, so the prop is no longer needed.
-};
-
 export default MoveHistory;

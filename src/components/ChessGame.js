@@ -1,8 +1,7 @@
 // src/components/ChessGame.js
-import React, {useCallback, useRef } from 'react';
+import React, {useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { movePiece, resetGame, setGameOver} from '../redux/actions/gameActions';
-import { flipBoard, setTheme, setSound } from '../redux/actions/gameActions';
 import Clocks from './Clocks';
 import MoveHistory from './MoveHistory';
 import playSound from '../utils/soundUtils';
@@ -40,13 +39,9 @@ const ChessGame = ({ onEnterAnalysis }) => {
     dispatch(resetGame(duration));
   };
 
-  const handleGameOver = useCallback((winner) => {
-    dispatch(setGameOver(true, `${winner} Won by Time`));
-  }, [dispatch]);
-
-  const enterAnalysisMode = () => {
-    onEnterAnalysis();
-  };
+  // const handleGameOver = useCallback((winner) => {
+  //   dispatch(setGameOver(true, `${winner} Won by Time`));
+  // }, [dispatch]);
 
   return (
     <div className="main-container">

@@ -1,7 +1,5 @@
-// src/redux/reducers/gameReducer.js
-import { Chess } from 'chess.js';
+// src/redux/reducers/pgnReducer.js
 import {LOAD_PGN} from '../actions/analysisActions';
-import CONFIG from '../../config';
 
 const initialState = {
   finalFen: "",

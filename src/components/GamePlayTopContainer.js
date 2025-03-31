@@ -3,7 +3,6 @@ import React from 'react';
 import '../styles/topContainer.css';
 import Settings from './Settings';
 import GamePlayTopBar from './GamePlayTopBar';
-import PropTypes from 'prop-types';
 
 const TopContainer = () => {
   return (

@@ -6,7 +6,7 @@ import { jumpToMove } from '../redux/actions/analysisActions';
 
 const AnalysisMoveHistory = () => {
   const scrollRef = useRef(null);
-  const { moves, fens } = useSelector((state) => state.pgn); // Get moveHistory from Redux
+  const { moves } = useSelector((state) => state.pgn); // Get moveHistory from Redux
   const { currentMoveIndex } = useSelector((state) => state.analysis); // Get currentMoveIndex from Redux
   const dispatch = useDispatch();
 

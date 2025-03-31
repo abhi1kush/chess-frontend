@@ -4,7 +4,7 @@ import PropTypes from "prop-types";import { useDispatch, useSelector } from "rea
 import {startPos, prev, next, finalPosition} from "../redux/actions/analysisActions";
 
 const MoveNavigation = ({setPosition}) => {
-  const {fens, moves, finalPos} = useSelector((state) => state.pgn);
+  const {fens} = useSelector((state) => state.pgn);
   const {currentMoveIndex} = useSelector((state) => state.analysis);
   const dispatch = useDispatch();
   // ⏮️ Move to the first move

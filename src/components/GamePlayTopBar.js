@@ -1,6 +1,5 @@
 // src/components/TopBar.js
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { flipBoard, resetGame } from '../redux/actions/gameActions';
 

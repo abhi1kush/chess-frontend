@@ -1,6 +1,6 @@
 // src/redux/reducers/gameReducer.js
 import { Chess } from 'chess.js';
-import { MOVE_PIECE, RESET_GAME, LOAD_GAME, SET_GAME_OVER, SET_GAME_RESULT, SET_TIMER_DURATION } from '../actions/gameActions';
+import { MOVE_PIECE, RESET_GAME, LOAD_GAME, SET_GAME_OVER, SET_TIMER_DURATION } from '../actions/gameActions';
 import CONFIG from '../../config';
 
 const initialState = {

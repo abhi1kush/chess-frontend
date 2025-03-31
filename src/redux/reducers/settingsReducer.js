@@ -1,4 +1,4 @@
-// src/redux/reducers/gameReducer.js
+// src/redux/reducers/settingsReducer.js
 import {FLIP_BOARD, SET_THEME, SET_SOUND} from '../actions/settingsActions';
 
 const initialState = {
