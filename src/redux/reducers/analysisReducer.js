@@ -1,10 +1,10 @@
-// src/redux/reducers/gameReducer.js
+// src/redux/reducers/analysisReducer.js
 import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN, JUMP_TO_MOVE} from '../actions/analysisActions';
 
 const initialState = {
   finalFen: "",
   fenLength: 0, 
-  currentMoveIndex: 0
+  currentMoveIndex: 0,
 };
 
 const analysisReducer = (state = initialState, action) => {

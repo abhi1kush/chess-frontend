@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Chess } from 'chess.js';
 import { useDispatch } from 'react-redux';
 import {loadPgn} from '../../redux/actions/analysisActions'
-import CONFIG from '../../config';
 
 // Pure function to read file content
 const readFileContent = (file) => {
@@ -19,7 +18,7 @@ const readFileContent = (file) => {
   });
 };
 
-const PgnUploader = ({ onLoadPGN }) => {
+const PgnUploader = () => {
   const dispatch = useDispatch()
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -30,16 +29,28 @@ const PgnUploader = ({ onLoadPGN }) => {
             const chess = new Chess();
             chess.loadPgn(pgnData);
             const moves = chess.history();
-            const fens = [CONFIG.START_FEN]; // Initialize with starting FEN
+            const fens = [];
+            const termination = chess.header().Termination
+            const blackPlayerName = chess.header().Black || '-'; // Default value
+            const whitePlayerName = chess.header().White || '-';
+            const Result = chess.header().Result;
 
-            // Generate FENs for each move
-            chess.reset(); // Reset to starting position
+            chess.reset(); 
+            fens.push(chess.fen());
             moves.forEach((move) => {
               chess.move(move);
               fens.push(chess.fen());
             });
 
-            dispatch(loadPgn(fens[fens.length - 1], moves, fens))
+            dispatch(loadPgn({
+              finalPos: fens[fens.length - 1], 
+              moves: moves, 
+              fens: fens, 
+              termination: termination,
+              result: Result,
+              blackPlayerName: blackPlayerName,
+              whitePlayerName: whitePlayerName,
+            }))
           } catch (error) {
             console.error('Error parsing PGN:', error);
           }

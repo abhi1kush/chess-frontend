@@ -111,3 +111,34 @@ html, body {
     background-color: #2c333a;
   }
   
+  .player-name {
+    border-radius: 5px;
+    padding: 7px;
+    font-weight: bold;
+  }
+
+  .white-player-name {
+    color: white;
+    background-color: #aaaaaa;
+  }
+
+  .black-player-name {
+    color: black;
+    background-color: #dddddd;
+  }
+
+  .player-names-wrapper {
+    display: flex;
+    justify-content: right; /* Push names to opposite ends */
+    align-items: right;
+    position: relative;
+    width: 80%;
+  }
+
+  .termination-msg {
+    color: #2f4f7a;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }

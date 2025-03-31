@@ -17,7 +17,7 @@ const gameReducer = (state = initialState, action) => {
   switch (action.type) {
     case MOVE_PIECE:
         try {
-            const game = new Chess(state.fen); // Create Chess instance for move calculation
+            const game = new Chess(state.fen); 
             const move = game.move({ from: action.payload.from, to: action.payload.to, promotion: action.payload.promotionPiece });
             if (!move) return state;
     

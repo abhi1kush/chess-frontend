@@ -20,7 +20,7 @@ const PGNLoader = () => {
         setMoves(moveArray);
       } catch (error) {
         console.error('Error parsing PGN:', error);
-        setMoves([]); // Clear moves on error
+        setMoves([]); 
       }
     };
     reader.readAsText(file);

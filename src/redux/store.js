@@ -7,7 +7,6 @@ import rootReducer from './reducers/reducers';
 const persistConfig = {
   key: 'root',
   storage,
-  // Optionally, you can whitelist/blacklist reducers:
   whitelist: ['game', 'settings', 'analysis', 'pgn'],
 };
 
@@ -18,7 +17,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST'], // Ignore persist actions
+        ignoredActions: ['persist/PERSIST'], 
       },
     }),
 });

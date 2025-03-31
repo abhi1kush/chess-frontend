@@ -3,10 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'; 
 import '../../styles/components/moveHistory.css';
 import { jumpToMove } from '../../redux/actions/analysisActions';
+import boardSetupSound from "../../assets/sounds/board-start.mp3"
 
-const AnalysisMoveHistory = () => {
+const Moves = () => {
   const scrollRef = useRef(null);
-  const { moves } = useSelector((state) => state.pgn);
+  const { moves, termination} = useSelector((state) => state.pgn);
   const { currentMoveIndex } = useSelector((state) => state.analysis); 
   const dispatch = useDispatch();
 
@@ -29,12 +30,14 @@ const AnalysisMoveHistory = () => {
   }, [currentMoveIndex]);
 
   const handleMoveClick = (index) => {
+    const sound = new Audio(boardSetupSound)
+    sound.play()
     dispatch(jumpToMove(index));
   };
-
   return (
     <div className="move-history">
-      <h3>Move History</h3>
+      <b>Moves</b>
+      <div className='termination-msg bold-text'>{termination}</div>
       <table>
         <thead>
           <tr>
@@ -48,12 +51,12 @@ const AnalysisMoveHistory = () => {
             index % 2 === 0 ? (
               <tr key={index / 2} className={`move-row-${index}`}>
                 <td>{Math.floor(index / 2) + 1}.</td>
-                <td style={{backgroundColor: index + 1 === currentMoveIndex ? 'lightblue' : 'transparent'}} 
+                <td className="clickable" style={{backgroundColor: index + 1 === currentMoveIndex ? 'lightblue' : 'transparent'}} 
                 onClick={() => handleMoveClick(index + 1)}
                 >
                   {move}
                 </td>
-                <td style={{backgroundColor: index + 2 === currentMoveIndex ? 'lightblue' : 'transparent'}}
+                <td className="clickable" style={{backgroundColor: index + 2 === currentMoveIndex ? 'lightblue' : 'transparent'}}
                 onClick={() => handleMoveClick(index + 2)}
                 >
                   {moves[index + 1] || ''}
@@ -67,4 +70,4 @@ const AnalysisMoveHistory = () => {
   );
 };
 
-export default AnalysisMoveHistory;
+export default Moves;

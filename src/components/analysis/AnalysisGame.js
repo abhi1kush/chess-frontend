@@ -4,10 +4,11 @@ import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
 import ChessboardComponent from "../common/ChessboardComponent";
 import CONFIG from "../../config";
-import AnalysisMoveHistory from "./Moves";
+import Moves from "./Moves";
+import '../../styles/global.css';
 
 const AnalysisGame = () => {
-  const { fens, moves } = useSelector((state) => state.pgn);
+  const { fens, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
   const { currentMoveIndex } = useSelector((state) => state.analysis);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme } = useSelector((state) => state.settings);
@@ -17,28 +18,31 @@ const AnalysisGame = () => {
       setPosition(fens[currentMoveIndex]);
     }
   }, [currentMoveIndex, fens]);
-
   return (
      <div className="main-container">
           <AnalysisTopContainer/> 
           <div className="middle-container">
             <div className={`chess-container ${theme}-theme`}>
-            <div className="left-panel">
-            </div>
-                <div className="centre-area">
+              <div className="left-panel">
+              </div>
+              <div className="centre-area">
+                <div className="player-names-wrapper">
+                  <div className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}`}>{isFlipped ? whitePlayerName : blackPlayerName}</div>
+                </div>
                 <ChessboardComponent
                   className={'analysis-board'}
                   fen={position}
                   isFlipped={isFlipped}
                   handleMove={() => {}}
                 />
+                <div className="player-names-wrapper">
+                  <div className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}`}>{isFlipped ? blackPlayerName : whitePlayerName}</div>
                 </div>
-                <div className="right-panel">
-                  <AnalysisMoveHistory moveHistory={moves} />
-                  <MoveNavigation 
-                  setPosition={setPosition}
-                />
-            </div>
+              </div>
+              <div className="right-panel">
+                <Moves moves={moves} />
+                <MoveNavigation setPosition={setPosition}/>
+              </div>
             </div>
           </div>
         </div>

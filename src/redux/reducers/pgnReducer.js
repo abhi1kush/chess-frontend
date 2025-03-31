@@ -5,6 +5,10 @@ const initialState = {
   finalFen: "",
   moves: [],
   fens:[],
+  termination: "",
+  result: "",
+  blackPlayerName: "",
+  whitePlayerName: "",
 };
 
 const pgnReducer = (state = initialState, action) => {
@@ -15,6 +19,10 @@ const pgnReducer = (state = initialState, action) => {
             finalFen: action.payload.finalPos,
             moves: action.payload.moves,
             fens: action.payload.fens,
+            termination: action.payload.termination,
+            result: action.payload.result, 
+            blackPlayerName: action.payload.blackPlayerName,
+            whitePlayerName: action.payload.whitePlayerName, 
         };
     default:
       return state;
