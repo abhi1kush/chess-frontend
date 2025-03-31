@@ -8,18 +8,18 @@ import "./styles/global.css"
 const App = () => {
   return (
     <ConfigProvider>
-      <Router>
+      <Router basename="/chess-frontend">
         <nav className="routes">
             <div>
-              <Link to="/" className='action-button'>Gameplay</Link>
+              <Link to="/" className='action-button'>Analysis</Link>
             </div>
             <div>
-              <Link to="/analysis" className='action-button'>Analysis</Link>
+              <Link to="/analysis" className='action-button'>Gameplay</Link>
             </div>
         </nav>
         <Routes>
-          <Route path="/" element={<ChessGame/>} />
-          <Route path="/analysis" element={<AnalysisGame/>} />
+          <Route path="/" element={<AnalysisGame/>} />
+          <Route path="/analysis" element={<ChessGame/>} />
         </Routes>
       </Router>
     </ConfigProvider>
