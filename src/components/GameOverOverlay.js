@@ -2,7 +2,6 @@
 import React from 'react';
 
 const GameOverOverlay = ({resetGameHandler, timerDuration, gameResult}) => {
-    console.log("GameOverOverlay rendred")
      return (
      <div className="game-over-overlay">
         <div className="game-over-message">

@@ -17,7 +17,6 @@ const PGNLoader = () => {
         const chess = new Chess();
         chess.loadPgn(pgnContent);
         const moveArray = chess.history();
-        console.log("pgn moves", moveArray)
         setMoves(moveArray);
       } catch (error) {
         console.error('Error parsing PGN:', error);

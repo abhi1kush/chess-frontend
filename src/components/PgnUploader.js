@@ -39,9 +39,6 @@ const PgnUploader = ({ onLoadPGN }) => {
               fens.push(chess.fen());
             });
 
-            // console.log('Parsed Moves:', moves);
-            // console.log('Parsed FENs:', fens);
-            // onLoadPGN(pgnData);
             dispatch(loadPgn(fens[fens.length - 1], moves, fens))
           } catch (error) {
             console.error('Error parsing PGN:', error);

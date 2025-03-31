@@ -14,7 +14,6 @@ const AnalysisGame = () => {
 
   useEffect(() => {
     if (fens && fens.length > 0) {
-      console.log("Setting Position to", currentMoveIndex, fens[currentMoveIndex])
       setPosition(fens[currentMoveIndex]);
     }
   }, [currentMoveIndex, fens]);

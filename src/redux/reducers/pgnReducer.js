@@ -8,10 +8,8 @@ const initialState = {
 };
 
 const pgnReducer = (state = initialState, action) => {
-//   console.log('gameReducer called with:', state, action);
   switch (action.type) {
     case LOAD_PGN:
-        console.log("pgnReducer LOAD_PGN", action.payload);
         return {
             ...state,
             finalFen: action.payload.finalPos,

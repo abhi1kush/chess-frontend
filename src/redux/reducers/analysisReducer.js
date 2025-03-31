@@ -8,7 +8,6 @@ const initialState = {
 };
 
 const analysisReducer = (state = initialState, action) => {
-  console.log("analysisReducer", action.type, action.payload, state.currentMoveIndex)
   switch (action.type) {
     case NEXT:
         if (state.currentMoveIndex === (state.fenLength - 1)) {
@@ -43,7 +42,6 @@ const analysisReducer = (state = initialState, action) => {
             currentMoveIndex: action.payload
         }
     case LOAD_PGN:
-        console.log("pgnload", action.payload)
         return {
             ...state,
             finalFen: action.payload.finalPos,

@@ -14,12 +14,10 @@ const initialState = {
 };
 
 const gameReducer = (state = initialState, action) => {
-//   console.log('gameReducer called with:', state, action);
   switch (action.type) {
     case MOVE_PIECE:
         try {
             const game = new Chess(state.fen); // Create Chess instance for move calculation
-            // console.log('FEN before move:', state.fen); // Add this line
             const move = game.move({ from: action.payload.from, to: action.payload.to, promotion: action.payload.promotionPiece });
             if (!move) return state;
     
@@ -49,7 +47,6 @@ const gameReducer = (state = initialState, action) => {
             moveHistory: action.payload.moveHistory || [],
         };
     case SET_GAME_OVER:
-      console.log("gameOver", action, action.payload)
       return {
         ...state,
         isGameOver: action.payload.isGameOver,

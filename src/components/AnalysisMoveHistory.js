@@ -29,7 +29,6 @@ const AnalysisMoveHistory = () => {
   }, [currentMoveIndex]);
 
   const handleMoveClick = (index) => {
-    console.log("clicked on move", index)
     dispatch(jumpToMove(index));
   };
 
