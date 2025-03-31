@@ -1,6 +1,6 @@
 // utils/soundUtils.js
-import moveSound from "../sounds/normal-move.mp3";
-import captureSound from "../sounds/capture-move.mp3";
+import moveSound from "../assets/sounds/normal-move.mp3";
+import captureSound from "../assets/sounds/capture-move.mp3";
 
 const playSound = (type) => {
   let sound;

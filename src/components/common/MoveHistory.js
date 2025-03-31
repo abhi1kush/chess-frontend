@@ -1,6 +1,6 @@
 // src/components/MoveHistory.js
 import React, { useEffect, useRef } from 'react';
-import '../styles/components/moveHistory.css';
+import '../../styles/components/moveHistory.css';
 
 const MoveHistory = ({moveHistory}) => {
   const scrollRef = useRef(null);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import ChessGame from './components/ChessGame';
-import AnalysisGame from './components/AnalysisGame';
+import ChessGame from './components/gameplay/ChessGame';
+import AnalysisGame from './components/analysis/AnalysisGame';
 import { ConfigProvider } from './context/configContext';
 import "./styles/global.css"
 

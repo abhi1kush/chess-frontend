@@ -1,21 +1,21 @@
 // src/components/ChessGame.js
 import React, {useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { movePiece, resetGame, setGameOver} from '../redux/actions/gameActions';
+import { movePiece, resetGame, setGameOver} from '../../redux/actions/gameActions';
 import Clocks from './Clocks';
-import MoveHistory from './MoveHistory';
-import playSound from '../utils/soundUtils';
-import ChessboardComponent from './ChessboardComponent';
-import { getMoveType, checkGameOver } from '../utils/helpers';
+import MoveHistory from '../common/MoveHistory';
+import playSound from '../../utils/soundUtils';
+import ChessboardComponent from '../common/ChessboardComponent';
+import { getMoveType, checkGameOver } from '../../utils/helpers';
 import GamePlayTopContainer from './GamePlayTopContainer';
 import GameOverComponent from './GameOverOverlay';
-import '../styles/global.css';
-import '../styles/pageLayout.css';
-import '../styles/topContainer.css';
+import '../../styles/global.css';
+import '../../styles/pageLayout.css';
+import '../../styles/components/topContainer.css';
 import { Chess } from 'chess.js';
-import CONFIG from '../config';
+import CONFIG from '../../config';
 
-const ChessGame = ({ onEnterAnalysis }) => {
+const ChessGame = () => {
   const dispatch = useDispatch();
   const { fen, moveHistory, lastMove, isGameOver, gameResult, timerDuration, isWhiteTurn} = useSelector((state) => state.game);
   const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);

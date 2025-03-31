@@ -1,7 +1,7 @@
 // src/components/ChessboardComponent.js
 import React from 'react';
 import { Chessboard } from 'react-chessboard';
-import '../styles/themes.css';
+import '../../styles/themes.css';
 import PropTypes from 'prop-types';
 
 const ChessboardComponent = ({ className, handleMove, fen, lastMove, isFlipped}) => {

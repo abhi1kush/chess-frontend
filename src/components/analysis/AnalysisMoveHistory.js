@@ -1,13 +1,13 @@
 // src/components/MoveHistory.js
 import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'; 
-import '../styles/components/moveHistory.css';
-import { jumpToMove } from '../redux/actions/analysisActions';
+import '../../styles/components/moveHistory.css';
+import { jumpToMove } from '../../redux/actions/analysisActions';
 
 const AnalysisMoveHistory = () => {
   const scrollRef = useRef(null);
-  const { moves } = useSelector((state) => state.pgn); // Get moveHistory from Redux
-  const { currentMoveIndex } = useSelector((state) => state.analysis); // Get currentMoveIndex from Redux
+  const { moves } = useSelector((state) => state.pgn);
+  const { currentMoveIndex } = useSelector((state) => state.analysis); 
   const dispatch = useDispatch();
 
   useEffect(() => {

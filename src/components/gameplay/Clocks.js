@@ -1,9 +1,9 @@
 // src/components/Clocks.js
 import React, { useState, useRef, useEffect } from 'react';
-import '../styles/components/clock.css';
+import '../../styles/components/clock.css';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { setGameOver } from '../redux/actions/gameActions';
+import { setGameOver } from '../../redux/actions/gameActions';
 
 const Clocks = React.memo(({ hasGameStarted, isGameOver, isWhiteTurn, isFlipped, timerDuration }) => {
   const dispatch = useDispatch();

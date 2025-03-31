@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Chess } from 'chess.js';
 import { useDispatch } from 'react-redux';
-import {loadPgn} from '../redux/actions/analysisActions'
-import CONFIG from '../config';
+import {loadPgn} from '../../redux/actions/analysisActions'
+import CONFIG from '../../config';
 
 // Pure function to read file content
 const readFileContent = (file) => {
@@ -50,7 +50,6 @@ const PgnUploader = ({ onLoadPGN }) => {
         });
     }
   };
-
   return (
     <label className="action-button upload-btn">
       Upload PGN

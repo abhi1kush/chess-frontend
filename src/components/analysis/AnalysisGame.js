@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import {useSelector} from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
-import ChessboardComponent from "./ChessboardComponent";
-import CONFIG from "../config";
+import ChessboardComponent from "../common/ChessboardComponent";
+import CONFIG from "../../config";
 import AnalysisMoveHistory from "./AnalysisMoveHistory";
 
 const AnalysisGame = () => {

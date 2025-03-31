@@ -1,7 +1,7 @@
 // src/components/TopContainer.js
 import React from 'react';
-import '../styles/topContainer.css';
-import Settings from './Settings';
+import '../../styles/components/topContainer.css';
+import Settings from '../common/Settings';
 import AnalysisTopBar from './AnalysisTopBar';
 
 const AnalysisTopContainer = () => {
