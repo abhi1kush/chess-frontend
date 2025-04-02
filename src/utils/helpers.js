@@ -1,3 +1,4 @@
+import { Chess } from "chess.js"
 import CONFIG from "../config"
 
 export const getMoveType = (move, game) => {
@@ -33,3 +34,23 @@ export const checkGameOver = (game) => {
         } 
         return {isGameOver: false, gameResult: ""}
       };
+
+   
+export const getKingPosition = (chessBoard, color) => {
+  const kingChar = color === 'w' ? 'K' : 'k';
+  for (let rank = 0; rank < 8; rank++) {
+    for (let file = 0; file < 8; file++) {
+      const square = chessBoard[rank][file];
+      if (square && square.type === 'k' && square.color === color) {
+        return { rank, file };
+      }
+    }
+  }
+  return null;
+};
+
+export const getWinnerColor = (result) => {
+  if (result === '1-0') return 'w';
+  if (result === '0-1') return 'b';
+  return null; // Draw or other result
+};

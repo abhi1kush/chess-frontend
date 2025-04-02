@@ -13,6 +13,8 @@
   --text-color: #000000;  
   --global-light-square: #a3bad5;
   --global-dark-square: #4F7BB0;
+  --winner-king-background: rgb(22, 202, 76);
+  --loser-king-background: rgb(190, 55, 55);
 }
 
 html, body {

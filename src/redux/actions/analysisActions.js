@@ -11,9 +11,9 @@ export const prev = () => ({type: PREV});
 export const next = () => ({type: NEXT});
 export const finalPosition = () => ({type: FINAL_POS});
 
-export const loadPgn = ({finalPos, moves, fens, termination, result, blackPlayerName, whitePlayerName}) => ({
+export const loadPgn = ({finalPos, moves, fens, fromToSquares, termination, result, blackPlayerName, whitePlayerName}) => ({
   type: LOAD_PGN,
-  payload: {finalPos, moves, fens, termination, result, blackPlayerName, whitePlayerName},
+  payload: {finalPos, moves, fens, fromToSquares, termination, result, blackPlayerName, whitePlayerName},
 });
 
 export const jumpToMove = (index) => ({

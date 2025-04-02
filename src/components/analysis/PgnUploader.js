@@ -34,11 +34,13 @@ const PgnUploader = () => {
             const blackPlayerName = chess.header().Black || '-'; // Default value
             const whitePlayerName = chess.header().White || '-';
             const Result = chess.header().Result;
+            const fromToSquares = [];
 
             chess.reset(); 
             fens.push(chess.fen());
             moves.forEach((move) => {
-              chess.move(move);
+              const moveDetails = chess.move(move);
+              fromToSquares.push({from: moveDetails.from, to: moveDetails.to});
               fens.push(chess.fen());
             });
 
@@ -46,6 +48,7 @@ const PgnUploader = () => {
               finalPos: fens[fens.length - 1], 
               moves: moves, 
               fens: fens, 
+              fromToSquares: fromToSquares,
               termination: termination,
               result: Result,
               blackPlayerName: blackPlayerName,

@@ -8,8 +8,9 @@ import Moves from "./Moves";
 import '../../styles/global.css';
 
 const AnalysisGame = () => {
-  const { fens, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
-  const { currentMoveIndex } = useSelector((state) => state.analysis);
+  const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
+  const { currentMoveIndex} = useSelector((state) => state.analysis);
+  const { result} = useSelector((state) => state.pgn);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme } = useSelector((state) => state.settings);
 
@@ -17,7 +18,7 @@ const AnalysisGame = () => {
     if (fens && fens.length > 0) {
       setPosition(fens[currentMoveIndex]);
     }
-  }, [currentMoveIndex, fens]);
+  }, [currentMoveIndex, fens, fromToSquares]);
   return (
      <div className="main-container">
           <AnalysisTopContainer/> 
@@ -33,7 +34,10 @@ const AnalysisGame = () => {
                   className={'analysis-board'}
                   fen={position}
                   isFlipped={isFlipped}
+                  lastMove={currentMoveIndex > 0 && currentMoveIndex < fens.length - 1 ? fromToSquares[currentMoveIndex - 1]: null}
                   handleMove={() => {}}
+                  isFinalMove={currentMoveIndex === fens.length - 1}
+                  result={result}
                 />
                 <div className="player-names-wrapper">
                   <div className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}`}>{isFlipped ? blackPlayerName : whitePlayerName}</div>
