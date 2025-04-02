@@ -34,7 +34,7 @@ const AnalysisGame = () => {
                   className={'analysis-board'}
                   fen={position}
                   isFlipped={isFlipped}
-                  lastMove={currentMoveIndex > 0 && currentMoveIndex < fens.length - 1 ? fromToSquares[currentMoveIndex - 1]: null}
+                  lastMove={currentMoveIndex > 0 && currentMoveIndex < fens.length - 1  && fromToSquares ? fromToSquares[currentMoveIndex - 1]: null}
                   handleMove={() => {}}
                   isFinalMove={currentMoveIndex === fens.length - 1}
                   result={result}
