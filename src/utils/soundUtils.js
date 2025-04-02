@@ -1,6 +1,6 @@
 // utils/soundUtils.js
-import moveSound from "../assets/sounds/normal-move.mp3";
-import captureSound from "../assets/sounds/capture-move.mp3";
+import moveSound from "../assets/sounds/move.mp3";
+import captureSound from "../assets/sounds/capture.mp3";
 import boardStartSound from "../assets/sounds/board-start.mp3"
 
 export const playMoveSound = (type) => {

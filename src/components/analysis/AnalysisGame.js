@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import {useSelector} from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
-import ChessboardComponent from "../common/ChessboardComponent";
 import CONFIG from "../../config";
 import Moves from "./Moves";
 import '../../styles/global.css';
+import AnalysisBoard from "./AnalysisBoard";
 
 const AnalysisGame = () => {
   const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
@@ -30,7 +30,7 @@ const AnalysisGame = () => {
                 <div className="player-names-wrapper">
                   <div className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}`}>{isFlipped ? whitePlayerName : blackPlayerName}</div>
                 </div>
-                <ChessboardComponent
+                <AnalysisBoard
                   className={'analysis-board'}
                   fen={position}
                   isFlipped={isFlipped}

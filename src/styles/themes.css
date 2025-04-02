@@ -3,14 +3,14 @@
     --light-square: #EEEED2;
     --dark-square: #769656;
     --last-move-from: #FFFF0080; /* Yellow with transparency */
-    --last-move-to: #00FF0080;   /* Green with transparency */
+    --last-move-to: #FFFF0080;   /* Green with transparency */
 }
 
 /*Default*/ .default-theme {
     --light-square: var(--global-light-square);
     --dark-square: var(--global-dark-square);
     --last-move-from: #FFFF0080;
-    --last-move-to: #00FF0080;
+    --last-move-to: #FFFF0080;
 }
 
 /* Classic Theme */
@@ -18,7 +18,7 @@
     --light-square: #EEEED2;
     --dark-square: #769656;
     --last-move-from: #FFFF0080;
-    --last-move-to: #00FF0080;
+    --last-move-to: #FFFF0080;
 }
 
 /* Wood Theme */
@@ -26,7 +26,7 @@
     --light-square: #EED3B7;
     --dark-square: #A77B5A;
     --last-move-from: #FFD70080; /* Gold */
-    --last-move-to: #32CD3280;   /* Lime Green */
+    --last-move-to: #FFFF0080;   /* Lime Green */
 }
 
 /* Marble Theme */

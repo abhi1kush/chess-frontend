@@ -52,3 +52,13 @@ export const getWinnerColor = (result) => {
   if (result === '0-1') return 'b';
   return null; // Draw or other result
 };
+
+export const getLastMoveSquareStyles = (lastMove) => {
+  if (lastMove) {
+    return {
+      [lastMove.from]: { backgroundColor: 'var(--last-move-from)' },
+      [lastMove.to]: { backgroundColor: 'var(--last-move-to)' },
+    }
+  }
+  return null
+};
