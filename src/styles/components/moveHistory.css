@@ -52,3 +52,11 @@
 .move-history tbody tr:last-child td {
     padding-bottom: 10px;
 }
+
+.move-history table tbody tr:nth-child(even) {
+    background-color: var(--dark); 
+  }
+  
+  .move-history table tbody tr:nth-child(odd) {
+    background-color: var(--darkest); 
+  }

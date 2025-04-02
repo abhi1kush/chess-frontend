@@ -1,4 +1,3 @@
-import { Chess } from "chess.js"
 import CONFIG from "../config"
 
 export const getMoveType = (move, game) => {
@@ -37,7 +36,6 @@ export const checkGameOver = (game) => {
 
    
 export const getKingPosition = (chessBoard, color) => {
-  const kingChar = color === 'w' ? 'K' : 'k';
   for (let rank = 0; rank < 8; rank++) {
     for (let file = 0; file < 8; file++) {
       const square = chessBoard[rank][file];
