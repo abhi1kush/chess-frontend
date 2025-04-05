@@ -6,6 +6,7 @@ import CONFIG from "../../config";
 import Moves from "./Moves";
 import '../../styles/global.css';
 import AnalysisBoard from "./AnalysisBoard";
+import EvalBar from "./EvalBar";
 
 const AnalysisGame = () => {
   const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
@@ -13,11 +14,13 @@ const AnalysisGame = () => {
   const { result} = useSelector((state) => state.pgn);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme } = useSelector((state) => state.settings);
+  const [blackEvalBarHeight, setBlackEvalBarHeight] = useState(50);
 
   useEffect(() => {
     if (fens && fens.length > 0) {
       setPosition(fens[currentMoveIndex]);
     }
+    setBlackEvalBarHeight(Math. random() * (100 - 1) + 1);
   }, [currentMoveIndex, fens, fromToSquares]);
   return (
      <div className="main-container">
@@ -25,6 +28,11 @@ const AnalysisGame = () => {
           <div className="middle-container">
             <div className={`chess-container ${theme}-theme`}>
               <div className="left-panel">
+                <EvalBar
+                isFlipped={isFlipped}
+                blackHeight={blackEvalBarHeight}
+                setBlackHeight={setBlackEvalBarHeight} 
+                />
               </div>
               <div className="centre-area">
                 <div className="player-names-wrapper">
