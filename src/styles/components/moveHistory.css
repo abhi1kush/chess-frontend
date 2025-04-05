@@ -5,7 +5,7 @@
     flex-direction: column;
     overflow: hidden; /* Prevents outer scrolling */
     border-radius: 8px;
-    background-color: var(--dark);
+    background-color: var(--background-color);
     color: var(--text-color);
     font-size: 1rem;
     text-align: center;
@@ -36,7 +36,7 @@
 .move-history thead {
     position: sticky;
     top: 0;
-    background-color: var(--dark);
+    background-color: var(--text-color);
     z-index: 2;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .move-history th {
-    background-color: #eeeeee;
+    background-color: var(--background-color1);
     color: var(--text-color);
     font-weight: bold;
     padding: 10px;
@@ -63,7 +63,7 @@
     width: 33%;
     text-align: center;
     padding: 5px;
-    border-bottom: 1px solid #dddd;
+    border-bottom: 1px solid var(--background-color);
 }
 
 
@@ -73,9 +73,9 @@
 }
 
 .move-history table tbody tr:nth-child(even) {
-    background-color: var(--dark); 
+    background-color: var(--background-color1); 
   }
   
   .move-history table tbody tr:nth-child(odd) {
-    background-color: var(--darkest); 
+    background-color: var(--background-color2); 
   }

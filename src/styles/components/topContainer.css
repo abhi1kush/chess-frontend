@@ -14,15 +14,15 @@
     align-items: center;
     width: 100%;
     padding: 12px 20px;
-    border-bottom: 1px solid #E0E0E0; /* Subtle border */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05); /* Soft shadow for depth */
+    border-bottom: 1px solid var(--nav-bottum); /* Subtle border */
+    box-shadow: 0px 2px 5px var(--nav-shadow); /* Soft shadow for depth */
     margin: 0;
 }
 
 .action-button {
-    background: #ffffff;
+    background: var(--background-color);
     color: var(--text-color);
-    border: 1px solid #ccc;
+    border: 1px solid var(--text-color);
     padding: 8px 12px;
     border-radius: 5px;
     font-size: 0.85rem;
@@ -32,11 +32,26 @@
 
 /* Hover Effect */
 .action-button:hover {
-    background: #f5f5f5;
+    background: var(--button-hover-color);
 }
 
 /* Active Button Click Effect */
 .action-button:active {
-    background: #f5f5f5;
+    background: var(--button-hover-color);
     transform: scale(0.98);
 }
+
+.theme-toggle-btn {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .theme-toggle-btn:hover {
+    background-color: var(--button-hover-color);
+  }

@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { flipBoard } from '../../redux/actions/settingsActions';
 import PgnUploader from './PgnUploader'; 
 import Settings from '../common/Settings';
+import DarkThemeToggle from '../common/DarkThemeToggle';
+import "../../styles/components/topContainer.css"
 
 const AnalysisTopBar = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,7 @@ const AnalysisTopBar = () => {
       <FlipButton/>
       <PgnUploader/>
       <Settings />
+      <DarkThemeToggle/>
     </nav>
   );
 };
