@@ -3,6 +3,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { flipBoard } from '../../redux/actions/gameActions';
 import PgnUploader from './PgnUploader'; 
+import Settings from '../common/Settings';
 
 const AnalysisTopBar = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const AnalysisTopBar = () => {
     <nav className="top-bar">
       <FlipButton/>
       <PgnUploader/>
+      <Settings />
     </nav>
   );
 };

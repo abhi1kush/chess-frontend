@@ -2,43 +2,41 @@
 .top-bar {
     width: 100%; /* Ensure it spans full width */
     display: flex;
+    align-items: center;
     justify-content: center; /* Center buttons horizontally */
     gap: 10px;
-    padding: 10px;
 }
 
 /* Top Bar with White and Subtle Grey */
 .top-container {
-    background: #dddddd !important;/* White to light grey */
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    width: 100%;
     padding: 12px 20px;
     border-bottom: 1px solid #E0E0E0; /* Subtle border */
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05); /* Soft shadow for depth */
     margin: 0;
-    padding: 12px 20px;
 }
 
 .action-button {
-    background: #eeeeee;
-    color: #444; /* Dark Grey */
-    border: 0px;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-family: sans-serif;
-    font-size: 14px;
+    background: #ffffff;
+    color: var(--text-color);
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 /* Hover Effect */
 .action-button:hover {
-    background: #ffffff;
+    background: #f5f5f5;
 }
 
 /* Active Button Click Effect */
 .action-button:active {
-    background: #ffffff;
+    background: #f5f5f5;
     transform: scale(0.98);
 }

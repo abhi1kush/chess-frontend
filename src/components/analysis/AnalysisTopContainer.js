@@ -8,7 +8,6 @@ const AnalysisTopContainer = () => {
   return (
     <div className="top-container">
       <AnalysisTopBar/>
-      <Settings />
     </div>
   );
 };

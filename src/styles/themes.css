@@ -9,40 +9,30 @@
 /*Default*/ .default-theme {
     --light-square: var(--global-light-square);
     --dark-square: var(--global-dark-square);
-    --last-move-from: #FFFF0080;
-    --last-move-to: #FFFF0080;
 }
 
 /* Classic Theme */
 .classic-theme {
     --light-square: #EEEED2;
     --dark-square: #769656;
-    --last-move-from: #FFFF0080;
-    --last-move-to: #FFFF0080;
 }
 
 /* Wood Theme */
 .wood-theme {
     --light-square: #EED3B7;
     --dark-square: #A77B5A;
-    --last-move-from: #FFD70080; /* Gold */
-    --last-move-to: #FFFF0080;   /* Lime Green */
 }
 
 /* Marble Theme */
 .marble-theme {
     --light-square: #F0D9B5;
     --dark-square: #B58863;
-    --last-move-from: #FFAA0080; /* Orange */
-    --last-move-to: #00DDFF80;   /* Cyan */
 }
 
 /* Dark Theme */
 .dark-theme {
     --light-square: #B0B0B0;
     --dark-square: #444444;
-    --last-move-from: #FF450080; /* Red-Orange */
-    --last-move-to: #00FFFF80;   /* Aqua */
 }
 
 /* Ensure chessboard picks up the theme */

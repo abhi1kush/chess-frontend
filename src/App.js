@@ -10,12 +10,8 @@ const App = () => {
     <ConfigProvider>
       <Router basename="/chess-frontend">
         <nav className="routes">
-            <div>
-              <Link to="/" className='action-button'>Analysis</Link>
-            </div>
-            <div>
-              <Link to="/analysis" className='action-button'>Gameplay</Link>
-            </div>
+              <Link to="/" className='action-button no-decoration'>Analysis</Link>
+              <Link to="/analysis" className='action-button no-decoration'>Gameplay</Link>
         </nav>
         <Routes>
           <Route path="/" element={<AnalysisGame/>} />

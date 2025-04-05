@@ -65,7 +65,7 @@ const PgnUploader = () => {
     }
   };
   return (
-    <label className="action-button upload-btn">
+    <label className="action-button">
       Upload PGN
       <input type="file" accept=".pgn" onChange={handleFileUpload} hidden />
     </label>

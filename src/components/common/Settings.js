@@ -36,24 +36,24 @@ const Settings = () => {
 
   return (
     <div className="settings-container" ref={settingsRef}>
-      <button className="settings-button" onClick={toggleDropdown}>
+      <button id="settings-button" className="action-button" onClick={toggleDropdown}>
         ⚙ Settings
       </button>
 
       {isOpen && (
       <div className="settings-dropdown">
         <div className="dropdown-item">
-          <label htmlFor="themeSelect">Theme:</label>
+          <label htmlFor="themeSelect">Theme</label>
           <select id="themeSelect" value={theme} onChange={handleThemeChange}>
             <option value="default">Default</option>
-            <option value="classic">Classic</option>
+            <option value="classic">Green</option>
             <option value="marble">Marble</option>
             <option value="wood">Wood</option>
             <option value="dark">Dark</option>
           </select>
         </div>
-      <div className="dropdown-item"> 
-        <label htmlFor="soundToggle">Sound:</label>
+      <div className="checkbox-item"> 
+        <label htmlFor="soundToggle">Sound</label>
         <input
           type="checkbox"
           id="soundToggle"

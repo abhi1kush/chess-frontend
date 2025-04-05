@@ -8,7 +8,7 @@ import boardSetupSound from "../../assets/sounds/board-start.mp3"
 const Moves = () => {
   const scrollRef = useRef(null);
   const { moves, termination} = useSelector((state) => state.pgn);
-  const { currentMoveIndex } = useSelector((state) => state.analysis); 
+  const { currentMoveIndex, fenLength } = useSelector((state) => state.analysis); 
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,9 +35,9 @@ const Moves = () => {
     dispatch(jumpToMove(index));
   };
   return (
+    <div className="move-history-wrapper">
+      {currentMoveIndex == fenLength - 1 && <div className='termination-msg bold-text'>{termination}</div>}
     <div className="move-history">
-      <b>Moves</b>
-      <div className='termination-msg bold-text'>{termination}</div>
       <table>
         <thead>
           <tr>
@@ -66,6 +66,7 @@ const Moves = () => {
           )}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };
