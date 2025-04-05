@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'; 
 import '../../styles/components/moveHistory.css';
 import { jumpToMove } from '../../redux/actions/analysisActions';
-import boardSetupSound from "../../assets/sounds/board-start.mp3"
+import { playBoardSetupSound } from '../../utils/soundUtils';
 
 const Moves = () => {
   const scrollRef = useRef(null);
@@ -30,13 +30,12 @@ const Moves = () => {
   }, [currentMoveIndex]);
 
   const handleMoveClick = (index) => {
-    const sound = new Audio(boardSetupSound)
-    sound.play()
+    playBoardSetupSound();
     dispatch(jumpToMove(index));
   };
   return (
     <div className="move-history-wrapper">
-      {currentMoveIndex == fenLength - 1 && <div className='termination-msg bold-text'>{termination}</div>}
+      {currentMoveIndex == fenLength - 1 && <div className='termination-msg'>{termination}</div>}
     <div className="move-history">
       <table>
         <thead>

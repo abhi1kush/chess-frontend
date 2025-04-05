@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Chess } from "chess.js";
 import {useSelector} from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
@@ -20,8 +21,21 @@ const AnalysisGame = () => {
     if (fens && fens.length > 0) {
       setPosition(fens[currentMoveIndex]);
     }
-    setBlackEvalBarHeight(Math. random() * (100 - 1) + 1);
+    // setBlackEvalBarHeight(Math. random() * (100 - 1) + 1);
   }, [currentMoveIndex, fens, fromToSquares]);
+
+  const handleMove = useCallback(({ from, to }) => {
+    console.log("handleMove", from, to);
+    const game = new Chess(position);
+    try {
+      const move = game.move({from, to, promotion: 'q'});
+      if (!move) return;
+      setPosition(game.fen());
+    } catch (error) {
+      console.error(error);
+    }
+  }, [position]);
+
   return (
      <div className="main-container">
           <AnalysisTopContainer/> 
@@ -43,7 +57,7 @@ const AnalysisGame = () => {
                   fen={position}
                   isFlipped={isFlipped}
                   lastMove={currentMoveIndex > 0 && currentMoveIndex < fens.length - 1  && fromToSquares ? fromToSquares[currentMoveIndex - 1]: null}
-                  handleMove={() => {}}
+                  handleMove={handleMove}
                   isFinalMove={currentMoveIndex === fens.length - 1}
                   result={result}
                 />

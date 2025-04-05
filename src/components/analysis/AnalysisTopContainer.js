@@ -1,7 +1,6 @@
 // src/components/AnalysisTopContainer.js
 import React from 'react';
 import '../../styles/components/topContainer.css';
-import Settings from '../common/Settings';
 import AnalysisTopBar from './AnalysisTopBar';
 
 const AnalysisTopContainer = () => {

@@ -7,12 +7,12 @@ export const flipBoard = () => ({
   type: FLIP_BOARD,
 });
 
-export const setTheme = (theme) => ({
-  type: SET_THEME,
-  payload: theme,
-});
+export const setTheme = (theme) => ({ 
+    type: SET_THEME,
+    payload: theme,
+  });
 
 export const setSound = (sound) => ({
-  type: SET_SOUND,
-  payload: sound,
-});
+    type: SET_SOUND, 
+    payload: sound
+  });

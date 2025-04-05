@@ -2,7 +2,7 @@
 import React from 'react';
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { setTheme, setSound } from '../../redux/actions/gameActions';
+import { setTheme, setSound } from '../../redux/actions/settingsActions';
 import "../../styles/components/settings.css"
 
 const Settings = () => {

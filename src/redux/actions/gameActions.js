@@ -5,9 +5,6 @@ export const LOAD_GAME = 'LOAD_GAME';
 export const UPDATE_TIME = 'UPDATE_TIME';
 export const SET_GAME_OVER = 'SET_GAME_OVER';
 export const SET_GAME_RESULT = 'SET_GAME_RESULT';
-export const FLIP_BOARD = 'FLIP_BOARD';
-export const SET_THEME = 'SET_THEME';
-export const SET_SOUND = 'SET_SOUND';
 export const SET_TIMER_DURATION = 'SET_TIMER_DURATION';
 
 export const movePiece = (move) => ({
@@ -33,20 +30,6 @@ export const updateTime = (turn, time) => ({
 export const setGameOver = (isGameOver, gameResult) => ({
   type: SET_GAME_OVER,
   payload: {isGameOver, gameResult},
-});
-
-export const flipBoard = () => ({
-  type: FLIP_BOARD,
-});
-
-export const setTheme = (theme) => ({
-  type: SET_THEME,
-  payload: theme,
-});
-
-export const setSound = (sound) => ({
-  type: SET_SOUND,
-  payload: sound,
 });
 
 export const setTimerDuration = (duration) => ({

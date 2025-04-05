@@ -18,7 +18,7 @@ import CONFIG from '../../config';
 const ChessGame = () => {
   const dispatch = useDispatch();
   const { fen, moveHistory, lastMove, isGameOver, gameResult, timerDuration, isWhiteTurn} = useSelector((state) => state.game);
-  const { isFlipped, theme, enableSound } = useSelector((state) => state.settings);
+  const { isFlipped, theme } = useSelector((state) => state.settings);
 
   const handleMove = useCallback(({ from, to }) => {
     if (isGameOver) return;
@@ -27,13 +27,13 @@ const ChessGame = () => {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
       dispatch(movePiece({ from: from, to: to, promotionPiece: 'q'}));
-      enableSound && playMoveSound(getMoveType(move, game));
+      playMoveSound(getMoveType(move, game));
       const {isGameOver, gameResult } = checkGameOver(game);
       isGameOver && dispatch(setGameOver(isGameOver, gameResult))
     } catch (error) {
       console.error(error);
     }
-  }, [isGameOver, dispatch, fen, enableSound]);
+  }, [isGameOver, dispatch, fen]);
 
   const resetGameHandler = (duration) => {
     dispatch(resetGame(duration));

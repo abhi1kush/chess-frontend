@@ -1,7 +1,9 @@
 // src/components/TopBar.js
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { flipBoard, resetGame } from '../../redux/actions/gameActions';
+import { flipBoard } from '../../redux/actions/settingsActions';
+import {resetGame} from '../../redux/actions/gameActions';
+import '../../styles/components/topContainer.css';
 
 const GamePlayTopBar = () => {
   const dispatch = useDispatch();
