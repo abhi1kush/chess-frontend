@@ -11,7 +11,7 @@ const EvalBar = ({isFlipped, blackHeight, setBlackHeight}) => {
   }
 
   return (
-      <div className={`eval-container ${isFlipped ? 'flipped' : ''}`}>
+      <div className={`eval-bar eval-container ${isFlipped ? 'flipped' : ''}`}>
         <div
           className="black-bar"
           style={{ height: `${blackHeight}%` }}

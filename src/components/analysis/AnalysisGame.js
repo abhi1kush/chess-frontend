@@ -8,6 +8,7 @@ import Moves from "./Moves";
 import '../../styles/global.css';
 import AnalysisBoard from "./AnalysisBoard";
 import EvalBar from "./EvalBar";
+import '../../styles/components/AnalysisLayout.css';
 
 const AnalysisGame = () => {
   const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
@@ -35,25 +36,27 @@ const AnalysisGame = () => {
       console.error(error);
     }
   }, [position]);
-
   return (
-     <div className="main-container">
-          <AnalysisTopContainer/> 
-          <div className="middle-container">
-            <div className={`chess-container ${theme}-theme`}>
-              <div className="left-panel">
-                <EvalBar
+    <div>
+      <AnalysisTopContainer/>
+      <div className='middle-container'>
+        <div className='left-menu-bar'></div>
+        <div className={`analysis-container ${theme}-theme `}>
+          <div className="main-area">
+          <div className="player-name top">              
+            <div className="player-names-wrapper">
+                  <div className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}`}>{isFlipped ? whitePlayerName : blackPlayerName}</div>
+            </div>
+          </div>
+          <div className='evalbar-board-container'>
+              <EvalBar
                 isFlipped={isFlipped}
                 blackHeight={blackEvalBarHeight}
                 setBlackHeight={setBlackEvalBarHeight} 
-                />
-              </div>
-              <div className="centre-area">
-                <div className="player-names-wrapper">
-                  <div className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}`}>{isFlipped ? whitePlayerName : blackPlayerName}</div>
-                </div>
-                <AnalysisBoard
-                  className={'analysis-board'}
+              />
+            <div className="board-wrapper">
+                  <AnalysisBoard
+                  className={'board'}
                   fen={position}
                   isFlipped={isFlipped}
                   lastMove={currentMoveIndex > 0 && currentMoveIndex < fens.length - 1  && fromToSquares ? fromToSquares[currentMoveIndex - 1]: null}
@@ -61,17 +64,21 @@ const AnalysisGame = () => {
                   isFinalMove={currentMoveIndex === fens.length - 1}
                   result={result}
                 />
-                <div className="player-names-wrapper">
-                  <div className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}`}>{isFlipped ? blackPlayerName : whitePlayerName}</div>
-                </div>
-              </div>
-              <div className="right-panel">
-                <Moves moves={moves} />
-                <MoveNavigation setPosition={setPosition}/>
-              </div>
             </div>
           </div>
+          <div className="player-name bottum">
+            <div className="player-names-wrapper">
+                  <div className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}`}>{isFlipped ? blackPlayerName : whitePlayerName}</div>
+            </div>
+          </div>
+          </div>
+         <div className="sidebar right-panel">
+          <Moves moves={moves} />
+          <MoveNavigation setPosition={setPosition}/>
+         </div>
         </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,0 +1,95 @@
+.analysis-container {
+    display: grid;
+    grid-template-columns: auto var(--sidebar-width);
+    column-gap: 10px;
+    height: calc(100vh - var(--top-container-height));
+    box-sizing: border-box;
+    align-items: start; /* Align children to the top instead of center */
+  }
+  
+  .main-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--players-height) 1fr var(--players-height);
+    /* justify-items: left; */
+    height: calc(100vh - var(--top-container-height));
+    width: calc(var(--evalbar-width) + var(--max-board-size));
+    box-sizing: border-box;
+  }
+
+  .evalbar-board-container{
+    grid-column: var(--chess-board-start-col) / var(--chess-board-end-col);
+    grid-row: 2/-2;
+    display:flex;
+  }
+
+  .evalbar {
+    grid-column: var(--chess-board-start-col) / var(--chess-board-end-col);
+    grid-row: 2 / -2;
+    height: var(--max-board-size);
+    width: var(--evalbar-width);
+  }
+  
+  .player-name.top, .player-name.bottum {
+    grid-column: var(--chess-board-start-col) / var(--chess-board-end-col);
+    margin-left: var(--evalbar-width); 
+    height: var(--players-height);
+    width: var(--max-board-size);
+    text-align: right;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+    .player-name.top {
+        grid-row: 1 / 2;
+    }
+
+    .player-name.bottum{
+        grid-row: -2 / -1;
+    }
+
+  .board-wrapper {
+    width: 100%;
+    height: var(--max-board-size);
+    width: var(--max-board-size);
+    aspect-ratio: 1 / 1;
+  }
+  
+  .board {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .sidebar {
+    /* background-color: #a0c4ff; */
+    overflow: auto;
+    height: var(--board-container-height);
+    width: 300px;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  
+    .analysis-container {
+      grid-template-columns: 1fr; /* only main content */
+    }
+  }
+
+  @media (max-height: 400px) {
+    .sidebar {
+      display: none;
+    }
+  
+    .analysis-container {
+      grid-template-columns: 1fr; /* only main content */
+    }
+  }
+
+  .evalbar-board-container, .board-wrapper, .board {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }

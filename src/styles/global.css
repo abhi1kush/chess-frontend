@@ -21,6 +21,16 @@
   --nav-shadow: rgba(0, 0, 0, 0.05);  
   --settings-color: #c3d8f1;
   --settings-hover: #a3c7f3;
+
+  --dvh: 1vh;
+  --evalbar-width: 30px;
+  --sidebar-width: 250px;
+  --players-height: 40px;
+  --top-container-height: 8vh;
+  --max-board-size: calc(100vh - var(--top-container-height)  - var(--players-height) * 2);
+  --board-container-height: calc(var(--max-board-size) + 2 * var(--players-height));
+  --chess-board-start-col: 1;
+  --chess-board-end-col: -1;
 }
 
 .dark-theme {
@@ -44,8 +54,10 @@
 html, body {
   color: var(--text-color);
   background-color: var(--background-color);
-  height: 100%;
-  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
   font-family: "Inter", sans-serif;
   font-size: 1rem;
     /* overflow: hidden; Prevents unwanted global scrolling */
@@ -141,7 +153,8 @@ html, body {
     justify-content: right; /* Push names to opposite ends */
     align-items: right;
     position: relative;
-    width: 80%;
+    height: var(--players-height);
+    width: 100%;
   }
 
   .termination-msg {
