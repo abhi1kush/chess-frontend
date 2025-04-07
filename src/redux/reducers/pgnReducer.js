@@ -36,7 +36,7 @@ const initialState = {
 const pgnReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_PGN:
-        const newState ={
+        return {
             ...state,
             finalFen: action.payload.finalPos,
             moves: action.payload.moves,
@@ -47,8 +47,6 @@ const pgnReducer = (state = initialState, action) => {
             blackPlayerName: action.payload.blackPlayerName,
             whitePlayerName: action.payload.whitePlayerName, 
         };
-        console.log("New PGN State:", newState);
-        return newState;
     default:
       return state;
   }

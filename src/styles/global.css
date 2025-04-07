@@ -13,8 +13,8 @@
   --button-hover-color: #dddddd;
   --text-color: #000000;  
   --font-size: 1rem;
-  --global-light-square: #a3bad5;
-  --global-dark-square: #4F7BB0;
+  --global-light-square: #FFF8EA;
+  --global-dark-square: #9E7676;
   --winner-king-background: rgb(22, 202, 76);
   --loser-king-background: rgb(190, 55, 55);
   --nav-bottum: #E0E0E0; 
@@ -42,8 +42,8 @@
   --button-hover-color: #060606;
   --text-color: #ffffff;  
   --font-size: 1rem;
-  --global-light-square: #93e4ed;
-  --global-dark-square: #4c688a;
+  --global-light-square: #DCD7C9;
+  --global-dark-square: #A27B5C;
   --winner-king-background: rgb(22, 202, 76);
   --loser-king-background: rgb(190, 55, 55);
   --nav-bottum: #4f4f4f; 

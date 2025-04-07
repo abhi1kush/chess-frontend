@@ -2,8 +2,8 @@
 import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN, JUMP_TO_MOVE} from '../actions/analysisActions';
 
 const initialState = {
-  finalFen: "",
-  fenLength: 0, 
+  finalFen: "5rk1/1P3Bp1/R6p/8/6P1/2B1rQ2/2K3P1/6q1 b - - 0 36",
+  fenLength: 72, 
   currentMoveIndex: 0,
 };
 
