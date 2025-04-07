@@ -21,6 +21,7 @@
     grid-column: var(--chess-board-start-col) / var(--chess-board-end-col);
     grid-row: 2/-2;
     display:flex;
+    gap: var(--board-gap);
   }
 
   .evalbar {
@@ -32,7 +33,7 @@
   
   .player-name.top, .player-name.bottum {
     grid-column: var(--chess-board-start-col) / var(--chess-board-end-col);
-    margin-left: var(--evalbar-width); 
+    margin-left: calc(var(--evalbar-width) + var(--board-gap)); 
     height: var(--players-height);
     width: var(--max-board-size);
     text-align: right;

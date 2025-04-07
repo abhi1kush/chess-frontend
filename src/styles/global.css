@@ -26,11 +26,12 @@
   --evalbar-width: 30px;
   --sidebar-width: 250px;
   --players-height: 40px;
-  --top-container-height: 8vh;
+  --top-container-height: 6vh;
   --max-board-size: calc(100vh - var(--top-container-height)  - var(--players-height) * 2);
   --board-container-height: calc(var(--max-board-size) + 2 * var(--players-height));
   --chess-board-start-col: 1;
   --chess-board-end-col: -1;
+  --board-gap: 5px;
 }
 
 .dark-theme {
