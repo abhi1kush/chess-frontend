@@ -43,7 +43,7 @@ const AnalysisGame = () => {
         <div className='left-menu-bar'></div>
         <div className={`analysis-container ${theme}-theme `}>
           <div className="main-area">
-          <div className="player-name top">              
+          <div className="top-name">              
             <div className="player-names-wrapper">
                   <div className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}`}>{isFlipped ? whitePlayerName : blackPlayerName}</div>
             </div>
@@ -66,7 +66,7 @@ const AnalysisGame = () => {
                 />
             </div>
           </div>
-          <div className="player-name bottum">
+          <div className="bottom-name">
             <div className="player-names-wrapper">
                   <div className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}`}>{isFlipped ? blackPlayerName : whitePlayerName}</div>
             </div>

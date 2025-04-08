@@ -31,7 +31,7 @@
     width: var(--evalbar-width);
   }
   
-  .player-name.top, .player-name.bottum {
+  .top-name, .bottom-name {
     grid-column: var(--chess-board-start-col) / var(--chess-board-end-col);
     margin-left: calc(var(--evalbar-width) + var(--board-gap)); 
     height: var(--players-height);
@@ -41,11 +41,11 @@
     padding: 0;
   }
 
-    .player-name.top {
+    .top-name {
         grid-row: 1 / 2;
     }
 
-    .player-name.bottum{
+    .bottom-name {
         grid-row: -2 / -1;
     }
 
@@ -70,10 +70,15 @@
   }
 
   @media (max-width: 768px) {
-    .sidebar {
+    .routes {
       display: none;
     }
-  
+
+    .sidebar {
+      width: 100vw;
+      height: 50vh;
+    }
+
     .analysis-container {
       grid-template-columns: 1fr; /* only main content */
     }
@@ -93,4 +98,75 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+  }
+
+  @media (max-width: 450px) {
+
+    .body, .html{
+      margin: 0;
+      padding: 0;
+    }
+
+
+    .top-container {
+      width: 100vw;
+    }
+
+    .analysis-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: right;
+    }
+    
+    .main-area {
+      width: 100vw;
+      height: calc(95vw - var(--evalbar-width) - var(--board-gap) + var(--players-height) * 2);
+    }
+
+    .evalbar-board-container {
+      width: 100vw;
+      padding: 0;
+      margin: 0;
+      height: calc(95vw - var(--evalbar-width) - var(--board-gap));
+      justify-content: center;
+      align-items: center;
+    } 
+
+    .board-wrapper, .board {
+      width: calc(95vw - var(--evalbar-width) - var(--board-gap));
+      height: calc(95vw - var(--evalbar-width) - var(--board-gap));
+    }
+
+    .top-name, .bottom-name  {
+      margin: 0;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+    }
+
+    .player-names-wrapper {
+      width: 95vw;
+    }
+
+    .eval-bar {
+      height: calc(95vw - var(--evalbar-width) - var(--board-gap));
+    }
+
+    .left-menu-bar, .routes {
+      display: none;
+    }
+
+
+    .move-history {
+      height:95%;
+    }
+
+    .move-navigation {
+      z-index: 100;
+      margin-top: 30vh;
+      margin-bottom: 0;
+      position: fixed;
+    }
   }

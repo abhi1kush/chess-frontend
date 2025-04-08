@@ -37,7 +37,7 @@ const Settings = () => {
   return (
     <div className="settings-container" ref={settingsRef}>
       <button id="settings-button" className="action-button" onClick={toggleDropdown}>
-        ⚙ Settings
+        ⚙️ Settings
       </button>
 
       {isOpen && (

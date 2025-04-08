@@ -25,7 +25,7 @@
 /* Middle Section */
 .middle-container {
     height: 89%;
-    width: 100%;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
