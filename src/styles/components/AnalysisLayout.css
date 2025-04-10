@@ -107,65 +107,73 @@
       padding: 0;
     }
 
+    .sidebar::-webkit-scrollbar {
+      display: none;
+    }
 
     .top-container {
-      width: 100vw;
+      justify-content: left;
+      width: 100dvw;
+    }
+
+    .top-bar {
+      margin-left: 10px;
+      justify-content: left;
     }
 
     .analysis-container {
-      width: 100vw;
-      height: 100vh;
+      width: 100dvw;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       justify-content: right;
     }
     
     .main-area {
-      width: 100vw;
-      height: calc(95vw - var(--evalbar-width) - var(--board-gap) + var(--players-height) * 2);
+      width: 100dvw;
+      height: calc(95dvw - var(--evalbar-width) - var(--board-gap) + var(--players-height) * 2);
     }
 
     .evalbar-board-container {
-      width: 100vw;
+      width: 100dvw;
       padding: 0;
       margin: 0;
-      height: calc(95vw - var(--evalbar-width) - var(--board-gap));
+      height: calc(95dvw - var(--evalbar-width) - var(--board-gap));
       justify-content: center;
       align-items: center;
     } 
 
     .board-wrapper, .board {
-      width: calc(95vw - var(--evalbar-width) - var(--board-gap));
-      height: calc(95vw - var(--evalbar-width) - var(--board-gap));
+      width: calc(95dvw - var(--evalbar-width) - var(--board-gap));
+      height: calc(95dvw - var(--evalbar-width) - var(--board-gap));
     }
 
     .top-name, .bottom-name  {
       margin: 0;
-      width: 100vw;
+      width: 100dvw;
       display: flex;
       justify-content: center;
     }
 
     .player-names-wrapper {
-      width: 95vw;
+      width: 95dvw;
     }
 
     .eval-bar {
-      height: calc(95vw - var(--evalbar-width) - var(--board-gap));
+      height: calc(95dvw - var(--evalbar-width) - var(--board-gap));
     }
 
     .left-menu-bar, .routes {
       display: none;
     }
 
-
     .move-history {
-      height:95%;
+      height: calc(100dvh - var(--top-container-height) - 95dvw - var(--evalbar-width) - var(--board-gap));
     }
 
     .move-navigation {
       z-index: 100;
-      margin-top: 30vh;
+      margin-top: 30dvh;
       margin-bottom: 0;
       position: fixed;
     }
