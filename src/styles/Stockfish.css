@@ -1,0 +1,46 @@
+.stockfish-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #222;
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #000;
+    text-align: center;
+  }
+  
+  .stockfish-title {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+  }
+  
+  .stockfish-input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .stockfish-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .stockfish-button:hover {
+    background-color: #1558c0;
+  }
+  
+  .stockfish-output {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+  

@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import '../../styles/components/EvalBar.css'; // Import the CSS file
 
-const EvalBar = ({isFlipped, blackHeight, setBlackHeight}) => {
-  const updateWhiteEval = (whitePercent) => {
-    updateBlackEval(100 - whitePercent);
-  };
-
-  const updateBlackEval = (blackPercent) => {
-    setBlackHeight(blackPercent);
+const EvalBar = ({isFlipped, evalScore}) => {
+  const evalScoreToWhiteHeight = (evalScore) => {
+    const maxEval = 10; // 10 pawns = full bar
+    const clampedScore = Math.max(-maxEval, Math.min(evalScore, maxEval));
+  
+    // Normalize from -10 to +10 → 0 to 100%
+    const normalized = (clampedScore + maxEval) / (2 * maxEval);
+  
+    // Convert to percentage (white is on top)
+    return normalized * 100;
   }
-
+  console.log("EVAL-BAR", evalScore);
   return (
       <div className={`eval-bar eval-container ${isFlipped ? 'flipped' : ''}`}>
         <div
-          className="black-bar"
-          style={{ height: `${blackHeight}%` }}
+          className="white-bar"
+          style={{ height: `${evalScoreToWhiteHeight(evalScore)}%` }}
         />
       </div>
   );

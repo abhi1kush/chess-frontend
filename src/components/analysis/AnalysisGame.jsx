@@ -52,8 +52,7 @@ const AnalysisGame = () => {
           <div className='evalbar-board-container'>
               <EvalBar
                 isFlipped={isFlipped}
-                blackHeight={blackEvalBarHeight}
-                setBlackHeight={setBlackEvalBarHeight} 
+                evalScore={0}
               />
             <div className="board-wrapper">
                   <AnalysisBoard
