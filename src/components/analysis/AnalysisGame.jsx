@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import useStockfish from "../../hooks/useStockfish";
 import { Chess } from "chess.js";
 import {useSelector} from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
@@ -16,7 +17,8 @@ const AnalysisGame = () => {
   const { result} = useSelector((state) => state.pgn);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme } = useSelector((state) => state.settings);
-  const [blackEvalBarHeight, setBlackEvalBarHeight] = useState(50);
+  const [evalScore, setEvalScore] = useState(0);
+  const latestScoreRef = useRef(null);
 
   useEffect(() => {
     if (fens && fens.length > 0) {
@@ -37,11 +39,37 @@ const AnalysisGame = () => {
     }
   }, [position]);
 
+  const { sendCommand } = useStockfish((data) => {
+    if (typeof data === "string") {
+      if (data.startsWith("info") && data.includes("score")) {
+        const match = data.match(/score (cp|mate) (-?\d+)/);
+        if (match) {
+          const type = match[1];
+          const value = parseInt(match[2], 10);
+          const displayValue = type === "cp" ? value / 100 : (value > 0 ? 10 : -10); // limit mate scores
+          latestScoreRef.current = displayValue;
+        }
+      }
+      if (data.startsWith("bestmove")) {
+        setEvalScore(latestScoreRef.current ?? 0);
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (position) {
+      latestScoreRef.current = 0;
+      sendCommand("uci");
+      sendCommand(`position fen ${position}`);
+      sendCommand("go depth 12");
+    }
+  }, [position, sendCommand]);
+
   return (
     <div>
       <AnalysisTopContainer/>
       <div className='middle-container'>
-        <div className='left-menu-bar'></div>
+        <div className='left-menu-bar'>          <p style={{ color: "black", marginTop: "0.5rem" }}>Eval: {evalScore}</p></div>
         <div className={`analysis-container ${theme}-theme `}>
           <div className="main-area">
           <div className="top-name">              
@@ -52,7 +80,7 @@ const AnalysisGame = () => {
           <div className='evalbar-board-container'>
               <EvalBar
                 isFlipped={isFlipped}
-                evalScore={0}
+                evalScore={evalScore}
               />
             <div className="board-wrapper">
                   <AnalysisBoard
