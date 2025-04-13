@@ -12,7 +12,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     if (workerRef.current) workerRef.current.terminate();
 
     if (version === 'lite') {
-      workerRef.current = new Worker('/stockfish/stockfish-17-lite-single.js');
+      workerRef.current = new Worker('/chess-frontend/stockfish/stockfish-17-lite-single.js');
     } else {
       workerRef.current = new Worker(new URL('../workers/stockfishWorker.js', import.meta.url), {
         type: 'classic',
@@ -46,7 +46,14 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
         console.log("onMsg :", data);
       }
     };
+
+    workerRef.current.onerror = (error) => {
+      console.error('Error with Stockfish worker:', error);
+    };
   }, [onMessage, version]);
+
+
+
 
   // Send command to Stockfish
   const sendCommand = useCallback((cmd) => {
@@ -76,7 +83,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     if (!workerRef.current) return;
 
     clearTimeout(stopTimeoutRef.current); // clear any existing timeout
-    
+
     stopSearch();                         // Always stop the previous search
     startTime = Date.now();
     sendCommand(`position fen ${fen}`);

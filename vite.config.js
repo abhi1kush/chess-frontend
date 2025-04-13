@@ -10,5 +10,6 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-  assetsInclude: ['**/*.wasm']
+  assetsInclude: ['**/*.wasm'],
+  base: '/chess-frontend/'
 });
