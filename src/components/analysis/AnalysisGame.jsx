@@ -10,6 +10,7 @@ import '../../styles/global.css';
 import AnalysisBoard from "./AnalysisBoard";
 import EvalBar from "./EvalBar";
 import '../../styles/components/AnalysisLayout.css';
+import {onMessage} from "../../utils/onMessage"
 
 const AnalysisGame = () => {
   const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
@@ -18,7 +19,33 @@ const AnalysisGame = () => {
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const { isFlipped, theme } = useSelector((state) => state.settings);
   const [evalScore, setEvalScore] = useState(0);
-  const latestScoreRef = useRef(null);
+  const [bestLine, setBestLine] = useState("");
+  const stockfishOptions = [
+    { name: 'Threads', value: 1 },
+    { name: 'Hash', value: 16 },
+    { name: 'MultiPV', value: 1 },
+  ];
+
+  const handleEngineMessage = useCallback((data) => {
+    onMessage(data, setEvalScore, setBestLine, position);
+  }, [position]);
+
+  const { initEngine, setOptions, startSearch, stopSearch } = useStockfish(handleEngineMessage);
+
+  useEffect(() => {
+    initEngine();
+    setOptions(stockfishOptions);
+  }, [initEngine, setOptions]);
+
+  useEffect(() => {
+    if (!position) return;
+  
+    stopSearch();
+    startSearch(position);
+    return () => {
+      stopSearch();
+    };
+  }, [position, startSearch, stopSearch]);
 
   useEffect(() => {
     if (fens && fens.length > 0) {
@@ -39,37 +66,14 @@ const AnalysisGame = () => {
     }
   }, [position]);
 
-  const { sendCommand } = useStockfish((data) => {
-    if (typeof data === "string") {
-      if (data.startsWith("info") && data.includes("score")) {
-        const match = data.match(/score (cp|mate) (-?\d+)/);
-        if (match) {
-          const type = match[1];
-          const value = parseInt(match[2], 10);
-          const displayValue = type === "cp" ? value / 100 : (value > 0 ? 10 : -10); // limit mate scores
-          latestScoreRef.current = displayValue;
-        }
-      }
-      if (data.startsWith("bestmove")) {
-        setEvalScore(latestScoreRef.current ?? 0);
-      }
-    }
-  });
-
-  useEffect(() => {
-    if (position) {
-      latestScoreRef.current = 0;
-      sendCommand("uci");
-      sendCommand(`position fen ${position}`);
-      sendCommand("go depth 12");
-    }
-  }, [position, sendCommand]);
-
   return (
     <div>
       <AnalysisTopContainer/>
       <div className='middle-container'>
-        <div className='left-menu-bar'>          <p style={{ color: "black", marginTop: "0.5rem" }}>Eval: {evalScore}</p></div>
+        <div className='left-menu-bar'>          
+          <p style={{ color: "black", marginTop: "0.5rem" }}>Eval: {evalScore}</p>
+          <p style={{ color: "black", marginTop: "0.5rem" }}>Best Line: {bestLine}</p>
+        </div>
         <div className={`analysis-container ${theme}-theme `}>
           <div className="main-area">
           <div className="top-name">              

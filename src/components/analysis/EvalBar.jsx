@@ -12,7 +12,6 @@ const EvalBar = ({isFlipped, evalScore}) => {
     // Convert to percentage (white is on top)
     return normalized * 100;
   }
-  console.log("EVAL-BAR", evalScore);
   return (
       <div className={`eval-bar eval-container ${isFlipped ? 'flipped' : ''}`}>
         <div

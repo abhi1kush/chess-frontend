@@ -62,3 +62,9 @@ export const getLastMoveSquareStyles = (lastMove) => {
   }
   return null
 };
+
+
+export const normalizeEval = (evalScore, fen) => {
+  const sideToMove = fen.split(" ")[1];
+  return sideToMove === "w" ? evalScore : -evalScore;
+}

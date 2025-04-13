@@ -13,38 +13,20 @@
     width: 30px;
     border: 2px solid black;
     border-radius: 3px;
-<<<<<<< Updated upstream
-    background-color: white;
-=======
     background-color: black;
->>>>>>> Stashed changes
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     overflow: hidden;
     transition: all 0.5s ease-in-out;
   }
-<<<<<<< Updated upstream
-  
-  .black-bar {
-    background-color: black;
-=======
 
   .white-bar {
     background-color: white;
->>>>>>> Stashed changes
     width: 100%;
     transition: height 0.5s ease-in-out;
   }
   
   .eval-container.flipped {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
   
-<<<<<<< Updated upstream
-  .black-bar {
-    background-color: black;
-    width: 100%;
-    transition: height 0.5s ease-in-out;
-  }
-=======
->>>>>>> Stashed changes
