@@ -13241,7 +13241,7 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
                 })
             ]
         });
-    }, B2 = "data:audio/mpeg;base64,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", z2 = "/assets/capture-ZghC9U6S.mp3", U2 = "/assets/board-start-D1dzlFLG.mp3", R0 = ()=>{
+    }, B2 = "data:audio/mpeg;base64,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", z2 = "/chess-frontend/assets/capture-ZghC9U6S.mp3", U2 = "/chess-frontend/assets/board-start-D1dzlFLG.mp3", R0 = ()=>{
         const { enableSound: l } = kc.getState().settings;
         return l;
     }, Oc = (l)=>{
@@ -17746,7 +17746,7 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
         const u = O.useRef(null), o = O.useRef(null), f = O.useRef(null);
         let d = Date.now();
         const h = O.useCallback(()=>{
-            u.current && u.current.terminate(), r === "lite" ? u.current = new Worker("/stockfish/stockfish-17-lite-single.js") : u.current = new Worker(new URL("/assets/stockfishWorker-DpVJx5wv.js", import.meta.url), {
+            u.current && u.current.terminate(), r === "lite" ? u.current = new Worker("/chess-frontend/stockfish/stockfish-17-lite-single.js") : u.current = new Worker(new URL("/chess-frontend/assets/stockfishWorker-DpVJx5wv.js", import.meta.url), {
                 type: "classic"
             }), u.current.postMessage("uci"), console.log("Intialising worker ..."), u.current.onmessage = (T)=>{
                 const R = T.data;
@@ -17761,6 +17761,8 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
                     const M = Date.now();
                     console.log(`Elapsed: ${M - d} ms`), console.log("onMsg :", R);
                 }
+            }, u.current.onerror = (T)=>{
+                console.error("Error with Stockfish worker:", T);
             };
         }, [
             l,
@@ -18259,7 +18261,33 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
                 })
             ]
         });
-    }, ZE = ()=>{
+    }, ZE = O.createContext(), JE = ({ children: l })=>{
+        const r = (b, E)=>{
+            const S = localStorage.getItem(b);
+            return S !== null ? JSON.parse(S) : E;
+        }, [i, u] = O.useState(()=>r(ot.THEME_KEY, ot.THEME)), [o, f] = O.useState(()=>r(ot.ENABLE_SOUND_KEY, ot.ENABLE_SOUND)), [d, h] = O.useState(()=>r(ot.TIMER_DURATION_KEY, ot.TIMER_DURATION)), [p, m] = O.useState(()=>r(ot.IS_FLIPPED_KEY, ot.IS_FLIPPED));
+        return O.useEffect(()=>localStorage.setItem(ot.THEME_KEY, JSON.stringify(i)), [
+            i
+        ]), O.useEffect(()=>localStorage.setItem(ot.ENABLE_SOUND_KEY, JSON.stringify(o)), [
+            o
+        ]), O.useEffect(()=>localStorage.setItem(ot.TIMER_DURATION_KEY, JSON.stringify(d)), [
+            d
+        ]), O.useEffect(()=>localStorage.setItem(ot.IS_FLIPPED_KEY, JSON.stringify(p)), [
+            p
+        ]), y.jsx(ZE.Provider, {
+            value: {
+                theme: i,
+                setTheme: u,
+                enableSound: o,
+                setEnableSound: f,
+                timerDuration: d,
+                setTimerDuration: h,
+                isFlipped: p,
+                setIsFlipped: m
+            },
+            children: l
+        });
+    }, FE = ()=>{
         const [l, r] = O.useState("rn1qkbnr/pp3ppp/2p1p3/3p4/3P4/2N1PN2/PPP2PPP/R1BQKB1R w KQkq - 0 1"), [i, u] = O.useState(null), [o, f] = O.useState(null), [d, h] = O.useState(!1), p = O.useRef(null), { sendCommand: m } = $0((E)=>{
             if (console.log("💬 Stockfish says:", E), typeof E == "string") {
                 if (E.startsWith("info") && E.includes("score")) {
@@ -18354,34 +18382,9 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
                 })
             ]
         });
-    }, JE = O.createContext(), FE = ({ children: l })=>{
-        const r = (b, E)=>{
-            const S = localStorage.getItem(b);
-            return S !== null ? JSON.parse(S) : E;
-        }, [i, u] = O.useState(()=>r(ot.THEME_KEY, ot.THEME)), [o, f] = O.useState(()=>r(ot.ENABLE_SOUND_KEY, ot.ENABLE_SOUND)), [d, h] = O.useState(()=>r(ot.TIMER_DURATION_KEY, ot.TIMER_DURATION)), [p, m] = O.useState(()=>r(ot.IS_FLIPPED_KEY, ot.IS_FLIPPED));
-        return O.useEffect(()=>localStorage.setItem(ot.THEME_KEY, JSON.stringify(i)), [
-            i
-        ]), O.useEffect(()=>localStorage.setItem(ot.ENABLE_SOUND_KEY, JSON.stringify(o)), [
-            o
-        ]), O.useEffect(()=>localStorage.setItem(ot.TIMER_DURATION_KEY, JSON.stringify(d)), [
-            d
-        ]), O.useEffect(()=>localStorage.setItem(ot.IS_FLIPPED_KEY, JSON.stringify(p)), [
-            p
-        ]), y.jsx(JE.Provider, {
-            value: {
-                theme: i,
-                setTheme: u,
-                enableSound: o,
-                setEnableSound: f,
-                timerDuration: d,
-                setTimerDuration: h,
-                isFlipped: p,
-                setIsFlipped: m
-            },
-            children: l
-        });
-    }, WE = ()=>y.jsx(FE, {
+    }, WE = ()=>y.jsx(JE, {
             children: y.jsxs(T2, {
+                basename: "/chess-frontend",
                 children: [
                     y.jsxs("nav", {
                         className: "routes",
@@ -18399,7 +18402,7 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
                             y.jsx(zl, {
                                 to: "/engine",
                                 className: "action-button no-decoration",
-                                children: "StockfishHello"
+                                children: "StockfishTest"
                             })
                         ]
                     }),
@@ -18415,7 +18418,7 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
                             }),
                             y.jsx(yu, {
                                 path: "/engine",
-                                element: y.jsx(ZE, {})
+                                element: y.jsx(FE, {})
                             })
                         ]
                     })
