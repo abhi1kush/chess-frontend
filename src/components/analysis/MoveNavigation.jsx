@@ -4,7 +4,7 @@ import PropTypes from "prop-types";import { useDispatch, useSelector } from "rea
 import { startPos, prev, next, finalPosition } from "../../redux/actions/analysisActions";
 import { playMoveSound, playBoardSetupSound} from "../../utils/soundUtils"
 
-const MoveNavigation = ({setPosition}) => {
+const MoveNavigation = ({setPosition, handleMove}) => {
   const {fens} = useSelector((state) => state.pgn);
   const {currentMoveIndex} = useSelector((state) => state.analysis);
   const dispatch = useDispatch();
@@ -13,6 +13,7 @@ const MoveNavigation = ({setPosition}) => {
     playBoardSetupSound();
     dispatch(startPos());
     setPosition(fens[0]);
+    handleMove();
   };
 
   const prevMove = () => {
@@ -20,6 +21,7 @@ const MoveNavigation = ({setPosition}) => {
       playMoveSound("move");
         dispatch(prev());
         setPosition(fens[currentMoveIndex - 1]);
+        handleMove();
       };
   }
 
@@ -28,6 +30,7 @@ const MoveNavigation = ({setPosition}) => {
       playMoveSound("move");
       dispatch(next());
       setPosition(fens[currentMoveIndex + 1]);
+      handleMove();
     }
   };
 
@@ -35,6 +38,7 @@ const MoveNavigation = ({setPosition}) => {
     playBoardSetupSound();
     dispatch(finalPosition());
     setPosition(fens[fens.length - 1]);
+    handleMove();
   };
 
   return (

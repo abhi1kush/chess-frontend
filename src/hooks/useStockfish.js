@@ -4,6 +4,8 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
   const workerRef = useRef(null);
   const resolveRef = useRef(null);
   const stopTimeoutRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
+  const isSearchingRef = useRef(false);
   let startTime = Date.now();
 
 
@@ -42,8 +44,8 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
           }
         }
         const endTime = Date.now();
-        console.log(`Elapsed: ${endTime - startTime} ms`);
-        console.log("onMsg :", data);
+        // console.log(`Elapsed: ${endTime - startTime} ms`);
+        // console.log("onMsg :", data);
       }
     };
 
@@ -51,9 +53,6 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
       console.error('Error with Stockfish worker:', error);
     };
   }, [onMessage, version]);
-
-
-
 
   // Send command to Stockfish
   const sendCommand = useCallback((cmd) => {
@@ -79,35 +78,55 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     sendCommand(command);
   }, [sendCommand]);
 
+    // Stop search
+  const stopSearch = useCallback((id) => {
+    console.log("1. try stopSearch ...", id);
+    if (!workerRef.current) return;
+    console.log("2. try stopSearch ...", id);
+    if (!isSearchingRef.current) return;
+    console.log("Interrupting current search...", id);
+    sendCommand('stop');
+    isSearchingRef.current = false;
+    if (stopTimeoutRef.current) {
+      clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = null;
+    }
+  }, [sendCommand]);
+
   const startSearch = useCallback((fen) => {
     if (!workerRef.current) return;
 
     clearTimeout(stopTimeoutRef.current); // clear any existing timeout
 
-    stopSearch();                         // Always stop the previous search
-    startTime = Date.now();
-    sendCommand(`position fen ${fen}`);
-    sendCommand("go infinite");
+    stopSearch("pre startSearch"); 
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    } 
+    searchTimeoutRef.current = setTimeout(() => {  
+      isSearchingRef.current = true;                     // Always stop the previous search
+      startTime = Date.now();
+      sendCommand(`position fen ${fen}`);
+      sendCommand("go infinite");
 
-    // Auto-stop after X milliseconds
-    stopTimeoutRef.current = setTimeout(() => {
-      stopSearch();
-    }, autoStopTime);
-  }, [sendCommand, autoStopTime]);
+      // Auto-stop after X milliseconds
+      stopTimeoutRef.current = setTimeout(() => {
+        stopSearch("startSearch timer expire");
+      }, autoStopTime);}, 50);
+  }, [sendCommand, autoStopTime, stopSearch]);
 
-  // Stop search
-  const stopSearch = useCallback(() => {
-    sendCommand('stop');
-    clearTimeout(stopTimeoutRef.current);
-  }, [sendCommand]);
+
 
   const terminateEngine = useCallback(() => {
     if (workerRef.current) {
-      console.log("Terminating worker...");
+      // console.log("Terminating worker...");
       workerRef.current.terminate();
       workerRef.current = null;
     }
-    clearTimeout(stopTimeoutRef.current);
+    isSearchingRef.current = false;
+    if (stopTimeoutRef.current) {
+      clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = null;
+    }
   }, []);
 
   useEffect(() => {
@@ -122,7 +141,6 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     setFen,
     startSearch,
     stopSearch,
-    startSearch,
     terminateEngine,
   };
 }

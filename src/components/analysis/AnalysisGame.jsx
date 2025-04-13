@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import useStockfish from "../../hooks/useStockfish";
 import { Chess } from "chess.js";
 import {useSelector} from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
@@ -10,42 +9,39 @@ import '../../styles/global.css';
 import AnalysisBoard from "./AnalysisBoard";
 import EvalBar from "./EvalBar";
 import '../../styles/components/AnalysisLayout.css';
-import {onMessage} from "../../utils/onMessage"
+import {onMessage} from "../../utils/onMessage";
+import { useStockfishContext } from "../../context/StockfishContext";
 
 const AnalysisGame = () => {
   const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
   const { currentMoveIndex} = useSelector((state) => state.analysis);
   const { result} = useSelector((state) => state.pgn);
   const [position, setPosition] = useState(CONFIG.START_FEN);
+  const positionRef = useRef(position); 
   const { isFlipped, theme } = useSelector((state) => state.settings);
   const [evalScore, setEvalScore] = useState(0);
   const [bestLine, setBestLine] = useState("");
+  const count = useRef(1);
   const stockfishOptions = [
     { name: 'Threads', value: 1 },
     { name: 'Hash', value: 16 },
     { name: 'MultiPV', value: 1 },
   ];
-
+  const { initEngine, setOptions, startSearch, stopSearch, setOnMessage } = useStockfishContext();
   const handleEngineMessage = useCallback((data) => {
-    onMessage(data, setEvalScore, setBestLine, position);
-  }, [position]);
+    onMessage(data, setEvalScore, setBestLine, positionRef.current);
+  }, []);
 
-  const { initEngine, setOptions, startSearch, stopSearch } = useStockfish(handleEngineMessage);
+    // ✅ New: Keep positionRef up-to-date
+    useEffect(() => {
+      positionRef.current = position;
+    }, [position]);
 
   useEffect(() => {
     initEngine();
     setOptions(stockfishOptions);
-  }, [initEngine, setOptions]);
-
-  useEffect(() => {
-    if (!position) return;
-  
-    stopSearch();
-    startSearch(position);
-    return () => {
-      stopSearch();
-    };
-  }, [position, startSearch, stopSearch]);
+    setOnMessage(handleEngineMessage);
+  }, []);
 
   useEffect(() => {
     if (fens && fens.length > 0) {
@@ -61,10 +57,20 @@ const AnalysisGame = () => {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
       setPosition(game.fen());
+      stopSearch("handleMove");
+      startSearch(game.fen());
     } catch (error) {
       console.error(error);
     }
   }, [position]);
+
+  const navigateMove = useCallback(() => {
+    stopSearch("navigateMove");
+    startSearch(positionRef.current);
+  }, []);
+
+  console.log("rendred analsis game", count.current);
+  count.current += 1;
 
   return (
     <div>
@@ -106,7 +112,10 @@ const AnalysisGame = () => {
           </div>
          <div className="sidebar right-panel">
           <Moves moves={moves} />
-          <MoveNavigation setPosition={setPosition}/>
+          <MoveNavigation 
+            setPosition={setPosition}
+            handleMove={navigateMove}
+            />
          </div>
          </div>
       </div>

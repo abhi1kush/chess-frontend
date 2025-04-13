@@ -14,7 +14,7 @@ const StockfishHello = () => {
   const latestScoreRef = useRef(null); // this is key
 
   const { sendCommand } = useStockfish((data) => {
-    console.log("💬 Stockfish says:", data);
+    // console.log("💬 Stockfish says:", data);
 
     if (typeof data === "string") {
       // Capture eval scores during thinking
