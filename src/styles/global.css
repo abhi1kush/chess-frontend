@@ -183,3 +183,10 @@ html, body {
   #settings-button:hover{
     background-color: var(--settings-hover);
   }
+
+  .loading-screen {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: #555;
+  }

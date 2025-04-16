@@ -11,6 +11,7 @@ import EvalBar from "./EvalBar";
 import '../../styles/components/AnalysisLayout.css';
 import {onMessage} from "../../utils/onMessage";
 import { useStockfishContext } from "../../context/StockfishContext";
+import EngineEnabledListener from "./EngineEnabledListener"
 
 const AnalysisGame = () => {
   const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
@@ -21,27 +22,33 @@ const AnalysisGame = () => {
   const { isFlipped, theme } = useSelector((state) => state.settings);
   const [evalScore, setEvalScore] = useState(0);
   const [bestLine, setBestLine] = useState("");
-  const count = useRef(1);
+  const enabledChessEngine = useSelector(state => state.engine.enabled);
+
   const stockfishOptions = [
     { name: 'Threads', value: 1 },
     { name: 'Hash', value: 16 },
     { name: 'MultiPV', value: 1 },
   ];
-  const { initEngine, setOptions, startSearch, stopSearch, setOnMessage } = useStockfishContext();
+  const { initEngine, setOptions, startSearch, stopSearch, setOnMessage, syncEnabledState} = useStockfishContext();
   const handleEngineMessage = useCallback((data) => {
     onMessage(data, setEvalScore, setBestLine, positionRef.current);
   }, []);
+
+    // Permission sync
+    useEffect(() => {
+      syncEnabledState(enabledChessEngine);
+    }, [enabledChessEngine, syncEnabledState]);
 
     // ✅ New: Keep positionRef up-to-date
     useEffect(() => {
       positionRef.current = position;
     }, [position]);
 
-  useEffect(() => {
+  const setupEngine = () => {
     initEngine();
     setOptions(stockfishOptions);
     setOnMessage(handleEngineMessage);
-  }, []);
+  };
 
   useEffect(() => {
     if (fens && fens.length > 0) {
@@ -56,6 +63,7 @@ const AnalysisGame = () => {
     try {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
+      setupEngine();
       setPosition(game.fen());
       stopSearch("handleMove");
       startSearch(game.fen());
@@ -69,11 +77,9 @@ const AnalysisGame = () => {
     startSearch(positionRef.current);
   }, []);
 
-  console.log("rendred analsis game", count.current);
-  count.current += 1;
-
   return (
     <div>
+      <EngineEnabledListener fen={position} />
       <AnalysisTopContainer/>
       <div className='middle-container'>
         <div className='left-menu-bar'>          

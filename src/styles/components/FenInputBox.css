@@ -1,0 +1,57 @@
+.fen-container {
+    display: flex;
+    width: var(--max-board-size);
+    height: 56px;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: var(--background-color);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    gap: 3px;
+  }
+  
+  .fen-label {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+  
+  .fen-input {
+    height: 45px;
+    flex: 1;
+    padding: 0 12px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .fen-input:focus {
+    border-color: #0066ff;
+    box-shadow: 0 0 4px rgba(0, 102, 255, 0.3);
+  }
+  
+  .fen-button {
+    height: 50px;
+    padding: 0 20px;
+    background-color: var(--settings-color);
+    color: var(--text-color);
+    border:  1px solid #a3c7f3;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .fen-button:hover {
+    background-color: var(--settings-hover);
+  }
+  
+  .fen-button:active {
+    background-color: var(--settings-color);
+    border:  1px solid #a3c7f3;
+  }

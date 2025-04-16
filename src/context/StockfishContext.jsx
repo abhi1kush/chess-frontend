@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useRef, useCallback } from 'react';
-import useStockfish from '../hooks/useStockfish';
+import useStockfish from '../engine/useStockfish';
 
 const StockfishContext = createContext();
 export const useStockfishContext = () => useContext(StockfishContext);
