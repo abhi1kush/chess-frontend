@@ -5,6 +5,10 @@
     box-sizing: border-box;
 } 
 
+/* * {
+  outline: 1px solid rgba(255, 0, 0, 0.3);
+} */
+
 :root {
   --background-color3: #6e6e6e;
   --background-color2: #a7a7a7;
@@ -26,7 +30,7 @@
   --evalbar-width: 30px;
   --sidebar-width: 250px;
   --players-height: 40px;
-  --top-container-height: 6vh;
+  --top-container-height: 6dvh;
   --max-board-size: calc(100vh - var(--top-container-height)  - var(--players-height) * 2);
   --board-container-height: calc(var(--max-board-size) + 2 * var(--players-height));
   --chess-board-start-col: 1;

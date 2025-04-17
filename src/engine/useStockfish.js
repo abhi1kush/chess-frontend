@@ -58,7 +58,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     if (version === 'lite') {
       workerRef.current = new Worker('/chess-frontend/stockfish/stockfish-17-lite-single.js');
     } else {
-      workerRef.current = new Worker(new URL('../workers/stockfishWorker.js', import.meta.url), { type: 'classic' });
+      workerRef.current = new Worker(new URL('./stockfishWorker.js', import.meta.url), { type: 'classic' });
     }
 
     workerRef.current.postMessage('uci');
@@ -98,7 +98,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     if (version === 'lite') {
       workerRef.current = new Worker('/chess-frontend/stockfish/stockfish-17-lite-single.js');
     } else {
-      workerRef.current = new Worker(new URL('../workers/stockfishWorker.js', import.meta.url), {
+      workerRef.current = new Worker(new URL('./stockfishWorker.js', import.meta.url), {
         type: 'classic',
       });
     }

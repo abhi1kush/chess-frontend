@@ -15,7 +15,7 @@ const App = () => {
         <nav className="routes">
               <Link to="/analysis" className='action-button no-decoration'>Analysis</Link>
               <Link to="/gameplay" className='action-button no-decoration'>Gameplay</Link>
-              <Link to="/" className='action-button no-decoration'>FenViewer</Link>
+              <Link to="/fenviewer" className='action-button no-decoration'>FenViewer</Link>
         </nav>
         <Suspense fallback={<div className="loading-screen">Loading...</div>}>
           <Routes>
@@ -25,7 +25,8 @@ const App = () => {
               </StockfishProvider>
             } />
             <Route path="/gameplay" element={<ChessGame/>} />
-            <Route path="/" element={<FenViewer/>} />
+            <Route path="/fenviewer" element={<FenViewer/>} />
+            <Route path="*" element={<FenViewer />} /> {/* fallback route */}
           </Routes>
         </Suspense>
       </Router>

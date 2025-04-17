@@ -24,11 +24,12 @@
 
 /* Middle Section */
 .middle-container {
-    height: 89%;
-    width: 100vw;
+    height: calc(100dvh - var(--top-container-height));
+    width: 100dvw;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* outline: 5px solid rgba(228, 171, 213, 0.3); */
 }
 
 /* Left Menu */
@@ -43,8 +44,9 @@
 
 /* Chess Container */
 .chess-container {
-    background: var(--bg-color);
+    background: var(--background-color);
     width: 80%;
+    height: calc(100dvh - var(--top-container-height));
     display: flex;
     position: relative;
 }
