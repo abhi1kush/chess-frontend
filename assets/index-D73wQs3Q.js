@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-DSbjGaZk.js","assets/soundUtils-t78eB8mh.js","assets/soundUtils-DRJd2DQ5.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-BIQbW1Ip.js","assets/AnalysisGame-Tf-ih67V.css","assets/BoardEditor-C2QZgPRh.js","assets/BoardEditor-BkA3CGe8.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-bj2h221X.js","assets/soundUtils-v0Jzj2O8.js","assets/soundUtils-DRJd2DQ5.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-DDePFPnG.js","assets/AnalysisGame-Tf-ih67V.css","assets/BoardEditor-Bc63TOBY.js","assets/BoardEditor-BkA3CGe8.css"])))=>i.map(i=>d[i]);
 let wc, xE, wE, Oa, jE, CE, Dc, kE, XE, ht, Kc, Ay, IE, zE, HE, D, KE, QE, LE, qE, bE, UE, DE, S, BE, VE, Lg, Db, GE, a0;
 let __tla = (async ()=>{
     (function() {
@@ -17877,12 +17877,11 @@ Please change the parent <Route path="${k}"> to <Route path="${k === "/" ? "*" :
             ]
         });
     };
-    ME = S.lazy(()=>Nc(()=>import("./ChessGame-DSbjGaZk.js"), __vite__mapDeps([0,1,2,3])));
-    NE = S.lazy(()=>Nc(()=>import("./AnalysisGame-BIQbW1Ip.js"), __vite__mapDeps([4,1,2,5])));
-    AE = S.lazy(()=>Nc(()=>import("./BoardEditor-C2QZgPRh.js"), __vite__mapDeps([6,7])));
+    ME = S.lazy(()=>Nc(()=>import("./ChessGame-bj2h221X.js"), __vite__mapDeps([0,1,2,3])));
+    NE = S.lazy(()=>Nc(()=>import("./AnalysisGame-DDePFPnG.js"), __vite__mapDeps([4,1,2,5])));
+    AE = S.lazy(()=>Nc(()=>import("./BoardEditor-Bc63TOBY.js"), __vite__mapDeps([6,7])));
     PE = ()=>D.jsx(_b, {
             children: D.jsxs(hb, {
-                basename: "/chess-frontend",
                 children: [
                     D.jsxs("nav", {
                         className: "routes",
