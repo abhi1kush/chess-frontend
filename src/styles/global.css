@@ -36,6 +36,7 @@
   --chess-board-start-col: 1;
   --chess-board-end-col: -1;
   --board-gap: 5px;
+  --square-size: calc(var(--max-board-size) / 8);
 }
 
 .dark-theme {
