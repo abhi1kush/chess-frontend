@@ -10,30 +10,34 @@ const pieces = [
   "pawn", "rook", "knight", "bishop", "queen", "king"
 ];
 
+const generateInitialBoard = () => {
+    const initialPosition = {
+        0: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
+        1: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+        6: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+        7: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
+      };
+  
+      const squares = [];
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = initialPosition[row]?.[col] || null;
+          const color = row < 2 ? "w" : row > 5 ? "b" : null;
+          squares.push({
+            id: `${row}-${col}`,
+            color: (row + col) % 2 === 0 ? "light" : "dark",
+            piece: piece ? { type: piece, color } : null
+          });
+        }
+      }
+      return squares;
+}
+
 const BoardEditor = () => {
   const [board, setBoard] = useState([]);
-
+  
   useEffect(() => {
-    const initialPosition = {
-      0: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
-      1: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
-      6: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
-      7: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
-    };
-
-    const squares = [];
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
-        const piece = initialPosition[row]?.[col] || null;
-        const color = row < 2 ? "w" : row > 5 ? "b" : null;
-        squares.push({
-          id: `${row}-${col}`,
-          color: (row + col) % 2 === 0 ? "light" : "dark",
-          piece: piece ? { type: piece, color } : null
-        });
-      }
-    }
-    setBoard(squares);
+    resetBoard();
   }, []);
 
   const handleDragStart = (e, pieceId) => {
@@ -87,11 +91,48 @@ const BoardEditor = () => {
     );
   };
 
+  const handleRightClick = (e, squareId) => {
+    e.preventDefault();  // Prevent browser's context menu
+  
+    const updatedBoard = board.map(square => {
+      if (square.id === squareId) {
+        return {
+          ...square,
+          piece: null  // Remove the piece
+        };
+      }
+      return square;
+    });
+  
+    setBoard(updatedBoard);
+  };
+
+  const clearBoard = () => {
+    const cleared = board.map(square => ({
+      ...square,
+      piece: null
+    }));
+    setBoard(cleared);
+  };
+
+  const resetBoard = () => {
+    setBoard(generateInitialBoard());
+  };
+
+  const flipBoard = () => {
+    const flipped = [...board].reverse();
+    setBoard(flipped);
+  };
+
+  console.log("Board state:", board);
   return (
     <div className="main-container">
       <div className="top-container"> 
         <nav className="top-bar">
             {/* <FlipButton/> */}
+            <button onClick={resetBoard} className="action-button">Reset</button>
+            <button onClick={clearBoard} className="action-button">Clear Board</button>
+            <button onClick={flipBoard} className="action-button">Flip</button>
             <Settings />
             <DarkThemeToggle/>
         </nav>
@@ -106,6 +147,7 @@ const BoardEditor = () => {
               className={`square ${square.color}`}
               onDragOver={allowDrop}
               onDrop={(e) => handleDrop(e, square.id)}
+              onContextMenu={(e) => handleRightClick(e, square.id)}
             >
               {square.piece && renderPiece(square.piece, square.id)}
             </div>
