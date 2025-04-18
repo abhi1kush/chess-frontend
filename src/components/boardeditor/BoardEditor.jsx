@@ -10,31 +10,10 @@ const pieces = [
   "pawn", "rook", "knight", "bishop", "queen", "king"
 ];
 
-const generateInitialBoard = () => {
-    const initialPosition = {
-        0: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
-        1: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
-        6: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
-        7: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
-      };
-  
-      const squares = [];
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-          const piece = initialPosition[row]?.[col] || null;
-          const color = row < 2 ? "w" : row > 5 ? "b" : null;
-          squares.push({
-            id: `${row}-${col}`,
-            color: (row + col) % 2 === 0 ? "light" : "dark",
-            piece: piece ? { type: piece, color } : null
-          });
-        }
-      }
-      return squares;
-}
-
 const BoardEditor = () => {
   const [board, setBoard] = useState([]);
+  const [showFenPopup, setShowFenPopup] = useState(false);
+  const [fenInput, setFenInput] = useState("");
   
   useEffect(() => {
     resetBoard();
@@ -124,7 +103,73 @@ const BoardEditor = () => {
     setBoard(flipped);
   };
 
-  console.log("Board state:", board);
+  const generateFEN = () => {
+    let fen = "";
+    for (let row = 0; row < 8; row++) {
+      let emptyCount = 0;
+      for (let col = 0; col < 8; col++) {
+        const square = board.find(sq => sq.id === `${row}-${col}`);
+        if (square.piece) {
+          if (emptyCount > 0) {
+            fen += emptyCount;
+            emptyCount = 0;
+          }
+          const pieceChar = getFENChar(square.piece);
+          fen += pieceChar;
+        } else {
+          emptyCount++;
+        }
+      }
+      if (emptyCount > 0) {
+        fen += emptyCount;
+      }
+      if (row !== 7) fen += "/";
+    }
+  
+    // Add dummy placeholders for the rest of the FEN fields for now:
+    fen += " w - - 0 1";  // active color, castling, en passant, halfmove, fullmove
+  
+    console.log("FEN String:", fen);
+    alert("FEN: " + fen);
+  };
+
+  const setBoardFromFEN = (fen) => {
+    const [position] = fen.split(" ");
+    const rows = position.split("/");
+    if (rows.length !== 8) {
+      alert("Invalid FEN string!");
+      return;
+    }
+  
+    const newSquares = [];
+    rows.forEach((rowString, rowIdx) => {
+      let colIdx = 0;
+      for (const char of rowString) {
+        if (isNaN(char)) {
+          const pieceInfo = getPieceFromFENChar(char);
+          newSquares.push({
+            id: `${rowIdx}-${colIdx}`,
+            color: (rowIdx + colIdx) % 2 === 0 ? "light" : "dark",
+            piece: pieceInfo
+          });
+          colIdx++;
+        } else {
+          const emptySquares = parseInt(char);
+          for (let i = 0; i < emptySquares; i++) {
+            newSquares.push({
+              id: `${rowIdx}-${colIdx}`,
+              color: (rowIdx + colIdx) % 2 === 0 ? "light" : "dark",
+              piece: null
+            });
+            colIdx++;
+          }
+        }
+      }
+    });
+  
+    setBoard(newSquares);
+  };
+
   return (
     <div className="main-container">
       <div className="top-container"> 
@@ -133,6 +178,8 @@ const BoardEditor = () => {
             <button onClick={resetBoard} className="action-button">Reset</button>
             <button onClick={clearBoard} className="action-button">Clear Board</button>
             <button onClick={flipBoard} className="action-button">Flip</button>
+            <button onClick={generateFEN} className="action-button">Generate FEN</button>
+            <button onClick={() => setShowFenPopup(true)} className="action-button">Set FEN</button>
             <Settings />
             <DarkThemeToggle/>
         </nav>
@@ -176,8 +223,83 @@ const BoardEditor = () => {
         </div>
       </div>
       </div>
+      {showFenPopup && (
+  <div className="fen-popup">
+    <div className="fen-popup-content">
+      <h3>Enter FEN String:</h3>
+      <textarea
+        value={fenInput}
+        onChange={(e) => setFenInput(e.target.value)}
+        rows="3"
+        cols="40"
+        placeholder="e.g. rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+      />
+      <div className="fen-popup-buttons">
+        <button onClick={() => {
+          setBoardFromFEN(fenInput);
+          setShowFenPopup(false);
+        }}>Set Board</button>
+        <button onClick={() => setShowFenPopup(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
 
 export default BoardEditor;
+
+const getPieceFromFENChar = (char) => {
+    const isWhite = char === char.toUpperCase();
+    const typeMap = {
+      p: "pawn",
+      n: "knight",
+      b: "bishop",
+      r: "rook",
+      q: "queen",
+      k: "king"
+    };
+    const type = typeMap[char.toLowerCase()];
+    if (!type) {
+      console.warn(`Unknown FEN character: ${char}`);
+      return null;
+    }
+    return { type, color: isWhite ? "w" : "b" };
+  };
+
+  const generateInitialBoard = () => {
+    const initialPosition = {
+        0: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
+        1: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+        6: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+        7: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
+      };
+  
+      const squares = [];
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = initialPosition[row]?.[col] || null;
+          const color = row < 2 ? "w" : row > 5 ? "b" : null;
+          squares.push({
+            id: `${row}-${col}`,
+            color: (row + col) % 2 === 0 ? "light" : "dark",
+            piece: piece ? { type: piece, color } : null
+          });
+        }
+      }
+      return squares;
+}
+
+const getFENChar = (piece) => {
+    const map = {
+      pawn: "p",
+      knight: "n",
+      bishop: "b",
+      rook: "r",
+      queen: "q",
+      king: "k"
+    };
+    const char = map[piece.type];
+    return piece.color === "w" ? char.toUpperCase() : char;
+  };
