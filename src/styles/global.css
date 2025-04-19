@@ -24,7 +24,8 @@
   --nav-bottum: #E0E0E0; 
   --nav-shadow: rgba(0, 0, 0, 0.05);  
   --settings-color: #c3d8f1;
-  --settings-hover: #a3c7f3;
+  --settings-hover: #a3c7f3; 
+  --toggle-button-color: #68a4ed;
 
   --dvh: 1vh;
   --evalbar-width: 30px;

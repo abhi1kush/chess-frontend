@@ -5,6 +5,8 @@ import '../../styles/global.css';
 import '../../styles/pageLayout.css';
 import '../../styles/components/topContainer.css';
 import "../../styles/BoardEditor.css";
+import ToggleButton from "../common/buttons/ToggleButton";
+import MoveToggle from "../common/buttons/MoveToggle";
 
 const pieces = [
   "pawn", "rook", "knight", "bishop", "queen", "king"
@@ -16,12 +18,10 @@ const BoardEditor = () => {
   const [fenInput, setFenInput] = useState("");
   const [selectedPiece, setSelectedPiece] = useState(null);
   const [isFlipped, setIsflipped] = useState(false);
-  const [toggle, setToggle] = useState(false);
-
-  const handleToggle = () => {
-    setToggle(!toggle);
-    // You can trigger anything here
-  };
+  const [whiteKingSide, setWhiteKingSide] = useState(true);
+  const [whiteQueenSide, setWhiteQueenSide] = useState(true);
+  const [blackKingSide, setBlackKingSide] = useState(true);
+  const [blackQueenSide, setBlackQueenSide] = useState(true);
 
   useEffect(() => {
     resetBoard();
@@ -212,9 +212,9 @@ const BoardEditor = () => {
             <DarkThemeToggle/>
         </nav>
       </div>
-      <div className="middle-container" style={{backgroundColor:"green"}}>
+      <div className="middle-container">
       <div className="left-menu-bar"></div>
-      <div className="chessboard-container" style={{backgroundColor:"grey"}}>
+      <div className="chessboard-container">
         <div id="chessboard">
           {board.map(square => {
             const splited = square.id.split("-");
@@ -263,24 +263,39 @@ const BoardEditor = () => {
           )}
         </div>
         <div className="castling">
-            <div>
                 <div><h3>Castling</h3></div>
                 <div className="toggle-container">
-                <span className="toggle-label">Show Coordinates</span>
-                <label className="switch">
-                    <input type="checkbox" checked={toggle} onChange={handleToggle} />
-                    <span className="slider"></span>
-                </label>
-                </div>
-            </div>
+                  <span>To Move : </span>
+                  <MoveToggle/>
+                </div> 
+                <ToggleButton
+                  labelText={"White King-Side"}
+                  toggle={whiteKingSide}
+                  handleToggle={() => {setWhiteKingSide(!whiteKingSide);}}
+                />
+                <ToggleButton
+                  labelText={"White Queen-Side"}
+                  toggle={whiteQueenSide}
+                  handleToggle={() => {setWhiteQueenSide(!whiteQueenSide);}}
+                />
+                <ToggleButton
+                  labelText={"Black King-Side"}
+                  toggle={blackKingSide}
+                  handleToggle={() => {setBlackKingSide(!blackKingSide);}}
+                />
+                <ToggleButton
+                  labelText={"Black Queen-Side"}
+                  toggle={blackQueenSide}
+                  handleToggle={() => {setBlackQueenSide(!blackQueenSide);}}
+                /> 
         </div>
       </div>
       </div>
       {showFenPopup && (
-  <div className="fen-popup">
-    <div className="fen-popup-content">
-      <h3>Enter FEN String:</h3>
-      <textarea
+      <div className="fen-popup">
+       <div className="fen-popup-content">
+       <h3>Enter FEN String:</h3>
+       <textarea
         value={fenInput}
         onChange={(e) => setFenInput(e.target.value)}
         rows="3"

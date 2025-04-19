@@ -1,0 +1,23 @@
+.move-toggle {
+    display: flex;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 200px;
+  }
+  
+  .move-option {
+    flex: 1;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .move-option.active {
+    background-color: var(--toggle-button-color);
+    color: white;
+  }
+  
