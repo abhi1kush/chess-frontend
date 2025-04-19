@@ -14,10 +14,23 @@ const BoardEditor = () => {
   const [board, setBoard] = useState([]);
   const [showFenPopup, setShowFenPopup] = useState(false);
   const [fenInput, setFenInput] = useState("");
-  
+  const [selectedPiece, setSelectedPiece] = useState(null);
+  const [isFlipped, setIsflipped] = useState(false);
+  const [toggle, setToggle] = useState(false);
+
+  const handleToggle = () => {
+    setToggle(!toggle);
+    // You can trigger anything here
+  };
+
   useEffect(() => {
     resetBoard();
   }, []);
+
+  const handlePaletteClick = (pieceType, color) => {
+    console.log("Palette clicked:", pieceType, color);
+    setSelectedPiece({ type: pieceType, color });
+  };
 
   const handleDragStart = (e, pieceId) => {
     e.dataTransfer.setData("text", pieceId);
@@ -57,6 +70,7 @@ const BoardEditor = () => {
   const renderPiece = (piece, squareId) => {
     return (
       <img
+        className={"pieceimg"}
         key={squareId}
         id={`${squareId}-${piece.type}`}
         src={`pieces/${piece.color}_${piece.type}.png`}
@@ -101,6 +115,7 @@ const BoardEditor = () => {
   const flipBoard = () => {
     const flipped = [...board].reverse();
     setBoard(flipped);
+    setIsflipped(!isFlipped);
   };
 
   const generateFEN = () => {
@@ -170,13 +185,26 @@ const BoardEditor = () => {
     setBoard(newSquares);
   };
 
+  const handleSquareClick = (squareId) => {
+    if (!selectedPiece) return;
+  
+    const updatedBoard = board.map(square => {
+      if (square.id === squareId) {
+        return { ...square, piece: selectedPiece };
+      }
+      return square;
+    });
+  
+    setBoard(updatedBoard);
+  };
+
   return (
     <div className="main-container">
       <div className="top-container"> 
         <nav className="top-bar">
             {/* <FlipButton/> */}
+            <button onClick={clearBoard} className="action-button">Clear</button>
             <button onClick={resetBoard} className="action-button">Reset</button>
-            <button onClick={clearBoard} className="action-button">Clear Board</button>
             <button onClick={flipBoard} className="action-button">Flip</button>
             <button onClick={generateFEN} className="action-button">Generate FEN</button>
             <button onClick={() => setShowFenPopup(true)} className="action-button">Set FEN</button>
@@ -184,21 +212,32 @@ const BoardEditor = () => {
             <DarkThemeToggle/>
         </nav>
       </div>
-      <div className="middle-container">
+      <div className="middle-container" style={{backgroundColor:"green"}}>
       <div className="left-menu-bar"></div>
-      <div className="chessboard-container">
+      <div className="chessboard-container" style={{backgroundColor:"grey"}}>
         <div id="chessboard">
-          {board.map(square => (
+          {board.map(square => {
+            const splited = square.id.split("-");
+            const row = splited[0];
+            const col = splited[1];
+            const showRank = col === (isFlipped ? "0" : "7");
+            const showFile = row === (isFlipped ? "7" : "0");
+            const rankLabel = parseInt(row, 10) + 1;
+            const colLabel = "abcdefgh"[-(parseInt(col, 10) - 7)];
+            return (
             <div
               key={square.id}
               className={`square ${square.color}`}
               onDragOver={allowDrop}
+              onClick={() => handleSquareClick(square.id)}
               onDrop={(e) => handleDrop(e, square.id)}
               onContextMenu={(e) => handleRightClick(e, square.id)}
             >
+              { showRank && <div className="rank-label">{rankLabel}</div>}
+              { showFile && <div className="file-label">{colLabel}</div>}
               {square.piece && renderPiece(square.piece, square.id)}
             </div>
-          ))}
+          )})}
         </div>
 
         {/* Side palette */}
@@ -214,12 +253,26 @@ const BoardEditor = () => {
                 data-type={piece}
                 data-color={color}
                 data-square="palette"
+                onClick={() => {handlePaletteClick(piece, color)}}
                 onDragStart={(e) =>
                   handleDragStart(e, `palette-${color}-${piece}`)
                 }
+                className={`palette-piece ${selectedPiece?.type === piece && selectedPiece?.color === color ? 'selected' : ''}`}
               />
             ))
           )}
+        </div>
+        <div className="castling">
+            <div>
+                <div><h3>Castling</h3></div>
+                <div className="toggle-container">
+                <span className="toggle-label">Show Coordinates</span>
+                <label className="switch">
+                    <input type="checkbox" checked={toggle} onChange={handleToggle} />
+                    <span className="slider"></span>
+                </label>
+                </div>
+            </div>
         </div>
       </div>
       </div>
@@ -270,10 +323,10 @@ const getPieceFromFENChar = (char) => {
 
   const generateInitialBoard = () => {
     const initialPosition = {
-        0: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
+        0: ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
         1: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
         6: ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
-        7: ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
+        7: ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"]
       };
   
       const squares = [];
@@ -288,7 +341,7 @@ const getPieceFromFENChar = (char) => {
           });
         }
       }
-      return squares;
+      return squares.reverse();
 }
 
 const getFENChar = (piece) => {

@@ -4,7 +4,7 @@
 
   .chessboard-container {
     display: grid;
-    grid-template-columns: var(--max-board-size) 1fr;
+    grid-template-columns: var(--max-board-size) calc(var(--square-size) * 2) 1fr;
     height: calc(100dvh - var(--top-container-height));
     width: 80dvw;
     gap: 10px;
@@ -23,8 +23,12 @@
   }
   
   .square {
+    position: relative;
     width: var(--square-size);
     height: var(--square-size);
+    display: flex;
+    align-items: center;
+  justify-content: center;
   }
   
   .dark {
@@ -61,6 +65,7 @@
     width: calc(var(--max-board-size) / 8);
     height: calc(var(--max-board-size) / 8);
     cursor: grab;
+    z-index: 100;
   }
   
   /**/
@@ -89,3 +94,123 @@
     gap: 10px;
   }
   
+  .palette-piece.selected {
+    border: 2px solid #ff9800;
+    border-radius: 4px;
+    box-shadow: 0 0 6px #ff9800;
+  }
+
+  .rank-label {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 10px;
+    color: #555;
+    font-weight: bold;
+  }
+  
+  /* .file-label {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 10px;
+    color: #555;
+    font-weight: bold;
+  } */
+
+  .file-label, .rank-label {
+    position: absolute;
+    font-weight: bold;
+    font-size: 16px;
+    color: rgb(221, 170, 170);
+    pointer-events: none;
+  }
+
+  .file-label {
+    bottom:1px;
+    right: 1px;
+  }
+
+  .rank-label {
+    top:1px;
+    left: 1px;
+  }
+
+  .square.light .file-label, .square.light .rank-label {
+    color: var(--global-dark-square);
+  }
+
+  .square.dark .file-label, .square.dark .rank-label {
+    color: var(--global-light-square);
+  }
+
+  .pieceimg {
+    z-index: 100;
+  }
+
+  .castling {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    justify-content: start;
+    align-items: center;
+    background-color: #ff9800;
+    border-radius: 4px;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 34px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+  }
+  
+  /* Toggle ON */
+  input:checked + .slider {
+    background-color: #4cd964;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(22px);
+  }
+  
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .toggle-label {
+    font-size: 16px;
+    color: #333;
+  }

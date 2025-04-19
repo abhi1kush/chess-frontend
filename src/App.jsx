@@ -1,5 +1,5 @@
 import React, {Suspense, lazy} from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 import { ConfigProvider } from './context/configContext';
 import "./styles/global.css"
@@ -12,7 +12,7 @@ const BoardEditor = lazy(() => import('./components/boardeditor/BoardEditor'));
 const App = () => {
   return (
     <ConfigProvider>
-      <Router basename="/chess-frontend">
+      <Router>
         <nav className="routes">
               <Link to="/fenviewer" className='action-button no-decoration'>FenViewer</Link>
               <Link to="/analysis" className='action-button no-decoration'>Analysis</Link>
