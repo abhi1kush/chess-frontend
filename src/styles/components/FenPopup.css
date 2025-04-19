@@ -1,13 +1,3 @@
-/* .fen-button {
-  padding: 0.5rem 1rem;
-  margin: 0.5rem;
-  background-color: #2d89ef;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-} */
-
 .fen-popup-overlay {
   position: fixed;
   top: 0;
@@ -22,16 +12,16 @@
 }
 
 .fen-popup {
-  background: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  min-width: 40dvw;
   position: relative;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.fen-popup h3 {
-  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.3);
+  width: var(--max-board-size);
+  height: 30dvh;
+  background-color: var(--background-color);
 }
 
 .fen-close {
@@ -41,12 +31,17 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-color);
   cursor: pointer;
+}
+
+.fen-input-form {
+  width: 90%;
 }
 
 .fen-input {
   width: 100%;
+  max-height: 40px;
   padding: 0.5rem;
   margin: 1rem 0;
   border: 1px solid #ccc;
@@ -60,7 +55,7 @@
 }
 
 .fen-submit {
-  background-color: #28a745;
+  background-color: var(--toggle-button-color);
   color: white;
   border: none;
   padding: 0.4rem 0.8rem;

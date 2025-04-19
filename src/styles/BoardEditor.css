@@ -2,20 +2,30 @@
     border: #dc0a0a solid 1px;
   } */
 
+  .fen-chessboard-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: right;
+    height: calc(100dvh - var(--top-container-height));
+    width: 80dvw;
+    gap:0;
+  }
+
   .chessboard-container {
     display: grid;
     grid-template-columns: var(--max-board-size) calc(var(--square-size) * 2) 1fr;
-    height: calc(100dvh - var(--top-container-height));
+    height: calc(100dvh - (var(--top-container-height)*2) - 10vh);
     width: 80dvw;
     gap: 10px;
-    padding: 10px;
+    /* padding: 10px; */
   }
   
   #chessboard {
     display: grid;
     grid-template-columns: repeat(8, var(--square-size));
     grid-template-rows: repeat(8, var(--square-size));
-    border: 2px solid #9c9999;
+    /* border: 2px solid #9c9999; */
     width: calc(var(--max-board-size) + 4px);
     height: calc(var(--max-board-size) + 4px);
     border-radius: 3px;
@@ -156,5 +166,3 @@
     border-radius: 4px;
     gap: 3px;
   }
-
-  

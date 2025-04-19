@@ -1,0 +1,33 @@
+.fen-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+    min-width: var(--top-container-height);
+  }
+  
+  .fen-label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .fen-display {
+    padding: 8px 12px;
+    /* border: 1px solid #ccc; */
+    border-radius: 5px;
+    background-color: var(--background-color);
+    font-family: monospace;
+    min-width: 300px;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  
+  .copy-button {
+    border: none;
+    border-radius: 5px;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    height: 28px;
+  }
+  
