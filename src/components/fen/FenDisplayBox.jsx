@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import "../../styles/components/FenDisplayBox.css";
-import "../../styles/components/FenInputBox.css"
 
 const FenDisplayBox = ({ currentFen }) => {
   const [isValid, setIsValid] = useState(true);
