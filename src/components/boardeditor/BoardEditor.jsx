@@ -9,12 +9,12 @@ import ToggleButton from "../common/buttons/ToggleButton";
 import MoveToggle from "../common/buttons/MoveToggle";
 import FenPopup from "../fen/FenPopup";
 import FenDisplayBox from "../fen/FenDisplayBox";
-import { Chess } from 'chess.js';
 import CONFIG from "../../config";
+import { FenToBoard } from "../../services/fen/fen";
+import { getSquareColor } from "./util";
 
-const pieces = [
-  "p", "r", "n", "b", "q", "k"
-];
+
+
 const pieceCharToNameMap = {
   p: "pawn",
   n: "knight",
@@ -59,6 +59,7 @@ const BoardEditor = () => {
     setBlackKingSide(true);
     setBlackQueenSide(true);
     setBoardFromFEN(CONFIG.START_FEN, setBoard);
+    console.log("Initial Board", board);
   };
 
   const handleFenSubmit = (fenString) => {
@@ -66,19 +67,19 @@ const BoardEditor = () => {
     setBoardFromFEN(fenString, setBoard);
   };
 
-  const getKingPos = (fenBlockStr) => {
-    let count = 0;
-    for (let i = 0; i < fenBlockStr.length; i++) {
-      if (fenBlockStr[i] == 'k' || fenBlockStr[i] == 'K') {
-        return count + 1;
-      } else if ('1' <= fenBlockStr[i].charCodeAt(0) || fenBlockStr[i].charCodeAt(0) <= '8') {
-        count += parseInt(fenBlockStr[i], 10);
-      }else {
-        count += 1;
-      }
-    }
-    return count;
-  }
+  // const getKingPos = (fenBlockStr) => {
+  //   let count = 0;
+  //   for (let i = 0; i < fenBlockStr.length; i++) {
+  //     if (fenBlockStr[i] == 'k' || fenBlockStr[i] == 'K') {
+  //       return count + 1;
+  //     } else if ('1' <= fenBlockStr[i].charCodeAt(0) || fenBlockStr[i].charCodeAt(0) <= '8') {
+  //       count += parseInt(fenBlockStr[i], 10);
+  //     }else {
+  //       count += 1;
+  //     }
+  //   }
+  //   return count;
+  // }
 
   function generateFEN(halfmoveClock = 0, fullmoveNumber = 1) {
     const enPassant = "-";
@@ -88,30 +89,9 @@ const BoardEditor = () => {
       return "";
     }
     const rankFenBlocks = board.map(rank => rankTofen(rank));
-    if (rankFenBlocks[0][0] != 'r') {
-      // setWhiteKingSide(false);
-    }
-    if (rankFenBlocks[0][-1] != 'r') {
-      // setBlackKingSide(false);
-    }
-    if (rankFenBlocks[7][0] != 'R') {
-      // setWhiteQueenSide(false);
-    }
-    if (rankFenBlocks[7][-1] != 'R') {
-      // setBlackKingSide(false);
-    } 
-    if (getKingPos(rankFenBlocks[0]) != 4) {
-      // setBlackKingSide(false);
-      // setBlackQueenSide(false);
-    }
-    if (getKingPos(rankFenBlocks[7]) != 4) {
-      // setWhiteKingSide(false);
-      // setWhiteQueenSide(false); 
-    }
     fen += rankFenBlocks.join("/"); 
-    // Append the rest of the FEN string dynamically
     fen += ` ${playerToMove} ${castlingRights === "" ? "-": castlingRights} ${enPassant} ${halfmoveClock} ${fullmoveNumber}`;
-    console.log("fen", fen);
+    console.log("--->fen", fen);
     return fen;
   };
 
@@ -134,8 +114,11 @@ const BoardEditor = () => {
       <div className="fen-chessboard-container">
         <FenDisplayBox currentFen={generateFEN()} />
         <div className="chessboard-container">
-          {renderBoard(board, isFlipped, selectedPalletePiece, setBoard)}
-          <div className="palette">
+          <Board board={board} isFlipped={isFlipped} selectedPalletePiece={selectedPalletePiece}
+          setBoard={setBoard}
+          />
+          <PiecePallete selectedPalletePiece={selectedPalletePiece}/>
+          {/* <div className="palette">
             {["w", "b"].map(color =>
               pieces.map(piece => (
                 <img
@@ -155,14 +138,27 @@ const BoardEditor = () => {
               />
             ))
           )}
-        </div>
+        </div> */}
         <div className="castling">
           <div><h3>Castling</h3></div>
           <div className="toggle-container">
             <span>To Move : </span>
             <MoveToggle playerToMove={playerToMove} setPlayerToMove={setPlayerToMove}/>
             </div> 
-            <ToggleButton
+            {[
+              { label: "White King-Side", state: whiteKingSide, setState: setWhiteKingSide },
+              { label: "White Queen-Side", state: whiteQueenSide, setState: setWhiteQueenSide },
+              { label: "Black King-Side", state: blackKingSide, setState: setBlackKingSide },
+              { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
+             ].map(cfg => (<ToggleButton 
+                            key={cfg.label}
+                            labelText={cfg.label} 
+                            toggle={cfg.state} 
+                            handleToggle={() => {cfg.setState(!cfg.state)}}
+                          />)
+              )
+            }
+            {/* <ToggleButton
               labelText={"White King-Side"}
               toggle={whiteKingSide}
               handleToggle={() => {setWhiteKingSide(!whiteKingSide);}}
@@ -181,7 +177,7 @@ const BoardEditor = () => {
               labelText={"Black Queen-Side"}
               toggle={blackQueenSide}
               handleToggle={() => {setBlackQueenSide(!blackQueenSide);}}
-            /> 
+            />  */}
         </div>
       </div>
       </div>
@@ -243,17 +239,10 @@ const rankTofen = (rank) => {
 }
 
   const setBoardFromFEN = (fen, setBoard) => {
-    const game = new Chess();
-    game.load(fen);
-    const boardArray = game.board();
-    const board = boardArray.map((rank, rankIndex) => rank.map((square, fileIndex) => {
-      return ({
-        id: square ? square.square : `${"abcdefgh"[fileIndex]}${8 - rankIndex}`, 
-        piece: square ? {type: square.type, color: square.color} : null,
-      })
-    }));
-    setBoard(board);
+    setBoard(FenToBoard(fen));
   };
+
+
 
 const allowDrop = (e) => {
   e.preventDefault();
@@ -311,31 +300,56 @@ const handleDrop = (e, targetId, board, setBoard) => {
   setBoard(updatedBoard);
 };
 
-const renderBoard = (board, isFlipped, selectedPalletePiece, setBoard) => {
+const Board = React.memo(({ board, isFlipped, selectedPalletePiece, setBoard }) => {
   const visualBoard = isFlipped ? [...board].reverse().map(row => ([...row].reverse())) : board;
-  return (<div id="chessboard">
-    {visualBoard.map((row, rowIndex) => row.map((square, colIndex) => {
-        const rankLabel = isFlipped ? rowIndex + 1 : (7 - rowIndex) + 1;
-        const fileLabel = isFlipped ? "hgfedcba"[colIndex] : "abcdefgh"[colIndex];
-        return (
-        <div
-          key={square.id}
-          className={`square ${getSquareColor(square.id)}`}
-          onDragOver={allowDrop}
-          onClick={() => placePiece(board, square.id, selectedPalletePiece, setBoard)}
-          onDrop={(e) => handleDrop(e, square.id, board, setBoard)}
-          onContextMenu={(e) => handleRightClick(e, square.id, board, setBoard)}
-        >
-          { colIndex === 0 && <div className="rank-label">{rankLabel}</div>}
-          { rowIndex === 7 && <div className="file-label">{fileLabel}</div>} 
-          {square.piece && renderPiece(square.piece, square.id)}
-        </div>
-      )}))}
+  return (
+    <div id="chessboard">
+        {visualBoard.map((row, rowIndex) => row.map((square, colIndex) => {
+            const rankLabel = isFlipped ? rowIndex + 1 : (7 - rowIndex) + 1;
+            const fileLabel = isFlipped ? "hgfedcba"[colIndex] : "abcdefgh"[colIndex];
+            return (
+                <div
+                key={square.id}
+                className={`square ${getSquareColor(square.id)}`}
+                onDragOver={allowDrop}
+                onClick={() => placePiece(board, square.id, selectedPalletePiece, setBoard)}
+                onDrop={(e) => handleDrop(e, square.id, board, setBoard)}
+                onContextMenu={(e) => handleRightClick(e, square.id, board, setBoard)}
+                >
+                    { colIndex === 0 && <div className="rank-label">{rankLabel}</div>}
+                    { rowIndex === 7 && <div className="file-label">{fileLabel}</div>} 
+                    {square.piece && renderPiece(square.piece, square.id)}
+                </div>
+            )
+        }))}
   </div>)
-}
+});
 
-const getSquareColor = (squareID) => {
-  const fileIndex = squareID[0].charCodeAt(0) - 'a'.charCodeAt(0);
-  const rankIndex = squareID[1].charCodeAt(0) - '1'.charCodeAt(0);
-  return (fileIndex + rankIndex) % 2 === 0 ? "dark" : "light";
-} 
+const PiecePallete = React.memo(({selectedPalletePiece}) => {
+  const pieces = [
+    "p", "r", "n", "b", "q", "k"
+  ];
+  return (
+    <div className="palette">
+      {["w", "b"].map(color =>
+        pieces.map(piece => (
+          <img
+          key={`${color}-${piece}`}
+          id={`palette-${color}-${piece}`}
+          src={`pieces/${color}_${pieceCharToNameMap[piece]}.png`}
+          alt={`${color} ${piece}`}
+          draggable
+          data-type={piece}
+          data-color={color}
+          data-square="palette"
+          onClick={() => {handlePaletteClick(piece, color)}}
+          onDragStart={(e) =>
+            handleDragStart(e, `palette-${color}-${piece}`)
+          }
+          className={`palette-piece ${selectedPalletePiece?.type === piece 
+            && selectedPalletePiece?.color === color ? 'selected' : ''}`}
+        />
+        ))
+      )}
+    </div>)
+});
