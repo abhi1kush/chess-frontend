@@ -1,7 +1,7 @@
 import { current } from "@reduxjs/toolkit";
 import CONFIG, {startPosBoard, clearBoard} from "../../config"
 import {CLEAR_BOARD, RESET_BOARD, SET_BOARD_WITH_FEN, PUT_PIECE, MOVE_PIECE} from "../actions/boardEditorActions"
-import { FenToBoard, GetPlayerToMove } from "../../services/fen/fen";
+import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenparser";
 
 const initialState = {
     board: [...startPosBoard],
@@ -52,7 +52,7 @@ const boardEditorReducer = (state = initialState, action) => {
     case MOVE_PIECE: {
       return {
         ...state,
-        board: movePiece(board, action.payload.sourceId, action.payload.destId),
+        board: movePiece(board, action.payload.sourceSquareId, action.payload.destSquareId),
       }
     }
     default:

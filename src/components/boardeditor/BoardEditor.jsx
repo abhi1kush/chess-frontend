@@ -10,10 +10,8 @@ import MoveToggle from "../common/buttons/MoveToggle";
 import FenPopup from "../fen/FenPopup";
 import FenDisplayBox from "../fen/FenDisplayBox";
 import CONFIG from "../../config";
-import { FenToBoard } from "../../services/fen/fen";
+import { FenToBoard } from "../../services/fen/fenparser";
 import { getSquareColor } from "./util";
-
-
 
 const pieceCharToNameMap = {
   p: "pawn",
@@ -26,7 +24,6 @@ const pieceCharToNameMap = {
 
 const BoardEditor = () => {
   const [board, setBoard] = useState([]);
-  const [currentFen, setCurrentFen] = useState(CONFIG.START_FEN);
   const [selectedPalletePiece, setSelectedPalletePiece] = useState(null);
   const [isFlipped, setIsflipped] = useState(false);
   const [playerToMove, setPlayerToMove] = useState('w');
@@ -36,13 +33,16 @@ const BoardEditor = () => {
   const [blackQueenSide, setBlackQueenSide] = useState(true);
   const count = useRef(0);
 
+  const castllingFlags = [
+    { label: "White King-Side", state: whiteKingSide, setState: setWhiteKingSide },
+    { label: "White Queen-Side", state: whiteQueenSide, setState: setWhiteQueenSide },
+    { label: "Black King-Side", state: blackKingSide, setState: setBlackKingSide },
+    { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
+   ];
+
   useEffect(() => {
     resetBoard();
   }, []);
-
-  const handlePaletteClick = (pieceType, color) => {
-    setSelectedPalletePiece({ type: pieceType, color });
-  };
 
   const clearBoard = () => {
     const cleared = board.map(rank => rank.map(square => ({
@@ -59,27 +59,12 @@ const BoardEditor = () => {
     setBlackKingSide(true);
     setBlackQueenSide(true);
     setBoardFromFEN(CONFIG.START_FEN, setBoard);
-    console.log("Initial Board", board);
   };
 
   const handleFenSubmit = (fenString) => {
     console.log("Received FEN:", fenString);
     setBoardFromFEN(fenString, setBoard);
   };
-
-  // const getKingPos = (fenBlockStr) => {
-  //   let count = 0;
-  //   for (let i = 0; i < fenBlockStr.length; i++) {
-  //     if (fenBlockStr[i] == 'k' || fenBlockStr[i] == 'K') {
-  //       return count + 1;
-  //     } else if ('1' <= fenBlockStr[i].charCodeAt(0) || fenBlockStr[i].charCodeAt(0) <= '8') {
-  //       count += parseInt(fenBlockStr[i], 10);
-  //     }else {
-  //       count += 1;
-  //     }
-  //   }
-  //   return count;
-  // }
 
   function generateFEN(halfmoveClock = 0, fullmoveNumber = 1) {
     const enPassant = "-";
@@ -95,7 +80,7 @@ const BoardEditor = () => {
     return fen;
   };
 
-  console.log("Board rendered", count.current, currentFen, board);
+  console.log("Board rendered", count.current, board);
   count.current += 1;
   return (
     <div className="main-container">
@@ -117,67 +102,22 @@ const BoardEditor = () => {
           <Board board={board} isFlipped={isFlipped} selectedPalletePiece={selectedPalletePiece}
           setBoard={setBoard}
           />
-          <PiecePallete selectedPalletePiece={selectedPalletePiece}/>
-          {/* <div className="palette">
-            {["w", "b"].map(color =>
-              pieces.map(piece => (
-                <img
-                  key={`${color}-${piece}`}
-                  id={`palette-${color}-${piece}`}
-                  src={`pieces/${color}_${pieceCharToNameMap[piece]}.png`}
-                  alt={`${color} ${piece}`}
-                  draggable
-                  data-type={piece}
-                  data-color={color}
-                  data-square="palette"
-                  onClick={() => {handlePaletteClick(piece, color)}}
-                  onDragStart={(e) =>
-                    handleDragStart(e, `palette-${color}-${piece}`)
-                }
-                className={`palette-piece ${selectedPalletePiece?.type === piece && selectedPalletePiece?.color === color ? 'selected' : ''}`}
-              />
-            ))
-          )}
-        </div> */}
+        <PiecePallete selectedPalletePiece={selectedPalletePiece} setSelectedPalletePiece={setSelectedPalletePiece}/>
         <div className="castling">
           <div><h3>Castling</h3></div>
           <div className="toggle-container">
             <span>To Move : </span>
             <MoveToggle playerToMove={playerToMove} setPlayerToMove={setPlayerToMove}/>
             </div> 
-            {[
-              { label: "White King-Side", state: whiteKingSide, setState: setWhiteKingSide },
-              { label: "White Queen-Side", state: whiteQueenSide, setState: setWhiteQueenSide },
-              { label: "Black King-Side", state: blackKingSide, setState: setBlackKingSide },
-              { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
-             ].map(cfg => (<ToggleButton 
-                            key={cfg.label}
-                            labelText={cfg.label} 
-                            toggle={cfg.state} 
-                            handleToggle={() => {cfg.setState(!cfg.state)}}
-                          />)
-              )
+            {
+              castllingFlags.map(({label, state, setState}) => (
+              <ToggleButton 
+                key={label}
+                labelText={label} 
+                toggle={state} 
+                handleToggle={() => {setState(!state)}}
+              />))
             }
-            {/* <ToggleButton
-              labelText={"White King-Side"}
-              toggle={whiteKingSide}
-              handleToggle={() => {setWhiteKingSide(!whiteKingSide);}}
-            />
-            <ToggleButton
-              labelText={"White Queen-Side"}
-              toggle={whiteQueenSide}
-              handleToggle={() => {setWhiteQueenSide(!whiteQueenSide);}}
-            />
-            <ToggleButton
-              labelText={"Black King-Side"}
-              toggle={blackKingSide}
-              handleToggle={() => {setBlackKingSide(!blackKingSide);}}
-            />
-            <ToggleButton
-              labelText={"Black Queen-Side"}
-              toggle={blackQueenSide}
-              handleToggle={() => {setBlackQueenSide(!blackQueenSide);}}
-            />  */}
         </div>
       </div>
       </div>
@@ -325,7 +265,15 @@ const Board = React.memo(({ board, isFlipped, selectedPalletePiece, setBoard }) 
   </div>)
 });
 
-const PiecePallete = React.memo(({selectedPalletePiece}) => {
+const handlePaletteClick = (pieceType, color, selectedPalletePiece, setSelectedPalletePiece) => {
+  if (selectedPalletePiece != null && pieceType == selectedPalletePiece.type && color == selectedPalletePiece.color) {
+    setSelectedPalletePiece(null); 
+  } else {
+    setSelectedPalletePiece({ type: pieceType, color });
+  }
+};
+
+const PiecePallete = React.memo(({selectedPalletePiece, setSelectedPalletePiece}) => {
   const pieces = [
     "p", "r", "n", "b", "q", "k"
   ];
@@ -342,7 +290,7 @@ const PiecePallete = React.memo(({selectedPalletePiece}) => {
           data-type={piece}
           data-color={color}
           data-square="palette"
-          onClick={() => {handlePaletteClick(piece, color)}}
+          onClick={() => {handlePaletteClick(piece, color, selectedPalletePiece, setSelectedPalletePiece)}}
           onDragStart={(e) =>
             handleDragStart(e, `palette-${color}-${piece}`)
           }

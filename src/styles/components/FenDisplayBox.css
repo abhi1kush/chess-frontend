@@ -31,3 +31,28 @@
     height: 28px;
   }
   
+  .circle-tick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;              /* circle size */
+    height: 24px;
+    border-radius: 50%;
+    background-color: #4caf50; /* green color */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .circle-cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;              /* circle size */
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ff0000; /* green color */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }

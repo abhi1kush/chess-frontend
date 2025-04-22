@@ -62,3 +62,7 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.fen-submit:hover {
+  background-color: var(--toggle-button-color-hover); 
+}
