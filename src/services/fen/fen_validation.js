@@ -17,42 +17,46 @@ export const IsValidFen = (fen) => {
     
     for (let r = 0; r < 8; r++) {
         const currentRank = ranks[r];
+        let squareCount = 0;
         for (let i = 0; i < currentRank.length; i++) {
+            const emptySquares = Number(currentRank[i]);
+            squareCount += !isNaN(emptySquares) ? emptySquares : 1;
+            
             switch(currentRank[i]) {
                 case 'k':
-                    if (r == 0 && i == 4) {
-                        piecePos['e8'] = currentRank[i];
+                    if (r === 0 && squareCount === 5) {
+                        piecePos.set('e8', currentRank[i]);
                     }
                     blackKingCount += 1;
                     break;
                 case 'K':
-                    if (r == 7 && i == 4) {
-                        piecePos['e1'] = currentRank[i];
+                    if (r === 7 && squareCount === 5) {
+                        piecePos.set('e1', currentRank[i]);
                     }
                     whiteKingCount += 1;
                     break;
                 case 'p':
-                    if (r == 0 || r == 7) {
+                    if (r === 0 || r === 7) {
                         return {isValid: false, msg: "pawn can not exist on last rank or first rank."};
                     }
                     break;
                 case 'P':
-                    if (r == 0 || r == 7) {
+                    if (r === 0 || r === 7) {
                         return {isValid: false, msg: "pawn can not exist on last rank or first rank."};
                     }
                     break;
                 case 'r':
-                    if(r == 0 && i == 0) {
-                        piecePos["a8"] = currentRank[i];
-                    } else if (r == 0 && i == currentRank.length - 1) {
-                        piecePos["h8"] = currentRank[i];
+                    if(r === 0 && i === 0) {
+                        piecePos.set("a8", currentRank[i]);
+                    } else if (r === 0 && i === currentRank.length - 1) {
+                        piecePos.set("h8", currentRank[i]);
                     }
                     break;
                 case 'R':
-                    if(r == 7 && i == 0) {
-                        piecePos["a1"] = currentRank[i];
-                    } else if (r == 7 && i == currentRank.length - 1) {
-                        piecePos["h1"] = currentRank[i];
+                    if(r === 7 && i === 0) {
+                        piecePos.set("a1", currentRank[i]);
+                    } else if (r === 7 && i === currentRank.length - 1) {
+                        piecePos.set("h1", currentRank[i]);
                     }
                     break;
                 case 'n':
@@ -73,44 +77,45 @@ export const IsValidFen = (fen) => {
         }
     }
 
-    if (blackKingCount != 1) {
+    if (blackKingCount !== 1) {
         return {isValid: false, msg: "There should be only one black king."};
     }
-    if (whiteKingCount != 1) {
+    if (whiteKingCount !== 1) {
         return {isValid: false, msg: "There should be only one white king."};
     }
-
+    
+    console.log(...piecePos, ranks[7], ranks[0]);
     for (let i = 0; i < castlingFlags.length; i++) {
         switch(castlingFlags[i]) {
             case 'K':
-                if (piecePos.has('e1') && piecePos['e1'] != 'K') {
-                    return {isValid: false, msg: "white castling is not possible, king is not at e1."};
+                if (!piecePos.has('e1') || piecePos.get('e1') !== 'K') {
+                    return {isValid: false, msg: "king- white castling is not possible, king is not at e1."};
                 }
-                if (piecePos.has('h1')  && piecePos['h1'] != 'R') {
+                if (!piecePos.has('h1')  || piecePos.get('h1') !== 'R') {
                     return {isValid: false, msg: "white short castling is not possible, rook is not at h1"};
                 }
                 break;
             case 'Q':
-                if (piecePos.has('e1') && piecePos['e1'] != 'K') {
-                    return {isValid: false, msg: "white castling is not possible, king is not at e1."};
+                if (!piecePos.has('e1') || piecePos.get('e1') !== 'K') {
+                    return {isValid: false, msg: "queen- white castling is not possible, king is not at e1."};
                 }
-                if (piecePos.has('a1')  && piecePos['a1'] != 'R') {
+                if (!piecePos.has('a1')  || piecePos.get('a1') !== 'R') {
                     return {isValid: false, msg: "white long castling is not possible, rook is not at a1"};
                 }
                 break;
             case 'k':
-                if (piecePos.has('e8') && piecePos['e8'] != 'k') {
+                if (!piecePos.has('e8') || piecePos.get('e8') !== 'k') {
                     return {isValid: false, msg: "black castling is not possible, king is not at e8."};
                 }
-                if (piecePos.has('h8') && piecePos['h8'] != 'r') {
+                if (!piecePos.has('h8') || piecePos.get('h8') !== 'r') {
                     return {isValid: false, msg: "black short castling is not possible, rook is not at h8"};
                 }
                 break;
             case 'q':
-                if (piecePos.has('e8') && piecePos['e8'] != 'k') {
+                if (!piecePos.has('e8') || piecePos.get('e8') !== 'k') {
                     return {isValid: false, msg: "black castling is not possible, king is not at e8."};
                 }
-                if (piecePos.has('a8') && piecePos['a8'] != 'r') {
+                if (!piecePos.has('a8') || piecePos.get('a8') !== 'r') {
                     return {isValid: false, msg: "black long castling is not possible, rook is not at a8"};
                 }
                 break;
@@ -123,8 +128,8 @@ export const IsValidFen = (fen) => {
     const opponentInCheck = flippedGame.inCheck();
     
     if (opponentInCheck) {
-        const playerToMove = turn == 'w'? "white" : "black";
-        const opponentPlayer = turn == 'w'? "black" : "white";
+        const playerToMove = turn === 'w'? "white" : "black";
+        const opponentPlayer = turn === 'w'? "black" : "white";
         return {isValid: false, msg: `${playerToMove} to move but ${opponentPlayer} was already in check and did not defend king`};
     }
     return {isValid: true, msg: ""};

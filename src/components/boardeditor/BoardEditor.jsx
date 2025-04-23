@@ -80,7 +80,7 @@ const BoardEditor = () => {
     return fen;
   };
 
-  console.log("Board rendered", count.current, board);
+  console.log("Board rendered", count.current);
   count.current += 1;
   return (
     <div className="main-container">

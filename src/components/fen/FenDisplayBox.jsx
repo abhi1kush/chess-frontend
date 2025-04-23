@@ -8,8 +8,8 @@ const FenDisplayBox = ({ currentFen }) => {
     alert("FEN copied to clipboard!");
   };
 
-  const {isValid, reason } = currentFen != ""? IsValidFen(currentFen): {isValid: false, msg:""};
-  console.log("currentFen", currentFen, isValid);
+  const {isValid, msg } = currentFen != ""? IsValidFen(currentFen): {isValid: false, msg:""};
+  console.log("currentFen", currentFen, isValid, msg);
   return (
     <div className="fen-container">
       <div id="fen-display" className="fen-display">
