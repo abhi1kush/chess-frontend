@@ -2,6 +2,17 @@ import { Chess } from "chess.js";
 
 // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 export const IsValidFen = (fen) => {
+    if (fen === null || fen === undefined || fen === "") {
+        return {isValid: false, msg: ""};
+    }
+    if (fen.length < 10 || fen.length > 100) {
+        return {isValid: false, msg: ""};
+    }
+    const regex = /^[rnbqkpRNBQKP1-8/]+ [wb] [KQkq-]{0,4} (?:-|[a-h][36]) \d+ \d+$/;
+    if (!regex.test(fen)) {
+        return {isValid: false, msg: ""};
+    }
+
     const splittedFen = fen.split(" ");
     if (splittedFen.length === 0) {
         return {isValid: false, msg: ""};
@@ -84,12 +95,11 @@ export const IsValidFen = (fen) => {
         return {isValid: false, msg: "There should be only one white king."};
     }
     
-    console.log(...piecePos, ranks[7], ranks[0]);
     for (let i = 0; i < castlingFlags.length; i++) {
         switch(castlingFlags[i]) {
             case 'K':
                 if (!piecePos.has('e1') || piecePos.get('e1') !== 'K') {
-                    return {isValid: false, msg: "king- white castling is not possible, king is not at e1."};
+                    return {isValid: false, msg: "white castling is not possible, king is not at e1."};
                 }
                 if (!piecePos.has('h1')  || piecePos.get('h1') !== 'R') {
                     return {isValid: false, msg: "white short castling is not possible, rook is not at h1"};
@@ -97,7 +107,7 @@ export const IsValidFen = (fen) => {
                 break;
             case 'Q':
                 if (!piecePos.has('e1') || piecePos.get('e1') !== 'K') {
-                    return {isValid: false, msg: "queen- white castling is not possible, king is not at e1."};
+                    return {isValid: false, msg: "white castling is not possible, king is not at e1."};
                 }
                 if (!piecePos.has('a1')  || piecePos.get('a1') !== 'R') {
                     return {isValid: false, msg: "white long castling is not possible, rook is not at a1"};
@@ -122,6 +132,7 @@ export const IsValidFen = (fen) => {
         }
     }
  
+    const turn = splittedFen[1];
     // Flip the turn to simulate the opponent's position
     const flippedFen = flipTurnInFen(fen);
     const flippedGame = new Chess(flippedFen);

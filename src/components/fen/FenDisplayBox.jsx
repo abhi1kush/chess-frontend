@@ -1,15 +1,11 @@
-import React, {useState} from "react";
 import "../../styles/components/FenDisplayBox.css";
-import { IsValidFen } from "../../services/fen/fen_validation";
 
-const FenDisplayBox = ({ currentFen }) => {
+const FenDisplayBox = ({ currentFen, isValid}) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(currentFen);
     alert("FEN copied to clipboard!");
   };
 
-  const {isValid, msg } = currentFen != ""? IsValidFen(currentFen): {isValid: false, msg:""};
-  console.log("currentFen", currentFen, isValid, msg);
   return (
     <div className="fen-container">
       <div id="fen-display" className="fen-display">

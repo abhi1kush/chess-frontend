@@ -1,0 +1,52 @@
+.notice-board {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border: 2px solid #ccc; /* Add a solid grey border */
+    padding: 8px;
+    border-radius: 8px; /* Optional: Add rounded corners */
+    width: 100%;
+  }
+  
+  .notice-header {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 8px;
+    border-bottom: 1px solid #eee; /* Add a subtle separator */
+  }
+  
+  .notice-header.isIllegal {
+    text-align: center;
+    color: red; /* Style for illegal state */
+    background-color: #ffe0e0; /* Optional: Light red background */
+    border-radius: 8px;
+  }
+  
+  .notice-header.legal {
+    text-align: center;
+    color: green; /* Style for legal state */
+    background-color: #e0ffe0; /* Optional: Light green background */
+    border-radius: 8px;
+  }
+  
+  .message {
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd; /* Add a border to each message */
+    border-radius: 4px; /* Optional: Rounded corners for messages */
+    color: var(--text-color);
+    background-color: var(--background-color); /* Light background for messages */
+  }
+  
+  /* Example styles for different message types (if msg.type can have values like 'error', 'warning', etc.) */
+  .message.error {
+    color: darkred;
+    background-color: #ffdddd;
+    border-color: #ffaaaa;
+  }
+  
+  .message.warning {
+    color: darkgoldenrod;
+    background-color: #fffacd;
+    border-color: #eee8aa;
+  }

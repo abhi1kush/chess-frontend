@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Settings from '../common/Settings';
 import DarkThemeToggle from '../common/DarkThemeToggle';
 import '../../styles/global.css';
@@ -10,8 +10,10 @@ import MoveToggle from "../common/buttons/MoveToggle";
 import FenPopup from "../fen/FenPopup";
 import FenDisplayBox from "../fen/FenDisplayBox";
 import CONFIG from "../../config";
-import { FenToBoard } from "../../services/fen/fenparser";
+import { FenToBoard } from "../../services/fen/fenParser";
 import { getSquareColor } from "./util";
+import NoticeBoard from "./NoticeBoard";
+import { IsValidFen } from "../../services/fen/fenValidation";
 
 const pieceCharToNameMap = {
   p: "pawn",
@@ -32,6 +34,9 @@ const BoardEditor = () => {
   const [blackKingSide, setBlackKingSide] = useState(true);
   const [blackQueenSide, setBlackQueenSide] = useState(true);
   const count = useRef(0);
+  const fen = useRef("");
+  const [isValidFen, setIsValidFen] = useState(false);
+  const [fenErrorMsg, setFenErrorMsg] = useState("");
 
   const castllingFlags = [
     { label: "White King-Side", state: whiteKingSide, setState: setWhiteKingSide },
@@ -66,22 +71,29 @@ const BoardEditor = () => {
     setBoardFromFEN(fenString, setBoard);
   };
 
-  function generateFEN(halfmoveClock = 0, fullmoveNumber = 1) {
+  const generateFEN = useCallback((halfmoveClock = 0, fullmoveNumber = 1) => {
     const enPassant = "-";
     let fen = "";
     const castlingRights = (whiteKingSide ? "K" : "") + (whiteQueenSide ? "Q" : "") + (blackKingSide ? "k":"") + (blackQueenSide ? "q":""); 
-    if (board.length == 0) {
+    if (board.length === 0) {
       return "";
     }
     const rankFenBlocks = board.map(rank => rankTofen(rank));
     fen += rankFenBlocks.join("/"); 
     fen += ` ${playerToMove} ${castlingRights === "" ? "-": castlingRights} ${enPassant} ${halfmoveClock} ${fullmoveNumber}`;
-    console.log("--->fen", fen);
     return fen;
-  };
+  });
 
   console.log("Board rendered", count.current);
   count.current += 1;
+  useEffect(() => {
+    const currentFen = generateFEN();
+    const {isValid, msg } = IsValidFen(currentFen);
+    setIsValidFen(isValid);
+    setFenErrorMsg(msg);
+    fen.current = currentFen;
+  }, [generateFEN, board]);
+
   return (
     <div className="main-container">
       <div className="top-container"> 
@@ -97,14 +109,14 @@ const BoardEditor = () => {
       <div className="middle-container">
       <div className="left-menu-bar"></div>
       <div className="fen-chessboard-container">
-        <FenDisplayBox currentFen={generateFEN()} />
+        <FenDisplayBox currentFen={fen.current} isValid={isValidFen}/>
         <div className="chessboard-container">
           <Board board={board} isFlipped={isFlipped} selectedPalletePiece={selectedPalletePiece}
           setBoard={setBoard}
           />
         <PiecePallete selectedPalletePiece={selectedPalletePiece} setSelectedPalletePiece={setSelectedPalletePiece}/>
         <div className="castling">
-          <div><h3>Castling</h3></div>
+          {/* <div><h3>Castling</h3></div> */}
           <div className="toggle-container">
             <span>To Move : </span>
             <MoveToggle playerToMove={playerToMove} setPlayerToMove={setPlayerToMove}/>
@@ -118,6 +130,7 @@ const BoardEditor = () => {
                 handleToggle={() => {setState(!state)}}
               />))
             }
+            <NoticeBoard messages={[{type: isValidFen ? "ok" : "error", text: fenErrorMsg}]} isValid={isValidFen}/>
         </div>
       </div>
       </div>
