@@ -1,19 +1,17 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import Settings from '../common/Settings';
-import DarkThemeToggle from '../common/DarkThemeToggle';
 import '../../styles/global.css';
 import '../../styles/pageLayout.css';
 import '../../styles/components/topContainer.css';
 import "../../styles/BoardEditor.css";
-import ToggleButton from "../common/buttons/ToggleButton";
-import MoveToggle from "../common/buttons/MoveToggle";
-import FenInputPopup from "../fen/FenInputPopup";
 import FenDisplayBox from "../fen/FenDisplayBox";
 import CONFIG from "../../config";
 import { FenToBoard } from "../../services/fen/fenParser";
 import { getSquareColor } from "./util";
-import NoticeBoard from "./NoticeBoard";
 import { IsValidFen } from "../../services/fen/fenValidation";
+import { useSelector } from "react-redux";
+import CastlingFlagsComponent from "./CastlingFlagsComponent";
+import { resetBoard } from "../../redux/actions/boardEditorActions";
+import { useDispatch } from "react-redux";
 
 const pieceCharToNameMap = {
   p: "pawn",
@@ -27,54 +25,27 @@ const pieceCharToNameMap = {
 const BoardEditor = () => {
   const [board, setBoard] = useState([]);
   const [selectedPalletePiece, setSelectedPalletePiece] = useState(null);
-  const [isFlipped, setIsflipped] = useState(false);
-  const [playerToMove, setPlayerToMove] = useState('w');
-  const [whiteKingSide, setWhiteKingSide] = useState(true);
-  const [whiteQueenSide, setWhiteQueenSide] = useState(true);
-  const [blackKingSide, setBlackKingSide] = useState(true);
-  const [blackQueenSide, setBlackQueenSide] = useState(true);
+  const {isFlipped } = useSelector((state) => state.boardeditor);
   const count = useRef(0);
   const fen = useRef("");
   const [isValidFen, setIsValidFen] = useState(false);
-  const [fenErrorMsg, setFenErrorMsg] = useState("");
-
-  const castllingFlags = [
-    { label: "White King-Side", state: whiteKingSide, setState: setWhiteKingSide },
-    { label: "White Queen-Side", state: whiteQueenSide, setState: setWhiteQueenSide },
-    { label: "Black King-Side", state: blackKingSide, setState: setBlackKingSide },
-    { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
-   ];
+//   const [fenErrorMsg, setFenErrorMsg] = useState("");
+  const {playerToMove, CastlingFlags} = useSelector((state) => state.boardeditor);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    resetBoard();
+    dispatch(resetBoard());
   }, []);
 
-  const clearBoard = () => {
-    const cleared = board.map(rank => rank.map(square => ({
-      ...square,
-      piece: null
-    })));
-    setBoard(cleared);
-  };
-
-  const resetBoard = () => {
-    setPlayerToMove("w");
-    setWhiteKingSide(true);
-    setWhiteQueenSide(true); 
-    setBlackKingSide(true);
-    setBlackQueenSide(true);
-    setBoardFromFEN(CONFIG.START_FEN, setBoard);
-  };
-
-  const handleFenSubmit = useCallback((fenString, setBoard) => {
-    // console.log("Received FEN:", fenString);
-    setBoardFromFEN(fenString, setBoard);
-  });
+//   const handleFenSubmit = useCallback((fenString, setBoard) => {
+//     // console.log("Received FEN:", fenString);
+//     setBoardFromFEN(fenString, setBoard);
+//   });
 
   const generateFEN = useCallback((halfmoveClock = 0, fullmoveNumber = 1) => {
     const enPassant = "-";
     let fen = "";
-    const castlingRights = (whiteKingSide ? "K" : "") + (whiteQueenSide ? "Q" : "") + (blackKingSide ? "k":"") + (blackQueenSide ? "q":""); 
+    const castlingRights = (CastlingFlags.K ? "K" : "") + (CastlingFlags.Q ? "Q" : "") + (CastlingFlags.k ? "k":"") + (CastlingFlags.q ? "q":""); 
     if (board.length === 0) {
       return "";
     }
@@ -86,26 +57,15 @@ const BoardEditor = () => {
 
   console.log("--- BoardEditor rendered", count.current);
   count.current += 1;
-  useEffect(() => {
-    const currentFen = generateFEN();
-    const {isValid, msg } = IsValidFen(currentFen);
-    setIsValidFen(prev => (prev !== isValid ? isValid : prev));
-    setFenErrorMsg(prev => (prev !== msg ? msg : prev));
-    fen.current = currentFen;
-  }, [generateFEN, board]);
+//   useEffect(() => {
+//     const currentFen = generateFEN();
+//     const {isValid, msg } = IsValidFen(currentFen);
+//     setIsValidFen(prev => (prev !== isValid ? isValid : prev));
+//     setFenErrorMsg(prev => (prev !== msg ? msg : prev));
+//     fen.current = currentFen;
+//   }, [generateFEN, board]);
 
   return (
-    <div className="main-container">
-      <div className="top-container"> 
-        <nav className="top-bar">
-            <button onClick={clearBoard} className="action-button">Clear</button>
-            <button onClick={resetBoard} className="action-button">Reset</button>
-            <button onClick={() => {setIsflipped(!isFlipped)}} className="action-button">Flip</button>
-            <FenInputPopup onSubmit={handleFenSubmit}/>
-            <Settings />
-            <DarkThemeToggle/>
-        </nav>
-      </div>
       <div className="middle-container">
       <div className="left-menu-bar"></div>
       <div className="fen-chessboard-container">
@@ -115,27 +75,10 @@ const BoardEditor = () => {
           setBoard={setBoard}
           />
         <PiecePallete selectedPalletePiece={selectedPalletePiece} setSelectedPalletePiece={setSelectedPalletePiece}/>
-        <div className="castling">
-          {/* <div><h3>Castling</h3></div> */}
-          <div className="toggle-container">
-            <span>To Move : </span>
-            <MoveToggle playerToMove={playerToMove} setPlayerToMove={setPlayerToMove}/>
-            </div> 
-            {
-              castllingFlags.map(({label, state, setState}) => (
-              <ToggleButton 
-                key={label}
-                labelText={label} 
-                toggle={state} 
-                handleToggle={() => {setState(!state)}}
-              />))
-            }
-            <NoticeBoard messages={[{type: isValidFen ? "ok" : "error", text: fenErrorMsg}]} isValid={isValidFen}/>
-        </div>
+        <CastlingFlagsComponent/>
       </div>
       </div>
       </div>
-    </div>
   );
 };
 

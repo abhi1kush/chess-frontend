@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTheme, setSound } from '../../redux/actions/settingsActions';
 import "../../styles/components/settings.css"
 
-const Settings = () => {
+const Settings = React.memo(() => {
   const dispatch = useDispatch();
   const { theme, enableSound } = useSelector((state) => state.settings);
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +33,7 @@ const Settings = () => {
   const handleSoundChange = (event) => {
     dispatch(setSound(event.target.checked));
   };
-
+  console.log("render setting");
   return (
     <div className="settings-container" ref={settingsRef}>
       <button id="settings-button" className="action-button" onClick={toggleDropdown}>
@@ -64,6 +64,6 @@ const Settings = () => {
     </div>)}
     </div>
   );
-};
+});
 
 export default Settings;

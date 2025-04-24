@@ -1,7 +1,7 @@
 import React from "react";
 import "../../styles/components/NoticeBoard.css"
 
-const NoticeBoard = ({messages, isValid}) => {
+const NoticeBoard = React.memo(({messages, isValid}) => {
     return (
         <div className="notice-board">
             <div className={`notice-header ${isValid ? "legal" : "isIllegal"}`}>
@@ -12,6 +12,6 @@ const NoticeBoard = ({messages, isValid}) => {
             ))}
         </div>
     );
-};
+});
 
 export default NoticeBoard;

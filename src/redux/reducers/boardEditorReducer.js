@@ -1,7 +1,7 @@
-import { current } from "@reduxjs/toolkit";
+// import { current } from "@reduxjs/toolkit";
 import CONFIG, {startPosBoard, clearBoard} from "../../config"
 import {CLEAR_BOARD, RESET_BOARD, SET_BOARD_WITH_FEN, PUT_PIECE, MOVE_PIECE} from "../actions/boardEditorActions"
-import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenparser";
+import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenParser";
 
 const initialState = {
     board: [...startPosBoard],
@@ -9,11 +9,11 @@ const initialState = {
     selectedPalettePiece: null,
     isFlipped: false,
     playerToMove: CONFIG.WHITE,
-    castlingRights: {
-      whiteKingSide: true,
-      whiteQueenSide: true,
-      blackKingSide: true,
-      blackQueenSide: true
+    castlingFlags: {
+      K: true,
+      Q: true,
+      k: true,
+      q: true
     }
   };
 
@@ -23,12 +23,11 @@ const clearBoardState = {
   selectedPalettePiece: null,
   isFlipped: false,
   playerToMove: CONFIG.WHITE,
-  isFlipped: false,
-  castlingRights: {
-    whiteKingSide: true,
-    whiteQueenSide: true,
-    blackKingSide: true,
-    blackQueenSide: true
+  castlingFlags: {
+    K: true,
+    Q: true,
+    k: true,
+    q: true
   }
 }
 
@@ -42,17 +41,17 @@ const boardEditorReducer = (state = initialState, action) => {
       return {
         ...state,
         board: [...FenToBoard(action.payload.fen)],
-        playerToMove: GetPlayerToMove(fen),
+        playerToMove: GetPlayerToMove(action.payload.fen),
       }
     case PUT_PIECE:
       return {
         ...state,
-        board: putPiece(board, action.payload.id, action.payload.type),
+        board: putPiece(state.board, action.payload.id, action.payload.type),
       }
     case MOVE_PIECE: {
       return {
         ...state,
-        board: movePiece(board, action.payload.sourceSquareId, action.payload.destSquareId),
+        board: move_Piece(state.board, action.payload.sourceSquareId, action.payload.destSquareId),
       }
     }
     default:
@@ -63,7 +62,7 @@ const boardEditorReducer = (state = initialState, action) => {
   export default boardEditorReducer;
 
   const putPiece = (board, squareId, piece) => {
-    return board.map(rank => map(square => {
+    return board.map(rank => rank.map(square => {
       if (square.id == squareId) {
         return {
           ...square,
@@ -73,7 +72,7 @@ const boardEditorReducer = (state = initialState, action) => {
     }))
   }
 
-  const movePiece = (board, srcId, destId) => {
+  const move_Piece = (board, srcId, destId) => {
     let srcPiece = null;
     return board.map(rank => rank.map(square => {
       if (square.id == srcId) {

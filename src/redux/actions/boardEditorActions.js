@@ -5,6 +5,13 @@ export const FLIP_BOARD = 'FLIP_BOARD';
 export const SET_BOARD_WITH_FEN = 'SET_BOARD_WITH_FEN';
 export const PUT_PIECE = "PUT_PIECE";
 export const MOVE_PIECE = "MOVE_PIECE";
+export const TOGGLE_CASTLING_PIECE = "TOGGLE_CASTLING_PIECE";
+export const SET_PLAYER_TO_MOVE = "SET_PLAYER_TO_MOVE";
+
+export const setPlayerToMove = (playerColor) => ({
+  type: RESET_BOARD,
+  payload: playerColor,
+});
 
 export const resetBoard = () => ({
   type: RESET_BOARD,
@@ -28,10 +35,12 @@ export const putPiece = (squareId, piece) => ({
     payload: {id: squareId, type: piece},
 });
 
-export const movePiece = (sourceSquareId, destSquareId) => ({
+export const move_Piece = (sourceSquareId, destSquareId) => ({
     type: MOVE_PIECE,
     payload: {sourceSquareId: sourceSquareId, destSquareId: destSquareId},
 });
 
-
-
+export const toggleCastlingFlag = (flag) => ({
+    type: TOGGLE_CASTLING_PIECE,
+    payload: flag,
+});

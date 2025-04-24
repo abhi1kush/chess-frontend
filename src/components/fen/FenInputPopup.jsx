@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "../../styles/components/FenPopup.css";
+import "../../styles/components/FenInputPopup.css";
 
-const FenPopup = ({ onSubmit }) => {
+const FenInputPopup = React.memo(({ onSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [fen, setFen] = useState("");
 
@@ -22,7 +22,7 @@ const FenPopup = ({ onSubmit }) => {
     onSubmit(fen);
     handleClose();
   };
-
+  console.log("^ render fenInputPopup");
   return (
     <>
       <button className="action-button" onClick={handleOpen}>Set FEN</button>
@@ -48,6 +48,6 @@ const FenPopup = ({ onSubmit }) => {
       )}
     </>
   );
-};
+});
 
-export default FenPopup;
+export default FenInputPopup;

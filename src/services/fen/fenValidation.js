@@ -89,10 +89,10 @@ export const IsValidFen = (fen) => {
     }
 
     if (blackKingCount !== 1) {
-        return {isValid: false, msg: "There should be only one black king."};
+        return {isValid: false, msg: "There should be exactly one black king."};
     }
     if (whiteKingCount !== 1) {
-        return {isValid: false, msg: "There should be only one white king."};
+        return {isValid: false, msg: "There should be exactly one white king."};
     }
     
     for (let i = 0; i < castlingFlags.length; i++) {

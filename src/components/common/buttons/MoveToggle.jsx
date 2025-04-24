@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "../../../styles/components/MoveToggle.css";
 
 function MoveToggle({playerToMove, setPlayerToMove}) {
