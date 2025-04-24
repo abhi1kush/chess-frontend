@@ -1,6 +1,5 @@
-import { current } from "@reduxjs/toolkit";
 import CONFIG, {startPosBoard, clearBoard} from "../../config"
-import {CLEAR_BOARD, RESET_BOARD, SET_BOARD_WITH_FEN, PUT_PIECE, MOVE_PIECE} from "../actions/boardEditorActions"
+import {CLEAR_BOARD, RESET_BOARD, SET_BOARD_WITH_FEN, PUT_PIECE, MOVE_PIECE2} from "../actions/boardEditorActions"
 import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenparser";
 
 const initialState = {
@@ -42,17 +41,17 @@ const boardEditorReducer = (state = initialState, action) => {
       return {
         ...state,
         board: [...FenToBoard(action.payload.fen)],
-        playerToMove: GetPlayerToMove(fen),
+        playerToMove: GetPlayerToMove(action.payload.fen),
       }
     case PUT_PIECE:
       return {
         ...state,
-        board: putPiece(board, action.payload.id, action.payload.type),
+        board: putPiece(state.board, action.payload.id, action.payload.type),
       }
-    case MOVE_PIECE: {
+    case MOVE_PIECE2: {
       return {
         ...state,
-        board: movePiece(board, action.payload.sourceSquareId, action.payload.destSquareId),
+        board: move_Piece(state.board, action.payload.sourceSquareId, action.payload.destSquareId),
       }
     }
     default:
@@ -63,7 +62,7 @@ const boardEditorReducer = (state = initialState, action) => {
   export default boardEditorReducer;
 
   const putPiece = (board, squareId, piece) => {
-    return board.map(rank => map(square => {
+    return board.map(rank => rank.map(square => {
       if (square.id == squareId) {
         return {
           ...square,
@@ -73,7 +72,7 @@ const boardEditorReducer = (state = initialState, action) => {
     }))
   }
 
-  const movePiece = (board, srcId, destId) => {
+  const move_Piece = (board, srcId, destId) => {
     let srcPiece = null;
     return board.map(rank => rank.map(square => {
       if (square.id == srcId) {
