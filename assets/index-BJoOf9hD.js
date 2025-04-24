@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BYoIVMjH.js","assets/helpers-Bw3O6HpT.js","assets/helpers-CX52Veyb.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-BWqkRE1W.js","assets/AnalysisGame-Tf-ih67V.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-kHdkFMdX.js","assets/helpers-BTFKRZXY.js","assets/helpers-CX52Veyb.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-B7vGAFQ-.js","assets/AnalysisGame-Tf-ih67V.css"])))=>i.map(i=>d[i]);
 let Sf, ib, np, ub, J1, Mb, Qe, Bb, zb, Db, Pb, nb, Hb, Q, lp, qb, xb, Ub, Mp, wb, T, Cb, V1;
 let __tla = (async ()=>{
     (function() {
@@ -12366,7 +12366,7 @@ Error generating stack: ` + l.message + `
     gv = "CLEAR_BOARD";
     bv = "SET_BOARD_WITH_FEN";
     Sv = "PUT_PIECE";
-    Ev = "MOVE_PIECE";
+    Ev = "MOVE_PIECE2";
     xp = (u)=>{
         const r = new Sf;
         return r.load(u), r.board().map((o, d)=>o.map((y, m)=>({
@@ -12421,17 +12421,17 @@ Error generating stack: ` + l.message + `
                     board: [
                         ...xp(r.payload.fen)
                     ],
-                    playerToMove: _v(fen)
+                    playerToMove: _v(r.payload.fen)
                 };
             case Sv:
                 return {
                     ...u,
-                    board: Av(board, r.payload.id, r.payload.type)
+                    board: Av(u.board, r.payload.id, r.payload.type)
                 };
             case Ev:
                 return {
                     ...u,
-                    board: Ov(board, r.payload.sourceSquareId, r.payload.destSquareId)
+                    board: Ov(u.board, r.payload.sourceSquareId, r.payload.destSquareId)
                 };
             default:
                 return u;
@@ -14727,7 +14727,7 @@ Please change the parent <Route path="${L}"> to <Route path="${L === "/" ? "*" :
                         className: `palette-piece ${u?.type === o && u?.color === c ? "selected" : ""}`
                     }, `${c}-${o}`)))
         });
-    }), Ab = T.lazy(()=>Cp(()=>import("./ChessGame-BYoIVMjH.js"), __vite__mapDeps([0,1,2,3]))), Ob = T.lazy(()=>Cp(()=>import("./AnalysisGame-BWqkRE1W.js"), __vite__mapDeps([4,1,2,5]))), Nb = ()=>Q.jsx(lb, {
+    }), Ab = T.lazy(()=>Cp(()=>import("./ChessGame-kHdkFMdX.js"), __vite__mapDeps([0,1,2,3]))), Ob = T.lazy(()=>Cp(()=>import("./AnalysisGame-B7vGAFQ-.js"), __vite__mapDeps([4,1,2,5]))), Nb = ()=>Q.jsx(lb, {
             children: Q.jsxs(Yg, {
                 children: [
                     Q.jsxs("nav", {
