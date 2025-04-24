@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-CUV8iXG0.js","assets/helpers-CojZ9KEY.js","assets/helpers-CX52Veyb.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-omUO8uO1.js","assets/AnalysisGame-Tf-ih67V.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BYoIVMjH.js","assets/helpers-Bw3O6HpT.js","assets/helpers-CX52Veyb.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-BWqkRE1W.js","assets/AnalysisGame-Tf-ih67V.css"])))=>i.map(i=>d[i]);
 let Sf, ib, np, ub, J1, Mb, Qe, Bb, zb, Db, Pb, nb, Hb, Q, lp, qb, xb, Ub, Mp, wb, T, Cb, V1;
 let __tla = (async ()=>{
     (function() {
@@ -12437,7 +12437,7 @@ Error generating stack: ` + l.message + `
                 return u;
         }
     };
-    Av = (u, r, f)=>u.map((c)=>map((o)=>{
+    Av = (u, r, f)=>u.map((c)=>c.map((o)=>{
                 if (o.id == r) return {
                     ...o,
                     piece: f
@@ -14727,7 +14727,7 @@ Please change the parent <Route path="${L}"> to <Route path="${L === "/" ? "*" :
                         className: `palette-piece ${u?.type === o && u?.color === c ? "selected" : ""}`
                     }, `${c}-${o}`)))
         });
-    }), Ab = T.lazy(()=>Cp(()=>import("./ChessGame-CUV8iXG0.js"), __vite__mapDeps([0,1,2,3]))), Ob = T.lazy(()=>Cp(()=>import("./AnalysisGame-omUO8uO1.js"), __vite__mapDeps([4,1,2,5]))), Nb = ()=>Q.jsx(lb, {
+    }), Ab = T.lazy(()=>Cp(()=>import("./ChessGame-BYoIVMjH.js"), __vite__mapDeps([0,1,2,3]))), Ob = T.lazy(()=>Cp(()=>import("./AnalysisGame-BWqkRE1W.js"), __vite__mapDeps([4,1,2,5]))), Nb = ()=>Q.jsx(lb, {
             children: Q.jsxs(Yg, {
                 children: [
                     Q.jsxs("nav", {
