@@ -56,3 +56,21 @@
     font-size: 16px;
     font-weight: bold;
   }
+
+  @media (max-width: 450px) {
+    .circle-tick, .circle-cross{
+      display: none;
+    }
+    .fen-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .fen-display {
+      width: 100%;
+    }
+  
+    .copy-button {
+      display: none;
+    }   
+  }
