@@ -37,7 +37,7 @@ const Settings = React.memo(() => {
   return (
     <div className="settings-container" ref={settingsRef}>
       <button id="settings-button" className="action-button" onClick={toggleDropdown}>
-        ⚙️ Settings
+        ⚙️ <span className='settings-label'> Settings </span>
       </button>
 
       {isOpen && (

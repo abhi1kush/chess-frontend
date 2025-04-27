@@ -70,17 +70,16 @@
     display: flex;
     flex-direction: column;
     flex-flow: column wrap;
-    min-width: calc(var(--max-board-size) / 8);
-    max-width: calc(var(--max-board-size) / 4);
-    height: calc(6 * var(--square-size) + 4px);
-    /* background-color: blueviolet; */
-    border: 2px solid #9c9999;
+    min-width: var(--square-size);
+    max-width: calc(var(--square-size) * 2);
+    height: calc(var(--square-size)*7);
+    background-color: var(--background-color1);
     border-radius: 3px;
   }
   
   .palette img {
-    width: calc(var(--max-board-size) / 8);
-    height: calc(var(--max-board-size) / 8);
+    width: var(--square-size);
+    height: var(--square-size);
     cursor: grab;
     z-index: 100;
   }
@@ -184,7 +183,6 @@
     .routes {
       display: none;
     }
-
   
     .middle-container {
       flex-direction: column;
@@ -232,7 +230,7 @@
     .palette {
       flex-direction: row;
       flex-wrap: wrap;
-      max-width: 100%;
+      max-width: calc(var(--square-size) * 7);
       height: auto;
     }
   

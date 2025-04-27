@@ -14,6 +14,8 @@ const CONFIG = {
     CHECKMATE_MESSAGE: "Wins by Checkmate!",
     WHITE: 'w',
     BLACK: 'b', 
+    CHESS_PIECE: "chessPiece",
+    ERASER: "eraser",
   };
   
   export default CONFIG;
