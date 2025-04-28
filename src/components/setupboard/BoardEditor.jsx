@@ -47,10 +47,6 @@ const BoardEditor = () => {
     { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
    ];
 
-  useEffect(() => { 
-    console.log("Selected item changed", selectedItem);
-  },[selectedItem]);
-
   useEffect(() => {
     resetBoard();
   }, []);
@@ -159,7 +155,7 @@ const handleBoardPieceClick = (squareId, piece, selectedItem, setSelectedItem) =
   if (selectedItem == null) {
     setSelectedItem({type: CONFIG.BOARD_PIECE, id: `${squareId}-${piece.color}-${piece.type}`});
   }
-  console.log("Piece clicked", squareId, piece);
+  // console.log("Piece clicked", squareId, piece);
 }
 
 
@@ -184,7 +180,7 @@ const Piece = React.memo(({piece, squareId, selectedItem, setSelectedItem}) => {
       data-type={piece.type}
       data-color={piece.color}
       data-square={squareId}
-      onDragStart={(e) => handleDragStart(e, `${squareId}-${piece.type}`)}
+      onDragStart={(e) => handleDragStart(e, `${squareId}-${piece.color}-${piece.type}`)}
       onClick={() => handleBoardPieceClick(squareId, piece, selectedItem, setSelectedItem)}
     />
   );
@@ -265,7 +261,7 @@ const handleDrop = (e, targetId, board, setBoard) => {
   e.preventDefault();
   const pieceId = e.dataTransfer.getData("text");
   const sourcePiece = document.getElementById(pieceId);
-
+  // console.log(`handleDrop, targetId: ${targetId}, pieceID: ${pieceId}, sourcePiece`, sourcePiece);
   const updatedBoard = board.map(rank => rank.map(square => {
     if (square.id === targetId) {
       return {
