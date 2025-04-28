@@ -16,7 +16,7 @@ import NoticeBoard from "./NoticeBoard";
 import { IsValidFen } from "../../services/fen/fenValidation";
 
 // piece type: {type: "chessPiece" name: "k", color: "b"}
-const eraser = {type: CONFIG.ERASER, name: "eraserImage", color: ""};
+const eraser = {type: CONFIG.PALLETE_PIECE, id: CONFIG.ERASER_ID};
 const pieceCharToNameMap = {
   p: "pawn",
   n: "knight",
@@ -28,7 +28,7 @@ const pieceCharToNameMap = {
 
 const BoardEditor = () => {
   const [board, setBoard] = useState([]);
-  const [selectedPalleteItem, setselectedPalleteItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [isFlipped, setIsflipped] = useState(false);
   const [playerToMove, setPlayerToMove] = useState('w');
   const [whiteKingSide, setWhiteKingSide] = useState(true);
@@ -47,6 +47,10 @@ const BoardEditor = () => {
     { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
    ];
 
+  useEffect(() => { 
+    console.log("Selected item changed", selectedItem);
+  },[selectedItem]);
+
   useEffect(() => {
     resetBoard();
   }, []);
@@ -56,10 +60,12 @@ const BoardEditor = () => {
       ...square,
       piece: null
     })));
+    setSelectedItem(null);
     setBoard(cleared);
   };
 
   const resetBoard = () => {
+    setSelectedItem(null);
     setPlayerToMove("w");
     setWhiteKingSide(true);
     setWhiteQueenSide(true); 
@@ -86,7 +92,7 @@ const BoardEditor = () => {
     return fen;
   });
 
-  console.log("--- BoardEditor rendered", count.current);
+  // console.log("--- BoardEditor rendered", count.current);
   count.current += 1;
   useEffect(() => {
     const currentFen = generateFEN();
@@ -113,10 +119,11 @@ const BoardEditor = () => {
       <div className="fen-chessboard-container">
         <FenDisplayBox currentFen={fen.current} isValid={isValidFen}/>
         <div className="chessboard-container">
-          <Board board={board} isFlipped={isFlipped} selectedPalleteItem={selectedPalleteItem}
+          <Board board={board} isFlipped={isFlipped} selectedItem={selectedItem}
+          setSelectedItem={setSelectedItem}
           setBoard={setBoard}
           />
-        <PiecePallete selectedPalleteItem={selectedPalleteItem} setselectedPalleteItem={setselectedPalleteItem}/>
+        <PiecePallete selectedItem={selectedItem} setSelectedItem={setSelectedItem}/>
         <div className="castling">
           {/* <div><h3>Castling</h3></div> */}
           <div className="toggle-container">
@@ -147,7 +154,16 @@ const handleDragStart = (e, pieceId) => {
   e.dataTransfer.setData("text", pieceId);
 };
 
-const renderPiece = (piece, squareId) => {
+const handleBoardPieceClick = (squareId, piece, selectedItem, setSelectedItem) => {
+  if (piece == null) return;
+  if (selectedItem == null) {
+    setSelectedItem({type: CONFIG.BOARD_PIECE, id: `${squareId}-${piece.color}-${piece.type}`});
+  }
+  console.log("Piece clicked", squareId, piece);
+}
+
+
+const Piece = React.memo(({piece, squareId, selectedItem, setSelectedItem}) => {
   const pieceNameMap = {
     p: "pawn",
     n: "knight",
@@ -158,19 +174,21 @@ const renderPiece = (piece, squareId) => {
   }
   return (
     <img
-      className={"pieceimg"}
+      className={`pieceimg ${selectedItem != null && selectedItem?.type === CONFIG.BOARD_PIECE 
+        && selectedItem?.id === `${squareId}-${piece.color}-${piece.type}` ? 'selected' : ''}`}
       key={squareId}
-      id={`${squareId}-${piece.type}`}
-      src={`pieces/${piece.color}_${pieceNameMap[piece.type]}.png`}
+      id={`${squareId}-${piece.color}-${piece.type.toLowerCase()}`}
+      src={`pieces/svg/${piece.color}_${pieceNameMap[piece.type]}.svg`}
       alt={`${piece.color} ${piece.type}`}
       draggable
       data-type={piece.type}
       data-color={piece.color}
       data-square={squareId}
       onDragStart={(e) => handleDragStart(e, `${squareId}-${piece.type}`)}
+      onClick={() => handleBoardPieceClick(squareId, piece, selectedItem, setSelectedItem)}
     />
   );
-};
+});
 
 const rankTofen = (rank) => {
   let fen = "";
@@ -203,16 +221,26 @@ const allowDrop = (e) => {
   e.preventDefault();
 };
 
-const handleSquareClick = (board, squareId, selectedItem, setBoard) => {
-  if (!selectedItem) return;
+const handleSquareClick = ({board, squareId, squarePiece, selectedItem, setSelectedItem, setBoard}) => {
+  if (!selectedItem) {
+    if (squarePiece != null) {
+      setSelectedItem({type: CONFIG.BOARD_PIECE, id: `${squareId}-${squarePiece.color}-${squarePiece.type}`});
+    }
+    return;
+  }
+  const sourceSquare = selectedItem.id.split("-")[0];
   const updatedBoard = board.map(rank => rank.map(square => {
     if (square.id === squareId) {
-      if (selectedItem.type === CONFIG.ERASER) {
+      if (selectedItem.id === CONFIG.ERASER_ID) {
         return { ...square, piece: null };  // Remove the piece
       }
+      const splittedId = selectedItem.id.split("-");
       return {
         ...square, 
-        piece: {type: selectedItem.name, color: selectedItem.color} }; // Place the piece
+        piece: {type: splittedId[2], color: splittedId[1]} }; // Place the piece
+    } else if (selectedItem.type === CONFIG.BOARD_PIECE && square.id === sourceSquare) {
+      setSelectedItem(null);  // Deselect the piece
+      return { ...square, piece: null };  // Remove the piece from source square
     }
     return square;
   }));
@@ -260,9 +288,9 @@ const handleDrop = (e, targetId, board, setBoard) => {
   setBoard(updatedBoard);
 };
 
-const Board = React.memo(({ board, isFlipped, selectedPalleteItem, setBoard }) => {
+const Board = React.memo(({ board, isFlipped, selectedItem, setSelectedItem, setBoard}) => {
   const visualBoard = isFlipped ? [...board].reverse().map(row => ([...row].reverse())) : board;
-  console.log("* render board");
+  // console.log("* render board");
   return (
     <div id="chessboard">
         {visualBoard.map((row, rowIndex) => row.map((square, colIndex) => {
@@ -273,13 +301,17 @@ const Board = React.memo(({ board, isFlipped, selectedPalleteItem, setBoard }) =
                 key={square.id}
                 className={`square ${getSquareColor(square.id)}`}
                 onDragOver={allowDrop}
-                onClick={() => handleSquareClick(board, square.id, selectedPalleteItem, setBoard)}
+                onClick={() => handleSquareClick({
+                  board: board, squareId: square.id, squarePiece: square.piece, 
+                  selectedItem: selectedItem, setSelectedItem: setSelectedItem, setBoard: setBoard})}
+                // onTouchStart={() => handleSquareClick(board, square.id, selectedItem, setBoard)}
                 onDrop={(e) => handleDrop(e, square.id, board, setBoard)}
                 onContextMenu={(e) => handleRightClick(e, square.id, board, setBoard)}
                 >
                     { colIndex === 0 && <div className="rank-label">{rankLabel}</div>}
                     { rowIndex === 7 && <div className="file-label">{fileLabel}</div>} 
-                    {square.piece && renderPiece(square.piece, square.id)}
+                    {square.piece && <Piece piece={square.piece} squareId={square.id} 
+                    selectedItem={selectedItem} setSelectedItem={setSelectedItem}/>}
                 </div>
             )
         }))}
@@ -287,22 +319,36 @@ const Board = React.memo(({ board, isFlipped, selectedPalleteItem, setBoard }) =
 });
 
 //  item type: {type: "chessPiece, name: "k", color: "b"}
-const handlePaletteClick = ({item, selectedPalleteItem, setselectedPalleteItem}) => {
-  if (selectedPalleteItem != null 
-    && item.type == selectedPalleteItem.type 
-    && item.name === selectedPalleteItem.name
-    && item.color === selectedPalleteItem.color) {
-    setselectedPalleteItem(null); 
-  } else {
-    setselectedPalleteItem(item);
+const handlePaletteClick = ({item, selectedItem, setSelectedItem}) => {
+  // No selected Item.
+  if (selectedItem == null) {
+    setSelectedItem(item);
+    return;
   }
+  
+  // deselect if clicked again on selected item.
+  if (item.id === selectedItem.id) {
+    setSelectedItem(null); 
+    return;
+  }
+  
+
+  if (selectedItem.type === CONFIG.BOARD_PIECE) {
+    // Pallete selection on higher priorty.
+    if (item.type === CONFIG.PALLETE_PIECE) {
+      setSelectedItem(item);
+    }
+  } else if (selectedItem.type === CONFIG.PALLETE_PIECE && item.type === selectedItem.type) { // another pallete item clicked.
+    setSelectedItem(item);
+  }
+  // console.log("Palette clicked", item, selectedItem, item.id === selectedItem.id);
 };
 
-const PiecePallete = React.memo(({selectedPalleteItem, setselectedPalleteItem}) => {
+const PiecePallete = React.memo(({selectedItem, setSelectedItem}) => {
   const pieceCodes = [
     "p", "r", "n", "b", "q", "k"
   ];
-  console.log("+ render palette");
+  // console.log("+ render palette");
   return (
     <div className="palette">
       {["w", "b"].map(color =>
@@ -310,33 +356,32 @@ const PiecePallete = React.memo(({selectedPalleteItem, setselectedPalleteItem}) 
           <img
           key={`${color}-${pieceCode}`}
           id={`palette-${color}-${pieceCode}`}
-          src={`pieces/${color}_${pieceCharToNameMap[pieceCode]}.png`}
+          src={`pieces/svg/${color}_${pieceCharToNameMap[pieceCode]}.svg`}
           alt={`${color} ${pieceCode}`}
           draggable
           data-type={pieceCode}
           data-color={color}
           data-square="palette"
           onClick={() => {handlePaletteClick({
-            item: {type: CONFIG.CHESS_PIECE, name: pieceCode, color: color}, selectedPalleteItem: selectedPalleteItem, 
-            setselectedPalleteItem: setselectedPalleteItem
+            item: {type: CONFIG.PALLETE_PIECE, id: `p-${color}-${pieceCode}`}, selectedItem: selectedItem, 
+            setSelectedItem: setSelectedItem
           })}}
           onDragStart={(e) =>
             handleDragStart(e, `palette-${color}-${pieceCode}`)
           }
-          className={`palette-piece ${selectedPalleteItem?.type === CONFIG.CHESS_PIECE 
-            && selectedPalleteItem?.name === pieceCode 
-            && selectedPalleteItem?.color === color ? 'selected' : ''}`}
+          className={`palette-piece ${selectedItem?.type === CONFIG.PALLETE_PIECE 
+            && selectedItem?.id === `p-${color}-${pieceCode.toLowerCase()}` ? 'selected' : ''}`}
             style={{order: color == "w" ? pieceCodes.indexOf(pieceCode) : pieceCodes.indexOf(pieceCode) + 7}}
         />
         ))
       )}
-      <img data-square="palette" src="assets/eraser.png"
+      <img data-square="palette" src="assets/eraser.svg"
         style={{order:6}}
         onClick={() => {handlePaletteClick({
-          item: eraser, selectedPalleteItem: selectedPalleteItem, 
-          setselectedPalleteItem: setselectedPalleteItem
+          item: eraser, selectedItem: selectedItem, 
+          setSelectedItem: setSelectedItem
       })}}
-      className={`palette-piece eraser ${selectedPalleteItem?.type === eraser.type ? 'selected' : ''}`}
+      className={`palette-piece eraser ${selectedItem?.id === eraser.id ? 'selected' : ''}`}
       />
     </div>)
 });

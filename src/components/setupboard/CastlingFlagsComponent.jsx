@@ -9,7 +9,7 @@ import { setPlayerToMove, toggleCastlingFlag } from "../../redux/actions/boardEd
 const CastlingFlagsComponent = ({isValidFen, fenErrorMsg}) => {
   const {playerToMove, castlingFlags } = useSelector((state) => state.boardeditor);
   const dispatch = useDispatch();
-  console.log("CastlingFlags rendered", castlingFlags, playerToMove);
+  // console.log("CastlingFlags rendered", castlingFlags, playerToMove);
   const castlingFlagsUI = [
     { flag: 'K', label: "White King-Side", state: castlingFlags.K},
     { flag: 'Q', label: "White Queen-Side", state: castlingFlags.Q},

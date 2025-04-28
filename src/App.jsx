@@ -6,8 +6,7 @@ import "./styles/global.css"
 import StockfishProvider from "./context/StockfishContext"
 const ChessGame = lazy(() => import('./components/gameplay/ChessGame'));
 const AnalysisGame = lazy(() => import('./components/analysis/AnalysisGame'));
-import BoardEditor from "./components/boardeditor/BoardEditor";
-import BoardEditorPage from './components/boardeditor/BoardEditorPage';
+import BoardEditor from "./components/setupboard/BoardEditor";
 
 const App = () => {
   return (
@@ -17,7 +16,6 @@ const App = () => {
               <Link to="/boardeditor" className='action-button no-decoration'>Board Editor</Link>
               <Link to="/analysis" className='action-button no-decoration'>Analyse Game</Link>
               <Link to="/gameplay" className='action-button no-decoration'>Play Game</Link>
-              <Link to="/reduxboardeditor" className='action-button no-decoration'>Redux Board Editor</Link>
         </nav>
         <Suspense fallback={<div className="loading-screen">Loading...</div>}>
           <Routes>
@@ -28,7 +26,6 @@ const App = () => {
             } />
             <Route path="/gameplay" element={<ChessGame/>} />
             <Route path="/boardeditor" element={<BoardEditor/>} />
-            <Route path="/reduxboardeditor" element={<BoardEditorPage/>} />
             <Route path="*" element={<BoardEditor/>} /> {/* fallback route */}
           </Routes>
         </Suspense>
