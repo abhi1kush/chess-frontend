@@ -229,7 +229,7 @@ const handleSquareClick = ({board, squareId, squarePiece, selectedItem, setSelec
     setSelectedItem(null);
     return;
   }
-  
+
   const sourceSquare = selectedItem.id.split("-")[0];
   const updatedBoard = board.map(rank => rank.map(square => {
     if (square.id === squareId) {
@@ -243,20 +243,6 @@ const handleSquareClick = ({board, squareId, squarePiece, selectedItem, setSelec
     } else if (selectedItem.type === CONFIG.BOARD_PIECE && square.id === sourceSquare) {
       setSelectedItem(null);  // Deselect the piece
       return { ...square, piece: null };  // Remove the piece from source square
-    }
-    return square;
-  }));
-  setBoard(updatedBoard);
-};
-
-const handleRightClick = (e, squareId, board, setBoard) => {
-  e.preventDefault();  // Prevent browser's context menu
-  const updatedBoard = board.map(rank => rank.map(square => {
-    if (square.id === squareId) {
-      return {
-        ...square,
-        piece: null  // Remove the piece
-      };
     }
     return square;
   }));
@@ -296,29 +282,39 @@ const Board = React.memo(({ board, isFlipped, selectedItem, setSelectedItem, set
   return (
     <div id="chessboard">
         {visualBoard.map((row, rowIndex) => row.map((square, colIndex) => {
-            const rankLabel = isFlipped ? rowIndex + 1 : (7 - rowIndex) + 1;
-            const fileLabel = isFlipped ? "hgfedcba"[colIndex] : "abcdefgh"[colIndex];
             return (
-                <div
-                key={square.id}
-                className={`square ${getSquareColor(square.id)}`}
-                onDragOver={allowDrop}
-                onClick={() => handleSquareClick({
-                  board: board, squareId: square.id, squarePiece: square.piece, 
-                  selectedItem: selectedItem, setSelectedItem: setSelectedItem, setBoard: setBoard})}
-                // onTouchStart={() => handleSquareClick(board, square.id, selectedItem, setBoard)}
-                onDrop={(e) => handleDrop(e, square.id, board, setBoard)}
-                // onContextMenu={(e) => handleRightClick(e, square.id, board, setBoard)}
-                >
-                    { colIndex === 0 && <div className="rank-label">{rankLabel}</div>}
-                    { rowIndex === 7 && <div className="file-label">{fileLabel}</div>} 
-                    {square.piece && <Piece piece={square.piece} squareId={square.id} 
-                    selectedItem={selectedItem} setSelectedItem={setSelectedItem}/>}
-                </div>
+                <Square
+                  showRankLabel={colIndex === 0}
+                  showFileLabel={rowIndex === 7}
+                  board={board}
+                  setBoard={setBoard}
+                  square={square}
+                  selectedItem={selectedItem}
+                  setSelectedItem={setSelectedItem}
+                />
             )
         }))}
   </div>)
 });
+
+const Square = React.memo(({showRankLabel, showFileLabel, board, setBoard, square, selectedItem, setSelectedItem}) => {
+  return (
+    <div
+    className={`square ${getSquareColor(square.id)}`}
+    onDragOver={allowDrop}
+    onClick={() => handleSquareClick({
+      board: board, squareId: square.id, squarePiece: square.piece, 
+      selectedItem: selectedItem, setSelectedItem: setSelectedItem, setBoard: setBoard})}
+      onDrop={(e) => handleDrop(e, square.id, board, setBoard)}
+    >
+        { showRankLabel && <div className="rank-label">{square.id[0]}</div>}
+        { showFileLabel && <div className="file-label">{square.id[1]}</div>} 
+        {square.piece && <Piece piece={square.piece} squareId={square.id} 
+        selectedItem={selectedItem} setSelectedItem={setSelectedItem}/>}
+    </div>
+  );
+});
+
 
 //  item type: {type: "chessPiece, name: "k", color: "b"}
 const handlePaletteClick = ({item, selectedItem, setSelectedItem}) => {
