@@ -224,6 +224,12 @@ const handleSquareClick = ({board, squareId, squarePiece, selectedItem, setSelec
     }
     return;
   }
+  // deslect if clicked again on same piece.
+  if (squarePiece != null && selectedItem.id === `${squareId}-${squarePiece.color}-${squarePiece.type}`) {
+    setSelectedItem(null);
+    return;
+  }
+  
   const sourceSquare = selectedItem.id.split("-")[0];
   const updatedBoard = board.map(rank => rank.map(square => {
     if (square.id === squareId) {
@@ -302,7 +308,7 @@ const Board = React.memo(({ board, isFlipped, selectedItem, setSelectedItem, set
                   selectedItem: selectedItem, setSelectedItem: setSelectedItem, setBoard: setBoard})}
                 // onTouchStart={() => handleSquareClick(board, square.id, selectedItem, setBoard)}
                 onDrop={(e) => handleDrop(e, square.id, board, setBoard)}
-                onContextMenu={(e) => handleRightClick(e, square.id, board, setBoard)}
+                // onContextMenu={(e) => handleRightClick(e, square.id, board, setBoard)}
                 >
                     { colIndex === 0 && <div className="rank-label">{rankLabel}</div>}
                     { rowIndex === 7 && <div className="file-label">{fileLabel}</div>} 
