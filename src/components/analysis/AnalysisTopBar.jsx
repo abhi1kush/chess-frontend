@@ -11,8 +11,8 @@ const AnalysisTopBar = () => {
     <nav className="top-bar">
       <FlipButton/>
       <PgnUploader/>
-      <Settings />
       <DarkThemeToggle/>
+      <Settings />
     </nav>
   );
 };

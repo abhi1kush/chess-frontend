@@ -15,13 +15,6 @@
     font-size: 1.5rem;
 }
 
-/* Settings Always on Top Right */
-/* .settings-container {
-    position: absolute;
-    right: 10px;
-    border-radius: 8px;
-} */
-
 /* Middle Section */
 .middle-container {
     height: calc(100dvh - var(--top-container-height));

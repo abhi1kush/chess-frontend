@@ -107,7 +107,7 @@ const BoardEditor = () => {
             <button onClick={() => {setIsflipped(!isFlipped)}} className="action-button">Flip</button>
             <FenInputPopup onSubmit={handleFenSubmit}/>
             <DarkThemeToggle/>
-            <Settings />
+            {/* <Settings /> */}
         </nav>
       </div>
       <div className="middle-container">
