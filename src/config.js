@@ -16,6 +16,7 @@ const CONFIG = {
     BLACK: 'b', 
     CHESS_PIECE: "chessPiece",
     ERASER: "eraser",
+    PIECE_CLASS: "pieceimg",
   };
   
   export default CONFIG;
