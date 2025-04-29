@@ -1,15 +1,19 @@
+import React from 'react';
 import "../../styles/components/FenDisplayBox.css";
+import { useFEN } from '../../services/fen/useFEN';
 
-const FenDisplayBox = ({ currentFen, isValid}) => {
+const FenDisplayBox = React.memo(({ isValid}) => {
+  const fen = useFEN();
   const handleCopy = () => {
-    navigator.clipboard.writeText(currentFen);
+    navigator.clipboard.writeText(fen);
     alert("FEN copied to clipboard!");
   };
 
+  console.log("FEN Display Box: ", fen);
   return (
     <div className="fen-container">
       <div id="fen-display" className="fen-display">
-        {currentFen}
+        {fen}
       </div>
       {isValid ? <div className="circle-tick">✔</div>:<div className="circle-cross">✖</div>}
       <button onClick={handleCopy} className="copy-button">
@@ -23,6 +27,6 @@ const FenDisplayBox = ({ currentFen, isValid}) => {
       </button>
     </div>
   );
-};
+});
 
 export default FenDisplayBox;

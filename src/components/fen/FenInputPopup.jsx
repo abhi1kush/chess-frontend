@@ -22,7 +22,7 @@ const FenInputPopup = React.memo(({ onSubmit }) => {
     onSubmit(fen);
     handleClose();
   };
-  console.log("^ render fenInputPopup");
+  // console.log("^ render fenInputPopup");
   return (
     <>
       <button className="action-button" onClick={handleOpen}>Set FEN</button>

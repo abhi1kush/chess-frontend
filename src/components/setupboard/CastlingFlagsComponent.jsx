@@ -2,7 +2,7 @@ import React from "react";
 import ToggleButton from "../common/buttons/ToggleButton";
 import MoveToggle from "../common/buttons/MoveToggle";
 import { useSelector, useDispatch } from "react-redux";
-import NoticeBoard from "./NoticeBoard";
+import NoticeBoard from "./components/NoticeBoard";
 // import { IsValidFen } from "../../services/fen/fenValidation";
 import { setPlayerToMove, toggleCastlingFlag } from "../../redux/actions/boardEditorActions";
 
