@@ -27,6 +27,7 @@
   --settings-hover: #a3c7f3; 
   --toggle-button-color: #68a4ed;
   --toggle-button-color-hover: #398bee;
+  --shadow: rgba(0, 0, 0, 0.2);
 
   --dvh: 1vh;
   --evalbar-width: 30px;
@@ -69,6 +70,7 @@
   --nav-shadow: rgba(248, 248, 248, 0.05); 
   --settings-color: #0b3c78;
   --settings-hover: #042247;
+  --shadow: rgba(242, 241, 241, 0.2);
 }
 
 html, body {

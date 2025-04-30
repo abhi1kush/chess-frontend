@@ -18,6 +18,7 @@ import Palette from "./Palette";
 import { generateFEN } from "../../services/fen/fenGenerator";
 import Board from "./Board";
 import { setFen } from '../../services/fen/useFEN';
+import ToastIcon from "../common/buttons/ToolTipWrapper";
 
 const BoardEditor = () => {
   const [board, setBoard] = useState([]);
@@ -82,9 +83,8 @@ const BoardEditor = () => {
     setIsValidFen(prev => (prev !== isValid ? isValid : prev));
     setFenErrorMsg(prev => (prev !== msg ? msg : prev));
     setFen(currentFen);
-    console.log("BoardEditor useEffect", board, currentFen);
   }, [generateFenFromBoard, board]);
-
+  console.log("board editor rendered", count.current);
   return (
     <div className="main-container">
       <div className="top-container"> 
@@ -100,7 +100,7 @@ const BoardEditor = () => {
       <div className="middle-container">
       <div className="left-menu-bar"></div>
       <div className="fen-chessboard-container">
-        <FenDisplayBox isValid={isValidFen}/>
+        <FenDisplayBox isValid={isValidFen} fenErrorMsg={fenErrorMsg}/>
         <div className="chessboard-container">
           <Board board={board} isFlipped={isFlipped} selectedItem={selectedItem}
           setSelectedItem={setSelectedItem}

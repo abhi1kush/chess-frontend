@@ -1,0 +1,51 @@
+.toast-wrapper {
+    position: relative;
+    display: inline-block;
+
+  }
+  
+  
+  @media (min-width: 800px) {
+    .toast-button {
+      border: none;
+      background: none;
+    }
+
+    .toast-message {
+      display: none;;
+    }
+  }
+
+  @media (max-width: 450px) {
+    .toast-button {
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+      border: none;
+      background: none;
+    }
+    
+    .toast-button:hover {
+      transform: scale(1.1);
+    }
+
+    .toast-message {
+      position: absolute;
+      top: 2.5rem;      /* below the icon */
+      right: 0;         /* aligns the right edge of toast to icon */
+      padding: 0.5rem 1rem;
+      background-color: #ffdddd;
+      color: darkred;
+      border-radius: 0.25rem;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+    
+      width: 60dvw;         /* safe width for small screens */
+      word-wrap: break-word;
+      white-space: normal;
+      text-align: left;
+      z-index: 10001;
+      border-color: #ffaaaa;
+    }
+    
+
+  }
