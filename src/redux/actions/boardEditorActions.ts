@@ -35,6 +35,13 @@ interface PutPieceAction {
   };
 }
 
+interface RemovePieceAction {
+  type: typeof REMOVE_PIECE;
+  payload: {
+    squareId: string;
+  };
+}
+
 interface MoveBoardPieceAction {
   type: typeof MOVE_BOARD_PIECE;
   payload: {
@@ -48,7 +55,8 @@ export type BoardEditorActions =
   | ResetBoardAction
   | SetBoardWithFenAction
   | PutPieceAction
-  | MoveBoardPieceAction;
+  | MoveBoardPieceAction
+  | RemovePieceAction;
 
 export const setPlayerToMoveAction = (playerColor: PieceColor) => ({
   type: RESET_BOARD,
@@ -74,7 +82,7 @@ export const setupBoardWithFenAction = (fen: string) => ({
 
 export const putPieceAction = (squareId: string, piece: PieceType) => ({
     type: PUT_PIECE,
-    payload: {squareId: squareId, pieceType: piece},
+    payload: {squareId: squareId, piece: piece},
 });
 
 export const removePieceAction = (squareId: string) => ({

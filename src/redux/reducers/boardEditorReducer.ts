@@ -1,6 +1,8 @@
 // import { current } from "@reduxjs/toolkit";
 import CONFIG, {StartChessPosition, ClearBoardPosition} from "../../config"
-import {BoardEditorActions, CLEAR_BOARD, RESET_BOARD, SET_BOARD_WITH_FEN, PUT_PIECE, MOVE_BOARD_PIECE} from "../actions/boardEditorActions"
+import {BoardEditorActions, CLEAR_BOARD, RESET_BOARD, 
+  SET_BOARD_WITH_FEN, PUT_PIECE, REMOVE_PIECE,
+   MOVE_BOARD_PIECE} from "../actions/boardEditorActions"
 import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenparser";
 import {BoardState} from "../../CustomTypes/CustomTypes"
 
@@ -51,10 +53,7 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
         ...state,
         board: {
           ...state.board,
-          [action.payload.squareId]: {
-            ...state.board[action.payload.squareId],
-            piece: action.payload.piece,
-          }
+          [action.payload.squareId]: action.payload.piece,
         }
       }
     case MOVE_BOARD_PIECE: {
@@ -63,14 +62,17 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
         ...state,
         board: {
           ...state.board,
-          [action.payload.destSquareId]: {
-            ...state.board[action.payload.destSquareId],
-            piece: piece,
-          },
-          [action.payload.sourceSquareId]: {
-            ...state.board[action.payload.sourceSquareId],
-            piece: null,
-          },
+          [action.payload.destSquareId]: piece,
+          [action.payload.sourceSquareId]: null,
+        }
+      }
+    }
+    case REMOVE_PIECE: {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          [action.payload.squareId]: null,
         }
       }
     }
