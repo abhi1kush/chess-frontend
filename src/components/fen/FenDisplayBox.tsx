@@ -3,7 +3,12 @@ import "../../styles/components/FenDisplayBox.css";
 import { useFEN } from '../../services/fen/useFEN';
 import ToolTipWrapper from '../common/buttons/ToolTipWrapper';
 
-const FenDisplayBox = React.memo(({ isValid, fenErrorMsg}) => {
+interface FenDisplayBoxProps {
+  isValid: boolean;
+  fenErrorMsg: string;
+}
+
+const FenDisplayBox: React.FC<FenDisplayBoxProps> = React.memo(({ isValid, fenErrorMsg}) => {
   const fen = useFEN();
   const handleCopy = () => {
     navigator.clipboard.writeText(fen);

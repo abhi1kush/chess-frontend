@@ -4,7 +4,7 @@
 
   }
   
-  
+
   @media (min-width: 800px) {
     .toast-button {
       border: none;
@@ -25,10 +25,6 @@
       background: none;
     }
     
-    .toast-button:hover {
-      transform: scale(1.1);
-    }
-
     .toast-message {
       position: absolute;
       top: 2.5rem;      /* below the icon */

@@ -6,7 +6,7 @@ function ToolTipWrapper({component, message}) {
 
   const handleClick = () => {
     setShow(true);
-    setTimeout(() => setShow(false), 3000);
+    setTimeout(() => setShow(false), 2000);
   };
 
   return (

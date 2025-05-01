@@ -2,12 +2,19 @@ import React from "react";
 import ToggleButton from "../common/buttons/ToggleButton";
 import MoveToggle from "../common/buttons/MoveToggle";
 import { useSelector, useDispatch } from "react-redux";
-import NoticeBoard from "./components/NoticeBoard";
+import NoticeBoard from "./NoticeBoard";
 // import { IsValidFen } from "../../services/fen/fenValidation";
-import { setPlayerToMove, toggleCastlingFlag } from "../../redux/actions/boardEditorActions";
+import { setPlayerToMoveAction, toggleCastlingFlagAction } from "../../redux/actions/boardEditorActions";
+import { RootState } from "../../redux/reducers/reducers";
 
-const CastlingFlagsComponent = ({isValidFen, fenErrorMsg}) => {
-  const {playerToMove, castlingFlags } = useSelector((state) => state.boardeditor);
+
+interface CastlingFlagsComponentProps {
+  isValidFen: boolean;
+  fenErrorMsg: string;
+}
+
+const CastlingFlagsComponent: React.FC<CastlingFlagsComponentProps> = ({isValidFen, fenErrorMsg}) => {
+  const {playerToMove, castlingFlags } = useSelector((state: RootState) => state.boardeditor);
   const dispatch = useDispatch();
   // console.log("CastlingFlags rendered", castlingFlags, playerToMove);
   const castlingFlagsUI = [
@@ -22,7 +29,9 @@ const CastlingFlagsComponent = ({isValidFen, fenErrorMsg}) => {
         {/* <div><h3>Castling</h3></div> */}
         <div className="toggle-container">
             <span>To Move : </span>
-            <MoveToggle playerToMove={playerToMove} setPlayerToMove={() => {dispatch(setPlayerToMove(playerToMove === 'w' ? 'b' : 'w'))}}/>
+            <MoveToggle playerToMove={playerToMove} setPlayerToMove={
+              () => {dispatch(setPlayerToMoveAction(playerToMove === 'w' ? 'b' : 'w'))}}
+            />
         </div> 
         {
             castlingFlagsUI.map(({flag, label, state}) => (
@@ -30,7 +39,7 @@ const CastlingFlagsComponent = ({isValidFen, fenErrorMsg}) => {
             key={label}
             labelText={label} 
             toggle={state} 
-            handleToggle={() => {dispatch(toggleCastlingFlag(flag))}}
+            handleToggle={() => {dispatch(toggleCastlingFlagAction(flag))}}
             />))
         }
         <NoticeBoard messages={[{type: isValidFen ? "ok" : "error", text: fenErrorMsg}]} isValid={isValidFen}/>

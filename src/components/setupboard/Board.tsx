@@ -1,25 +1,29 @@
 import React from 'react';
-
+import { useSelector } from 'react-redux';
 import { allowDrop, handleSquareClick, handleDrop} from "./eventhandlers/SquareEventHandlers";
 import { handleDragStart, handleBoardPieceClick } from "./eventhandlers/PieceEventHandlers";
 import Square from './Square';
+import {FlippedSquareIds, SquareIds} from '../../config';
+import { RootState } from '../../redux/reducers/reducers';
 
-const Board = React.memo(({ board, isFlipped, selectedItem, setSelectedItem, setBoard}) => {
-    const visualBoard = isFlipped ? [...board].reverse().map(row => ([...row].reverse())) : board;
-    // console.log("* render board");
+interface BoardProps {
+  isFlipped: boolean;
+}
+
+const Board: React.FC<BoardProps> = React.memo(({ isFlipped }) => {
+    const visualBoard = isFlipped ? FlippedSquareIds : SquareIds;
+    const board = useSelector((state: RootState) => state.boardeditor.board);
+
     return (
       <div id="chessboard">
-          {visualBoard.map((row, rowIndex) => row.map((square, colIndex) => {
+          {visualBoard.map((row, rowIndex) => row.map((squareId, colIndex) => {
               return (
                   <Square
-                    key={square.id}
+                    key={squareId}
                     showRankLabel={colIndex === 0}
                     showFileLabel={rowIndex === 7}
-                    board={board}
-                    setBoard={setBoard}
-                    square={square}
-                    selectedItem={selectedItem}
-                    setSelectedItem={setSelectedItem}
+                    squareId={squareId}
+                    squarePiece={board[squareId]}
                     handleSquareClick={handleSquareClick}
                     handleDrop={handleDrop}
                     allowDrop={allowDrop}

@@ -8,8 +8,6 @@ import ToggleButton from "../common/buttons/ToggleButton";
 import MoveToggle from "../common/buttons/MoveToggle";
 import FenInputPopup from "../fen/FenInputPopup";
 import FenDisplayBox from "../fen/FenDisplayBox";
-import CONFIG from "../../config";
-import { FenToBoard } from "../../services/fen/fenParser";
 import NoticeBoard from "./NoticeBoard";
 import { IsValidFen } from "../../services/fen/fenValidation";
 import { handleDragStart } from "./eventhandlers/PieceEventHandlers";
@@ -18,20 +16,23 @@ import Palette from "./Palette";
 import { generateFEN } from "../../services/fen/fenGenerator";
 import Board from "./Board";
 import { setFen } from '../../services/fen/useFEN';
-import ToastIcon from "../common/buttons/ToolTipWrapper";
+import {useDispatch, useSelector} from "react-redux";
+import { deselectItemAction } from "../../redux/actions/selectedItemActions";
+import { clearBoardAction, resetBoardAction, setupBoardWithFenAction } from "../../redux/actions/boardEditorActions";
+import { RootState } from "../../redux/reducers/reducers";
 
-const BoardEditor = () => {
-  const [board, setBoard] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [isFlipped, setIsflipped] = useState(false);
-  const [playerToMove, setPlayerToMove] = useState('w');
-  const [whiteKingSide, setWhiteKingSide] = useState(true);
-  const [whiteQueenSide, setWhiteQueenSide] = useState(true);
-  const [blackKingSide, setBlackKingSide] = useState(true);
-  const [blackQueenSide, setBlackQueenSide] = useState(true);
+const BoardEditor: React.FC = () => {
+  const { board } = useSelector((state: RootState) => state.boardeditor)
+  const [isFlipped, setIsflipped] = useState<boolean>(false);
+  const [playerToMove, setPlayerToMove] = useState<'w' | 'b'>('w');
+  const [whiteKingSide, setWhiteKingSide] = useState<boolean>(true);
+  const [whiteQueenSide, setWhiteQueenSide] = useState<boolean>(true);
+  const [blackKingSide, setBlackKingSide] = useState<boolean>(true);
+  const [blackQueenSide, setBlackQueenSide] = useState<boolean>(true);
   const count = useRef(0);
-  const [isValidFen, setIsValidFen] = useState(false);
-  const [fenErrorMsg, setFenErrorMsg] = useState("");
+  const [isValidFen, setIsValidFen] = useState<boolean>(false);
+  const [fenErrorMsg, setFenErrorMsg] = useState<string>("");
+  const dispatch = useDispatch();
   
 
   const castlingFlags = [
@@ -46,30 +47,26 @@ const BoardEditor = () => {
   }, []);
 
   const clearBoard = () => {
-    const cleared = board.map(rank => rank.map(square => ({
-      ...square,
-      piece: null
-    })));
-    setSelectedItem(null);
-    setBoard(cleared);
+    dispatch(deselectItemAction());
+    dispatch(clearBoardAction());
   };
 
   const resetBoard = () => {
-    setSelectedItem(null);
+    dispatch(deselectItemAction());
     setPlayerToMove("w");
     setWhiteKingSide(true);
     setWhiteQueenSide(true); 
     setBlackKingSide(true);
     setBlackQueenSide(true);
-    setBoardFromFEN(CONFIG.START_FEN, setBoard);
+    dispatch(resetBoardAction())
   };
 
-  const handleFenSubmit = useCallback((fenString) => {
+  const handleFenSubmit = useCallback((fenString: string) => {
     console.log("Received FEN:", fenString);
-    setBoardFromFEN(fenString, setBoard);
-  });
+    dispatch(setupBoardWithFenAction(fenString));
+  }, [dispatch]);
 
-  const generateFenFromBoard = useCallback((halfmoveClock = 0, fullmoveNumber = 1) => {
+  const generateFenFromBoard = useCallback((halfmoveClock = 0, fullmoveNumber = 1): string => {
     return generateFEN({board: board, playerToMove: playerToMove, whiteKingSide: whiteKingSide, 
       whiteQueenSide : whiteQueenSide, blackKingSide: blackKingSide, blackQueenSide: blackQueenSide, 
       halfmoveClock: halfmoveClock, fullmoveNumber: fullmoveNumber});
@@ -102,12 +99,8 @@ const BoardEditor = () => {
       <div className="fen-chessboard-container">
         <FenDisplayBox isValid={isValidFen} fenErrorMsg={fenErrorMsg}/>
         <div className="chessboard-container">
-          <Board board={board} isFlipped={isFlipped} selectedItem={selectedItem}
-          setSelectedItem={setSelectedItem}
-          setBoard={setBoard}
-          />
-        <Palette selectedItem={selectedItem} setSelectedItem={setSelectedItem} 
-        handleDragStart={handleDragStart} handlePaletteClick={handlePaletteClick}/>
+          <Board isFlipped={isFlipped}/>
+        <Palette handleDragStart={handleDragStart} handlePaletteClick={handlePaletteClick}/>
         <div className="castling">
           {/* <div><h3>Castling</h3></div> */}
           <div className="toggle-container">
@@ -133,8 +126,4 @@ const BoardEditor = () => {
 };
 
 export default BoardEditor;
-
-const setBoardFromFEN = (fen, setBoard) => {
-  setBoard(FenToBoard(fen));
-};
 

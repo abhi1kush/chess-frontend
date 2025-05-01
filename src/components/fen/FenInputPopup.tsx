@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, MouseEvent, FormEvent }  from "react";
 import "../../styles/components/FenInputPopup.css";
 
-const FenInputPopup = React.memo(({ onSubmit }) => {
+interface FenInputPopupProps {
+  onSubmit: (fen: string) => void;
+}
+
+const FenInputPopup: React.FC<FenInputPopupProps> = React.memo(({ onSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [fen, setFen] = useState("");
 
@@ -11,13 +15,13 @@ const FenInputPopup = React.memo(({ onSubmit }) => {
     setFen("");
   };
 
-  const handleOverlayClick = (e) => {
-    if (e.target.classList.contains("fen-popup-overlay")) {
+  const handleOverlayClick = (e: MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).classList.contains("fen-popup-overlay")) {
       handleClose();
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(fen);
     handleClose();
