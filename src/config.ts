@@ -1,4 +1,4 @@
-import {PieceType} from "./CustomTypes/CustomTypes"
+import {BoardType, PieceType, SquareIdType} from "./CustomTypes/CustomTypes"
 const CONFIG = {
     TIMER_DURATION: 60*3, 
     THEME: "classic",
@@ -21,7 +21,7 @@ const CONFIG = {
   };
   
   export default CONFIG;
-  export const SquareIds = [ 
+  export const SquareIds: SquareIdType[][] = [ 
                              ['a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'],
                              ['a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7'],
                              ['a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6'],
@@ -32,7 +32,7 @@ const CONFIG = {
                              ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'] 
   ];
   
-  export const FlippedSquareIds = [ 
+  export const FlippedSquareIds: SquareIdType[][] = [ 
                              ['h1', 'g1', 'f1', 'e1', 'd1', 'c1', 'b1', 'a1' ], 
                              ['h2', 'g2', 'f2', 'e2', 'd2', 'c2', 'b2', 'a2' ],
                              ['h3', 'g3', 'f3', 'e3', 'd3', 'c3', 'b3', 'a3' ],
@@ -43,7 +43,7 @@ const CONFIG = {
                              ['h8', 'g8', 'f8', 'e8', 'd8', 'c8', 'b8', 'a8' ]
   ];
 
-  export const StartChessPosition: Record<string, PieceType | null> = {
+  export const StartChessPosition: BoardType = {
     a8: {type: 'r', color: 'b'}, 
     b8: {type: 'n', color: 'b'}, 
     c8: {type: 'b', color: 'b'}, 
@@ -124,7 +124,7 @@ const CONFIG = {
     h1: {type: 'r', color: 'w'} 
   }
   
-  export const ClearBoardPosition: Record<string, PieceType | null> = {
+  export const ClearBoardPosition: BoardType = {
     a8: null, 
     b8: null, 
     c8: null, 

@@ -1,6 +1,7 @@
 import { SquareIds } from "../../config";
+import { BoardType, PieceColor, SquareIdType } from "../../CustomTypes/CustomTypes"
 
-export const rankTofen = (board, rank) => {
+export const rankTofen = (board: BoardType, rank: SquareIdType[]) => {
     let fen = "";
     let emptySquares = 0;
     for (let i = 0; i < 8; i++) {
@@ -22,14 +23,22 @@ export const rankTofen = (board, rank) => {
     return fen;
   }
 
+  interface generateFENParams {
+    board: BoardType,
+    playerToMove: PieceColor,
+    halfmoveClock: number, 
+    fullmoveNumber: number, 
+    whiteKingSide: boolean, 
+    whiteQueenSide: boolean, 
+    blackKingSide: boolean, 
+    blackQueenSide: boolean
+  }
+
     export const generateFEN = ({board, playerToMove, halfmoveClock = 0, fullmoveNumber = 1, whiteKingSide, 
-        whiteQueenSide, blackKingSide, blackQueenSide}) => {
+        whiteQueenSide, blackKingSide, blackQueenSide}: generateFENParams) => {
       const enPassant = "-";
       let fen = "";
       const castlingRights = (whiteKingSide ? "K" : "") + (whiteQueenSide ? "Q" : "") + (blackKingSide ? "k":"") + (blackQueenSide ? "q":""); 
-      if (board.length === 0) {
-        return "";
-      }
       const rankFenBlocks = SquareIds.map(rank => rankTofen(board, rank));
       fen += rankFenBlocks.join("/"); 
       fen += ` ${playerToMove} ${castlingRights === "" ? "-": castlingRights} ${enPassant} ${halfmoveClock} ${fullmoveNumber}`;

@@ -20,9 +20,10 @@ import {useDispatch, useSelector} from "react-redux";
 import { deselectItemAction } from "../../redux/actions/selectedItemActions";
 import { clearBoardAction, resetBoardAction, setupBoardWithFenAction } from "../../redux/actions/boardEditorActions";
 import { RootState } from "../../redux/reducers/reducers";
+import { BoardType, PieceType } from "../../CustomTypes/CustomTypes";
 
 const BoardEditor: React.FC = () => {
-  const { board } = useSelector((state: RootState) => state.boardeditor)
+  const board = useSelector((state: RootState) => state.boardeditor.board as BoardType);
   const [isFlipped, setIsflipped] = useState<boolean>(false);
   const [playerToMove, setPlayerToMove] = useState<'w' | 'b'>('w');
   const [whiteKingSide, setWhiteKingSide] = useState<boolean>(true);

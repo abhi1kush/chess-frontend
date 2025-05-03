@@ -1,4 +1,4 @@
-import { PieceColor, PieceType } from "../../CustomTypes/CustomTypes"
+import { PieceColor, PieceType, SquareIdType } from "../../CustomTypes/CustomTypes"
 
 export const RESET_BOARD = 'RESET_BOARD';
 export const CLEAR_BOARD = 'CLEAR_BOARD';
@@ -45,8 +45,8 @@ interface RemovePieceAction {
 interface MoveBoardPieceAction {
   type: typeof MOVE_BOARD_PIECE;
   payload: {
-    sourceSquareId: string;
-    destSquareId: string;
+    sourceSquareId: SquareIdType;
+    destSquareId: SquareIdType;
   };
 }
 

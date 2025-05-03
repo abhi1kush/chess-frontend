@@ -1,8 +1,9 @@
+import { SelectedItemType } from "../../CustomTypes/CustomTypes";
 
 export const SELECT_ITEM = "SET_SELECTED_ITEM";
 export const DESELECT_ITEM = "DESELECT_ITEM";
 
-export const selectItemAction = (item) => ({
+export const selectItemAction = (item : SelectedItemType | null) => ({
   type: SELECT_ITEM,
   payload: item,
 });

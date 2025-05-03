@@ -5,6 +5,7 @@ import { handleDragStart, handleBoardPieceClick } from "./eventhandlers/PieceEve
 import Square from './Square';
 import {FlippedSquareIds, SquareIds} from '../../config';
 import { RootState } from '../../redux/reducers/reducers';
+import { PieceType } from '../../CustomTypes/CustomTypes';
 
 interface BoardProps {
   isFlipped: boolean;

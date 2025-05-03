@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 
-export const FenToBoard = (fen) => {
+export const FenToBoard = (fen: string) => {
     const game = new Chess();
     game.load(fen);
     const boardArray = game.board();
@@ -13,6 +13,6 @@ export const FenToBoard = (fen) => {
     return board;
   };
 
-  export const GetPlayerToMove = (fen) => {
+  export const GetPlayerToMove = (fen: string) => {
     return fen.split(" ")?.[1]
   }
