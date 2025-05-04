@@ -219,7 +219,7 @@ const BoardEditor = () => {
   //   return fen;
   // });
 
-  console.log("--- BoardEditor rendered", count.current);
+  // console.log("--- BoardEditor rendered", count.current);
   count.current += 1;
   // useEffect(() => {
   //   const currentFen = generateFEN();
@@ -373,7 +373,7 @@ const handleDragStart = (e, pieceId) => {
 
 const Board = React.memo(({ board, isFlipped, selectedPalleteItem, handleSquareClick}) => {
   // const visualBoard = isFlipped ? [...board].reverse().map(row => ([...row].reverse())) : board;
-  console.log("* render board");
+  // console.log("* render board");
   // const visualRanks = true ? [...ranks].reverse() : ranks;
   const visualRanks = isFlipped ? [1, 2, 3, 4, 5, 6, 7, 8] : ranks;
   const visualFiles = isFlipped ? ["h", "g", "f", "e", "d", "c", "b", "a"] : files;
@@ -415,7 +415,7 @@ const PiecePallete = React.memo(({selectedPalleteItem, setselectedPalleteItem}) 
   const pieceCodes = [
     "p", "r", "n", "b", "q", "k"
   ];
-  console.log("+ render palette");
+  // console.log("+ render palette");
   return (
     <div className="palette">
       {["w", "b"].map(color =>

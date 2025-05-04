@@ -1,7 +1,7 @@
 import { Chess } from "chess.js"; 
 
 // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-export const IsValidFen = (fen) => {
+export const IsValidFen = (fen: string) => {
     if (fen === null || fen === undefined || fen === "") {
         return {isValid: false, msg: ""};
     }
@@ -146,7 +146,7 @@ export const IsValidFen = (fen) => {
     return {isValid: true, msg: ""};
 }
 
-function flipTurnInFen(fen) {
+function flipTurnInFen(fen: string) {
     const parts = fen.split(" ");
     parts[1] = parts[1] === "w" ? "b" : "w";
     return parts.join(" ");

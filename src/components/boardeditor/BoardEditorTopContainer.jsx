@@ -8,7 +8,7 @@ import DarkThemeToggle from '../common/DarkThemeToggle';
 
 const BoardEditorTopContainer = React.memo(({handleFenSubmit}) => {
     const dispatch = useDispatch();
-    console.log("BoardEditorTopContainer rendered");
+    // console.log("BoardEditorTopContainer rendered");
     BoardEditorTopContainer.whyrendered = true;
     return (
         <div className="top-container"> 

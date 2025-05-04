@@ -1,5 +1,7 @@
 
 .top-bar {
+    margin-left: 13%;
+    margin-right: 35%;
     width: 95dvw; /* Ensure it spans full width */
     display: flex;
     align-items: center;
@@ -9,6 +11,8 @@
 
 @media (max-width: 360px), (max-width: 450px) {
     .top-bar {
+        margin-left: 0;
+        margin-right: 0;
         gap: 5px;
     }
 }

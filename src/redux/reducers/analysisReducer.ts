@@ -1,4 +1,5 @@
 // src/redux/reducers/analysisReducer.js
+import { AnalysisActionType } from '../actions/analysisActions';
 import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN, JUMP_TO_MOVE, TOGGLE_ENGINE, DISABLE_ENGINE} from '../actions/analysisActions';
 
 const initialState = {
@@ -8,7 +9,7 @@ const initialState = {
   engineEnabled: false,
 };
 
-const analysisReducer = (state = initialState, action) => {
+const analysisReducer = (state = initialState, action: AnalysisActionType) => {
   switch (action.type) {
     case NEXT:
         if (state.currentMoveIndex === (state.fenLength - 1)) {

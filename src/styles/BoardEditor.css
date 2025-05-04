@@ -116,6 +116,12 @@
     box-shadow: 0 0 6px #ff9800;
   }
 
+  .pieceimg.selected {
+    border: 2px solid #ff9800;
+    border-radius: 4px;
+    box-shadow: 0 0 6px #ff9800;
+  }
+
   .rank-label {
     position: absolute;
     top: 2px;

@@ -55,7 +55,7 @@ const BoardEditor = () => {
     return fen;
   });
 
-  console.log("--- BoardEditor rendered", count.current);
+  // console.log("--- BoardEditor rendered", count.current);
   count.current += 1;
 //   useEffect(() => {
 //     const currentFen = generateFEN();
@@ -198,7 +198,7 @@ const handleDrop = (e, targetId, board, setBoard) => {
 
 const Board = React.memo(({ board, isFlipped, selectedPalletePiece, setBoard }) => {
   const visualBoard = isFlipped ? [...board].reverse().map(row => ([...row].reverse())) : board;
-  console.log("* render board");
+  // console.log("* render board");
   return (
     <div id="chessboard">
         {visualBoard.map((row, rowIndex) => row.map((square, colIndex) => {
@@ -234,7 +234,7 @@ const PiecePallete = React.memo(({selectedPalletePiece, setSelectedPalletePiece}
   const pieces = [
     "p", "r", "n", "b", "q", "k"
   ];
-  console.log("+ render palette");
+  // console.log("+ render palette");
   return (
     <div className="palette">
       {["w", "b"].map(color =>
