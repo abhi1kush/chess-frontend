@@ -17,7 +17,7 @@ import { setFen } from '../../services/fen/useFEN';
 import {useDispatch, useSelector} from "react-redux";
 import { clearBoardAction, resetBoardAction, setupBoardWithFenAction, flipBoardAction, deselectItemAction } from "../../redux/actions/boardEditorActions";
 import { RootState } from "../../redux/reducers/reducers";
-import { BoardState, BoardType, PieceType } from "../../CustomTypes/CustomTypes";
+import { BoardState } from "../../CustomTypes/CustomTypes";
 import CastlingFlagsComponent from "./CastlingFlagsComponent";
 
 const BoardEditor: React.FC = () => {

@@ -1,5 +1,4 @@
 import { PieceColor, PieceType, SquareIdType, CastlingFlagsType, SelectedItemType } from "../../CustomTypes/CustomTypes"
-
 export const RESET_BOARD = 'RESET_BOARD';
 export const CLEAR_BOARD = 'CLEAR_BOARD';
 export const FLIP_BOARD = 'FLIP_BOARD';
@@ -92,8 +91,6 @@ export type BoardEditorActions =
   | SelectedItemActionType|
   DeselectItemActionType;
 
-
-  
   export const selectItemAction = (item : SelectedItemType | null) => ({
     type: SELECT_ITEM,
     payload: {item: item},
