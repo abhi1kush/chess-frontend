@@ -1,8 +1,8 @@
 import React from 'react';
 import CONFIG from '../../config';
 import {useSelector, useDispatch} from "react-redux";
-import { selectItemAction } from '../../redux/actions/selectedItemActions';
-import { PieceType } from '../../CustomTypes/CustomTypes';
+import { selectItemAction } from '../../redux/actions/boardEditorActions';
+import { PieceType, SelectedItemType } from '../../CustomTypes/CustomTypes';
 import { RootState } from '../../redux/reducers/reducers';
 
 interface PieceProps {
@@ -19,7 +19,7 @@ interface PieceProps {
 
 const Piece: React.FC<PieceProps> = React.memo(({piece, squareId, 
     handleDragStart, handleBoardPieceClick}) => {
-    const { selectedItem } = useSelector((state: RootState) => state.selecteditem);
+    const selectedItem = useSelector((state: RootState) => state.boardeditor.selectedItem as SelectedItemType);
     const dispatch = useDispatch();
     if (piece == null || piece === undefined || !squareId || squareId === "" || !piece.type) {
       console.log("render piece", squareId, piece, {...piece});

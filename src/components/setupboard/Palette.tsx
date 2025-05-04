@@ -1,6 +1,6 @@
 import React from 'react';
 import CONFIG from '../../config';
-import { selectItemAction } from '../../redux/actions/selectedItemActions';
+import { selectItemAction } from '../../redux/actions/boardEditorActions';
 import { eraser, pieceCharToNameMap } from "../../constants/constants";
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/reducers/reducers';
@@ -15,7 +15,7 @@ interface PaletteProps {
 const Palette: React.FC<PaletteProps> = React.memo(({handleDragStart, handlePaletteClick}) => {
     const pieceCodes: PieceCode[] = ['p', 'r', 'n', 'b', 'q', 'k'];
     const pieceColors: PieceColor[] = ['w', 'b'];
-    const  {selectedItem} = useSelector((state: RootState) => state.selecteditem);
+    const selectedItem = useSelector((state: RootState) => state.boardeditor.selectedItem as SelectedItemType);
     const dispatch = useDispatch();
     const setSelectedItem = (item: SelectedItemType | null) => {
       dispatch(selectItemAction(item));

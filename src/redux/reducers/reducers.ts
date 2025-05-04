@@ -6,7 +6,6 @@ import analysisReducer from './analysisReducer';
 import pgnReducer from './pgnReducer';
 import engineReducer from './engineReducer';
 import boardEditorReducer from './boardEditorReducer';
-import selectedItemReducer from './selectedItemReducer';
 
 const rootReducer = combineReducers({
   game: gameReducer,
@@ -15,7 +14,6 @@ const rootReducer = combineReducers({
   pgn: pgnReducer,
   engine: engineReducer,
   boardeditor: boardEditorReducer,
-  selecteditem: selectedItemReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

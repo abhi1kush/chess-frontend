@@ -1,7 +1,7 @@
 import React from 'react';
 import Piece from './Piece';
 import { getSquareColor } from './utils/util';
-import { selectItemAction } from '../../redux/actions/selectedItemActions';
+import { selectItemAction } from '../../redux/actions/boardEditorActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { putPieceAction, removePieceAction, movePieceAction} from '../../redux/actions/boardEditorActions';
 import { PieceType } from '../../CustomTypes/CustomTypes';
@@ -49,7 +49,7 @@ const Square: React.FC<SquareProps> = React.memo(
     handleDragStart, 
     handleBoardPieceClick
   }) => {
-    const  {selectedItem} = useSelector((state: RootState) => state.selecteditem);
+    const  selectedItem = useSelector((state: RootState) => state.boardeditor.selectedItem as SelectedItemType);
     const dispatch = useDispatch();
 
     const setSelectedItem = (item: SelectedItemType | null) => {

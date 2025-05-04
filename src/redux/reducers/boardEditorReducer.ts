@@ -2,7 +2,7 @@
 import CONFIG, {StartChessPosition, ClearBoardPosition} from "../../config"
 import {BoardEditorActions, FLIP_BOARD, CLEAR_BOARD, RESET_BOARD, 
   SET_BOARD_WITH_FEN, PUT_PIECE, REMOVE_PIECE,
-   MOVE_BOARD_PIECE,
+   MOVE_BOARD_PIECE, SELECT_ITEM, DESELECT_ITEM,
    TOGGLE_CASTLING_PIECE, SET_PLAYER_TO_MOVE} from "../actions/boardEditorActions"
 import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenparser";
 import {BoardState} from "../../CustomTypes/CustomTypes"
@@ -99,6 +99,16 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
         playerToMove: action.payload.color,
       }
     }
+    case SELECT_ITEM:
+          return {
+            ...state,
+            selectedItem: action.payload.item ?? null,
+          };
+    case DESELECT_ITEM:
+          return {
+            ...state,
+            selectedItem: null,
+          };
     default:
       return state;
     }

@@ -1,4 +1,4 @@
-import { PieceColor, PieceType, SquareIdType, CastlingFlagsType } from "../../CustomTypes/CustomTypes"
+import { PieceColor, PieceType, SquareIdType, CastlingFlagsType, SelectedItemType } from "../../CustomTypes/CustomTypes"
 
 export const RESET_BOARD = 'RESET_BOARD';
 export const CLEAR_BOARD = 'CLEAR_BOARD';
@@ -9,6 +9,8 @@ export const REMOVE_PIECE = "REMOVE_PIECE";
 export const MOVE_BOARD_PIECE = "MOVE_BOARD_PIECE";
 export const TOGGLE_CASTLING_PIECE = "TOGGLE_CASTLING_PIECE";
 export const SET_PLAYER_TO_MOVE = "SET_PLAYER_TO_MOVE";
+export const SELECT_ITEM = "SET_SELECTED_ITEM";
+export const DESELECT_ITEM = "DESELECT_ITEM";
 
 interface ClearBoardAction {
   type: typeof CLEAR_BOARD;
@@ -67,6 +69,16 @@ interface PlayerToMoveAction {
   payload: {color: PieceColor}
 }
 
+interface SelectedItemActionType {
+  type: typeof SELECT_ITEM,
+  payload: {item: SelectedItemType}
+}
+
+interface DeselectItemActionType {
+  type: typeof DESELECT_ITEM
+  payload: null,
+}
+
 export type BoardEditorActions =
   | ClearBoardAction
   | ResetBoardAction
@@ -76,7 +88,20 @@ export type BoardEditorActions =
   | RemovePieceAction
   | ToggleCastlingFlagAction
   | FlipAction
-  | PlayerToMoveAction;
+  | PlayerToMoveAction
+  | SelectedItemActionType|
+  DeselectItemActionType;
+
+
+  
+  export const selectItemAction = (item : SelectedItemType | null) => ({
+    type: SELECT_ITEM,
+    payload: {item: item},
+  });
+  
+  export const deselectItemAction = () => ({
+      type: DESELECT_ITEM,
+  });
 
 export const setPlayerToMoveAction = (playerColor: PieceColor) => ({
   type: SET_PLAYER_TO_MOVE,
