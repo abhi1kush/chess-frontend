@@ -1,42 +1,48 @@
 // import { current } from "@reduxjs/toolkit";
 import CONFIG, {StartChessPosition, ClearBoardPosition} from "../../config"
-import {BoardEditorActions, CLEAR_BOARD, RESET_BOARD, 
+import {BoardEditorActions, FLIP_BOARD, CLEAR_BOARD, RESET_BOARD, 
   SET_BOARD_WITH_FEN, PUT_PIECE, REMOVE_PIECE,
-   MOVE_BOARD_PIECE} from "../actions/boardEditorActions"
+   MOVE_BOARD_PIECE,
+   TOGGLE_CASTLING_PIECE, SET_PLAYER_TO_MOVE} from "../actions/boardEditorActions"
 import { FenToBoard, GetPlayerToMove } from "../../services/fen/fenparser";
 import {BoardState} from "../../CustomTypes/CustomTypes"
 
 const initialState: BoardState = {
     board: {...StartChessPosition},
     // currentFen: CONFIG.START_FEN,
-    // selectedPalettePiece: null,
-    // isFlipped: false,
-    // playerToMove: CONFIG.WHITE,
-    // castlingFlags: {
-    //   K: true,
-    //   Q: true,
-    //   k: true,
-    //   q: true
-    // }
+    selectedItem: null,
+    isFlipped: false,
+    playerToMove: CONFIG.WHITE,
+    castlingFlags: {
+      K: true,
+      Q: true,
+      k: true,
+      q: true
+    }
   };
 
 const clearBoardState: BoardState = {
   board: {...ClearBoardPosition},
   // currentFen: CONFIG.CLEAR_FEN,
-  // selectedPalettePiece: null,
-  // isFlipped: false,
-  // playerToMove: CONFIG.WHITE,
-  // castlingFlags: {
-  //   K: true,
-  //   Q: true,
-  //   k: true,
-  //   q: true
-  // }
+  selectedItem: null,
+  isFlipped: false,
+  playerToMove: CONFIG.WHITE,
+  castlingFlags: {
+    K: false,
+    Q: false,
+    k: false,
+    q: false
+  }
 }
 
 const boardEditorReducer = (state: BoardState = initialState, action: BoardEditorActions) => {
   console.log("boardEditorReducer", action.type, action.payload);
   switch (action.type) {
+    case FLIP_BOARD: 
+      return {
+        ...state,
+        isFlipped: !state.isFlipped,
+      }
     case RESET_BOARD:
       return initialState;
     case CLEAR_BOARD:
@@ -75,6 +81,22 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
           ...state.board,
           [action.payload.squareId]: null,
         }
+      }
+    }
+    case TOGGLE_CASTLING_PIECE: {
+      return {
+        ...state,
+        castlingFlags: {
+          ...state.castlingFlags,
+          [action.payload.flag]: !state.castlingFlags[action.payload.flag],
+        }
+      }
+    }
+    case SET_PLAYER_TO_MOVE: {
+      console.log("SET_PLAYER_TO_MOVE", action.payload.color, state.playerToMove);
+      return {
+        ...state,
+        playerToMove: action.payload.color,
       }
     }
     default:

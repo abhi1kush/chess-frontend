@@ -4,8 +4,6 @@ import '../../styles/global.css';
 import '../../styles/pageLayout.css';
 import '../../styles/components/topContainer.css';
 import "../../styles/BoardEditor.css";
-import ToggleButton from "../common/buttons/ToggleButton";
-import MoveToggle from "../common/buttons/MoveToggle";
 import FenInputPopup from "../fen/FenInputPopup";
 import FenDisplayBox from "../fen/FenDisplayBox";
 import NoticeBoard from "./NoticeBoard";
@@ -18,30 +16,28 @@ import Board from "./Board";
 import { setFen } from '../../services/fen/useFEN';
 import {useDispatch, useSelector} from "react-redux";
 import { deselectItemAction } from "../../redux/actions/selectedItemActions";
-import { clearBoardAction, resetBoardAction, setupBoardWithFenAction } from "../../redux/actions/boardEditorActions";
+import { clearBoardAction, resetBoardAction, setupBoardWithFenAction, flipBoardAction } from "../../redux/actions/boardEditorActions";
 import { RootState } from "../../redux/reducers/reducers";
-import { BoardType, PieceType } from "../../CustomTypes/CustomTypes";
+import { BoardState, BoardType, PieceType } from "../../CustomTypes/CustomTypes";
+import CastlingFlagsComponent from "./CastlingFlagsComponent";
 
 const BoardEditor: React.FC = () => {
-  const board = useSelector((state: RootState) => state.boardeditor.board as BoardType);
-  const [isFlipped, setIsflipped] = useState<boolean>(false);
-  const [playerToMove, setPlayerToMove] = useState<'w' | 'b'>('w');
-  const [whiteKingSide, setWhiteKingSide] = useState<boolean>(true);
-  const [whiteQueenSide, setWhiteQueenSide] = useState<boolean>(true);
-  const [blackKingSide, setBlackKingSide] = useState<boolean>(true);
-  const [blackQueenSide, setBlackQueenSide] = useState<boolean>(true);
+  const {
+    board,
+    isFlipped,
+    playerToMove,
+    castlingFlags,
+  } = useSelector((state: RootState) => ({
+    board: state.boardeditor.board,
+    isFlipped: state.boardeditor.isFlipped,
+    playerToMove: state.boardeditor.playerToMove,
+    castlingFlags: state.boardeditor.castlingFlags,
+  }) as BoardState);
+  
   const count = useRef(0);
   const [isValidFen, setIsValidFen] = useState<boolean>(false);
   const [fenErrorMsg, setFenErrorMsg] = useState<string>("");
   const dispatch = useDispatch();
-  
-
-  const castlingFlags = [
-    { label: "White King-Side", state: whiteKingSide, setState: setWhiteKingSide },
-    { label: "White Queen-Side", state: whiteQueenSide, setState: setWhiteQueenSide },
-    { label: "Black King-Side", state: blackKingSide, setState: setBlackKingSide },
-    { label: "Black Queen-Side", state: blackQueenSide, setState: setBlackQueenSide },
-   ];
 
   useEffect(() => {
     resetBoard();
@@ -54,11 +50,6 @@ const BoardEditor: React.FC = () => {
 
   const resetBoard = () => {
     dispatch(deselectItemAction());
-    setPlayerToMove("w");
-    setWhiteKingSide(true);
-    setWhiteQueenSide(true); 
-    setBlackKingSide(true);
-    setBlackQueenSide(true);
     dispatch(resetBoardAction())
   };
 
@@ -68,10 +59,10 @@ const BoardEditor: React.FC = () => {
   }, [dispatch]);
 
   const generateFenFromBoard = useCallback((halfmoveClock = 0, fullmoveNumber = 1): string => {
-    return generateFEN({board: board, playerToMove: playerToMove, whiteKingSide: whiteKingSide, 
-      whiteQueenSide : whiteQueenSide, blackKingSide: blackKingSide, blackQueenSide: blackQueenSide, 
+    return generateFEN({board: board, playerToMove: playerToMove, whiteKingSide: castlingFlags.K, 
+      whiteQueenSide : castlingFlags.Q, blackKingSide: castlingFlags.k, blackQueenSide: castlingFlags.q, 
       halfmoveClock: halfmoveClock, fullmoveNumber: fullmoveNumber});
-  },[board, playerToMove, whiteKingSide, whiteQueenSide, blackKingSide, blackQueenSide]);
+  },[board, playerToMove, castlingFlags.K, castlingFlags.k, castlingFlags.Q, castlingFlags.q]);
 
   // console.log("--- BoardEditor rendered", count.current);
   count.current += 1;
@@ -89,7 +80,7 @@ const BoardEditor: React.FC = () => {
         <nav className="top-bar">
             <button onClick={clearBoard} className="action-button">Clear</button>
             <button onClick={resetBoard} className="action-button">Reset</button>
-            <button onClick={() => {setIsflipped(!isFlipped)}} className="action-button">Flip</button>
+            <button onClick={() => {dispatch(flipBoardAction())}} className="action-button">Flip</button>
             <FenInputPopup onSubmit={handleFenSubmit}/>
             <DarkThemeToggle/>
             {/* <Settings /> */}
@@ -102,24 +93,9 @@ const BoardEditor: React.FC = () => {
         <div className="chessboard-container">
           <Board isFlipped={isFlipped}/>
         <Palette handleDragStart={handleDragStart} handlePaletteClick={handlePaletteClick}/>
-        <div className="castling">
-          {/* <div><h3>Castling</h3></div> */}
-          <div className="toggle-container">
-            <span>To Move : </span>
-            <MoveToggle playerToMove={playerToMove} setPlayerToMove={setPlayerToMove}/>
-            </div> 
-            {
-              castlingFlags.map(({label, state, setState}) => (
-              <ToggleButton 
-                key={label}
-                labelText={label} 
-                toggle={state} 
-                handleToggle={() => {setState(!state)}}
-              />))
-            }
-            <NoticeBoard messages={[{type: isValidFen ? "ok" : "error", text: fenErrorMsg}]} isValid={isValidFen}/>
+        <CastlingFlagsComponent isValidFen={isValidFen} fenErrorMsg={fenErrorMsg}/>
+        <NoticeBoard messages={[{type: isValidFen ? "ok" : "error", text: fenErrorMsg}]} isValid={isValidFen}/>
         </div>
-      </div>
       </div>
       </div>
     </div>

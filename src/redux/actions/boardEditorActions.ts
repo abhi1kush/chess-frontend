@@ -1,4 +1,4 @@
-import { PieceColor, PieceType, SquareIdType } from "../../CustomTypes/CustomTypes"
+import { PieceColor, PieceType, SquareIdType, CastlingFlagsType } from "../../CustomTypes/CustomTypes"
 
 export const RESET_BOARD = 'RESET_BOARD';
 export const CLEAR_BOARD = 'CLEAR_BOARD';
@@ -50,17 +50,37 @@ interface MoveBoardPieceAction {
   };
 }
 
+interface ToggleCastlingFlagAction {
+  type: typeof TOGGLE_CASTLING_PIECE;
+  payload: {
+    flag: CastlingFlagsType
+  }
+}
+
+interface FlipAction {
+  type: typeof FLIP_BOARD;
+  payload: null
+}
+
+interface PlayerToMoveAction {
+  type: typeof SET_PLAYER_TO_MOVE;
+  payload: {color: PieceColor}
+}
+
 export type BoardEditorActions =
   | ClearBoardAction
   | ResetBoardAction
   | SetBoardWithFenAction
   | PutPieceAction
   | MoveBoardPieceAction
-  | RemovePieceAction;
+  | RemovePieceAction
+  | ToggleCastlingFlagAction
+  | FlipAction
+  | PlayerToMoveAction;
 
 export const setPlayerToMoveAction = (playerColor: PieceColor) => ({
-  type: RESET_BOARD,
-  payload: playerColor,
+  type: SET_PLAYER_TO_MOVE,
+  payload: {color: playerColor},
 });
 
 export const resetBoardAction = () => ({
@@ -95,7 +115,7 @@ export const movePieceAction = (sourceSquareId: string, destSquareId: string) =>
     payload: {sourceSquareId: sourceSquareId, destSquareId: destSquareId},
 });
 
-// export const toggleCastlingFlagAction = (flag: ) => ({
-//     type: TOGGLE_CASTLING_PIECE,
-//     payload: flag,
-// });
+export const toggleCastlingFlagAction = (flag: CastlingFlagsType) => ({
+    type: TOGGLE_CASTLING_PIECE,
+    payload: {flag: flag},
+});

@@ -1,5 +1,28 @@
-import {BoardType, PieceType, SquareIdType} from "./CustomTypes/CustomTypes"
-const CONFIG = {
+import { PieceSymbol } from "chess.js";
+import {BoardType, PieceColor, PieceType, SquareIdType} from "./CustomTypes/CustomTypes"
+
+interface CONFIG_T {
+    TIMER_DURATION: number, 
+    THEME: string,
+    ENABLE_SOUND: boolean,
+    IS_FLIPPED: boolean,
+    THEME_KEY: string,
+    ENABLE_SOUND_KEY: string, 
+    TIMER_DURATION_KEY: string,
+    IS_FLIPPED_KEY: string,
+    CHESS_GAME_KEY: string,
+    START_FEN: string,
+    CLEAR_FEN: string,
+    FINAL_FEN_KEY: string,
+    CHECKMATE_MESSAGE: string,
+    WHITE: PieceColor,
+    BLACK: PieceColor, 
+    BOARD_PIECE: string,
+    PALLETE_ITEM: string,
+    ERASER_ID: string,
+}
+
+const CONFIG: CONFIG_T = {
     TIMER_DURATION: 60*3, 
     THEME: "classic",
     ENABLE_SOUND: true,

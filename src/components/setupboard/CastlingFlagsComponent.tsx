@@ -6,6 +6,7 @@ import NoticeBoard from "./NoticeBoard";
 // import { IsValidFen } from "../../services/fen/fenValidation";
 import { setPlayerToMoveAction, toggleCastlingFlagAction } from "../../redux/actions/boardEditorActions";
 import { RootState } from "../../redux/reducers/reducers";
+import { BoardState } from "../../CustomTypes/CustomTypes";
 
 
 interface CastlingFlagsComponentProps {
@@ -14,10 +15,19 @@ interface CastlingFlagsComponentProps {
 }
 
 const CastlingFlagsComponent: React.FC<CastlingFlagsComponentProps> = ({isValidFen, fenErrorMsg}) => {
-  const {playerToMove, castlingFlags } = useSelector((state: RootState) => state.boardeditor);
+  // const {playerToMove, castlingFlags } = useSelector((state: RootState) => state.boardeditor);
+    const {playerToMove, castlingFlags} = useSelector((state: RootState) => ({
+      playerToMove: state.boardeditor.playerToMove,
+      castlingFlags: state.boardeditor.castlingFlags,
+    }) as BoardState);
   const dispatch = useDispatch();
   // console.log("CastlingFlags rendered", castlingFlags, playerToMove);
-  const castlingFlagsUI = [
+ interface CastlingFlagUI {
+    flag: 'K' | 'Q' | 'k' | 'q';
+    label: string;
+    state: boolean; 
+  }
+  const castlingFlagsUI: CastlingFlagUI[] = [
     { flag: 'K', label: "White King-Side", state: castlingFlags.K},
     { flag: 'Q', label: "White Queen-Side", state: castlingFlags.Q},
     { flag: 'k', label: "Black King-Side", state: castlingFlags.k},
@@ -26,12 +36,9 @@ const CastlingFlagsComponent: React.FC<CastlingFlagsComponentProps> = ({isValidF
 
   return (
     <div className="castling">
-        {/* <div><h3>Castling</h3></div> */}
         <div className="toggle-container">
             <span>To Move : </span>
-            <MoveToggle playerToMove={playerToMove} setPlayerToMove={
-              () => {dispatch(setPlayerToMoveAction(playerToMove === 'w' ? 'b' : 'w'))}}
-            />
+            <MoveToggle/>
         </div> 
         {
             castlingFlagsUI.map(({flag, label, state}) => (

@@ -15,21 +15,23 @@ export interface PieceType {
   color: PieceColor;
 }
 
+export type CastlingFlagsType = 'K' | 'Q' | 'k' | 'q';
+
 export type BoardType = Record<SquareIdType, PieceType | null>;
 
 export type SquareId = string;
 export type BoardState = {
   board: BoardType;
   // currentFen: string;
-  // selectedPalettePiece: { type: string; id: string } | null;
-  // isFlipped: boolean;
-  // playerToMove: string;
-  // castlingFlags: {
-  //   K: boolean;
-  //   Q: boolean;
-  //   k: boolean;
-  //   q: boolean;
-  // };
+  selectedItem: SelectedItemType | null;
+  isFlipped: boolean;
+  playerToMove: PieceColor;
+  castlingFlags: {
+    K: boolean;
+    Q: boolean;
+    k: boolean;
+    q: boolean;
+  };
 };
 
 // Define the message type
