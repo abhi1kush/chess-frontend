@@ -77,7 +77,7 @@ export const flipBoardAction = () => ({
 
 export const setupBoardWithFenAction = (fen: string) => ({
     type: SET_BOARD_WITH_FEN,
-    payload: fen,
+    payload: {fen: fen},
 });
 
 export const putPieceAction = (squareId: string, piece: PieceType) => ({

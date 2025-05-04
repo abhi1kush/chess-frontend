@@ -1,7 +1,7 @@
 import { Chess } from "chess.js"; 
 
 // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-export const IsValidFen = (fen: string) => {
+export const IsValidFen = (fen: string): {isValid: boolean, msg: string} => {
     if (fen === null || fen === undefined || fen === "") {
         return {isValid: false, msg: ""};
     }

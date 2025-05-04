@@ -42,6 +42,7 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
     case CLEAR_BOARD:
       return clearBoardState;
     case SET_BOARD_WITH_FEN: 
+      console.log("SET_BOARD_WITH_FEN",action.payload.fen, FenToBoard(action.payload.fen));
       return {
         ...state,
         board: {...FenToBoard(action.payload.fen)},
