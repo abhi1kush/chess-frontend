@@ -13,7 +13,7 @@ const App = () => {
     <ConfigProvider>
       <Router>
         <nav className="routes">
-              <Link to="/boardeditor" className='action-button no-decoration'>Board Editor</Link>
+              <Link to="/boardeditor" className='action-button no-decoration'>Chess Position Editor</Link>
               <Link to="/analysis" className='action-button no-decoration'>Analyse Game</Link>
               <Link to="/gameplay" className='action-button no-decoration'>Play Game</Link>
         </nav>
