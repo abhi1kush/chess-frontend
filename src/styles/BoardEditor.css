@@ -110,16 +110,11 @@
     gap: 10px;
   }
   
-  .palette-piece.selected {
-    border: 2px solid #ff9800;
+  .palette-piece.selected, .pieceimg.selected{
+    background-color: var(--selected-border-color);
+    /* border: 4px solid var(--selected-border-color); */
     border-radius: 4px;
-    box-shadow: 0 0 6px #ff9800;
-  }
-
-  .pieceimg.selected {
-    border: 2px solid #ff9800;
-    border-radius: 4px;
-    box-shadow: 0 0 6px #ff9800;
+    box-shadow: 0 0 8px var(--selected-shadow);
   }
 
   .rank-label {

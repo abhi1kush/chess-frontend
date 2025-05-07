@@ -40,6 +40,8 @@
   --chess-board-end-col: -1;
   --board-gap: 5px;
   --square-size: calc(var(--max-board-size) / 8);
+  --selected-border-color: rgb(35, 193, 53);
+  --selected-shadow: rgb(151, 212, 177);
 }
 
 @media (max-width: 450px) {
