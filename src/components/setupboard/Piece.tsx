@@ -22,7 +22,7 @@ const Piece: React.FC<PieceProps> = React.memo(({piece, squareId,
     const selectedItem = useSelector((state: RootState) => state.boardeditor.selectedItem as SelectedItemType);
     const dispatch = useDispatch();
     if (piece == null || piece === undefined || !squareId || squareId === "" || !piece.type) {
-      console.log("render piece", squareId, piece, {...piece});
+      // console.log("render piece", squareId, piece, {...piece});
       return null;
     } else{
       // console.log("render piece", squareId, piece);

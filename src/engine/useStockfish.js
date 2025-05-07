@@ -104,7 +104,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     }
 
     workerRef.current.postMessage('uci');
-    console.log("Intialising worker ...");
+    // console.log("Intialising worker ...");
 
     workerRef.current.onmessage = (e) => {
       const data = e.data;
@@ -162,11 +162,11 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
 
     // Stop search
   const stopSearch = useCallback((id) => {
-    console.log("Attempt stopSearch..", id);
+    // console.log("Attempt stopSearch..", id);
     if (!workerRef.current) return;
-    console.log("try stopSearch ...", id);
+    // console.log("try stopSearch ...", id);
     if (!isSearchingRef.current) return;
-    console.log("Interrupting current search...", id);
+    // console.log("Interrupting current search...", id);
     enqueueCommand('stop', 'stop');
     isSearchingRef.current = false;
     if (stopTimeoutRef.current) {
@@ -182,7 +182,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     }
     
     if (!workerRef.current) {
-      console.log("Starting engine on demand...");
+      // console.log("Starting engine on demand...");
       internalInitEngine();
     }
 

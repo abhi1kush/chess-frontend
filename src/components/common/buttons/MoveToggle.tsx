@@ -3,11 +3,13 @@ import "../../../styles/components/MoveToggle.css";
 import { setPlayerToMoveAction } from "../../../redux/actions/boardEditorActions";
 import { BoardState } from "../../../CustomTypes/CustomTypes";
 import { RootState } from "../../../redux/reducers/reducers";
+import { selectCatllingProps } from "../../../selector/boardEditorSelector";
 
 function MoveToggle() {
-  const {playerToMove, castlingFlags} = useSelector((state: RootState) => ({
-    playerToMove: state.boardeditor.playerToMove,
-  }) as BoardState);
+    const {
+      playerToMove,
+      castlingFlags,
+    } = useSelector(selectCatllingProps);
   const dispatch = useDispatch();
   return (
     <div className="move-toggle">

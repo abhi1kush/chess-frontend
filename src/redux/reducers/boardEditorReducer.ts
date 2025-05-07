@@ -1,4 +1,5 @@
 // import { current } from "@reduxjs/toolkit";
+import { produce } from "immer";
 import CONFIG, {StartChessPosition, ClearBoardPosition} from "../../config"
 import {BoardEditorActions, FLIP_BOARD, CLEAR_BOARD, RESET_BOARD, 
   SET_BOARD_WITH_FEN, PUT_PIECE, REMOVE_PIECE,
@@ -35,8 +36,8 @@ const clearBoardState: BoardState = {
   }
 }
 
-const boardEditorReducer = (state: BoardState = initialState, action: BoardEditorActions) => {
-  console.log("boardEditorReducer", action.type, action.payload);
+const boardEditorReducer = (state: BoardState = initialState, action: BoardEditorActions): BoardState => {
+  // console.log("boardEditorReducer", action.type, action.payload);
   switch (action.type) {
     case FLIP_BOARD: 
       return {
@@ -48,7 +49,7 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
     case CLEAR_BOARD:
       return clearBoardState;
     case SET_BOARD_WITH_FEN: 
-      console.log("SET_BOARD_WITH_FEN",action.payload.fen, FenToBoard(action.payload.fen));
+      // console.log("SET_BOARD_WITH_FEN",action.payload.fen, FenToBoard(action.payload.fen));
       return {
         ...state,
         board: {...FenToBoard(action.payload.fen)},
@@ -93,7 +94,7 @@ const boardEditorReducer = (state: BoardState = initialState, action: BoardEdito
       }
     }
     case SET_PLAYER_TO_MOVE: {
-      console.log("SET_PLAYER_TO_MOVE", action.payload.color, state.playerToMove);
+      // console.log("SET_PLAYER_TO_MOVE", action.payload.color, state.playerToMove);
       return {
         ...state,
         playerToMove: action.payload.color,

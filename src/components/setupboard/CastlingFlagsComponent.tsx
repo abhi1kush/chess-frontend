@@ -7,6 +7,7 @@ import NoticeBoard from "./NoticeBoard";
 import { setPlayerToMoveAction, toggleCastlingFlagAction } from "../../redux/actions/boardEditorActions";
 import { RootState } from "../../redux/reducers/reducers";
 import { BoardState } from "../../CustomTypes/CustomTypes";
+import { selectCatllingProps } from "../../selector/boardEditorSelector";
 
 
 interface CastlingFlagsComponentProps {
@@ -16,10 +17,11 @@ interface CastlingFlagsComponentProps {
 
 const CastlingFlagsComponent: React.FC<CastlingFlagsComponentProps> = ({isValidFen, fenErrorMsg}) => {
   // const {playerToMove, castlingFlags } = useSelector((state: RootState) => state.boardeditor);
-    const {playerToMove, castlingFlags} = useSelector((state: RootState) => ({
-      playerToMove: state.boardeditor.playerToMove,
-      castlingFlags: state.boardeditor.castlingFlags,
-    }) as BoardState);
+
+  const {
+    playerToMove,
+    castlingFlags,
+  } = useSelector(selectCatllingProps);
   const dispatch = useDispatch();
   // console.log("CastlingFlags rendered", castlingFlags, playerToMove);
  interface CastlingFlagUI {

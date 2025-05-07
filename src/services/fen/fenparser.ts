@@ -1,9 +1,9 @@
 import { Chess } from 'chess.js';
-import { PieceType } from '../../CustomTypes/CustomTypes'
-export type BoardType = Record<string, PieceType | null>;
+import { BoardType, PieceColor, SquareId } from '../../CustomTypes/CustomTypes'
+import { ClearBoardPosition } from '../../config'
 
 export const FenToBoard = (fen: string): BoardType => {
-  const board: BoardType = {};
+  const board: BoardType = ClearBoardPosition;
   try {
     const game = new Chess();
     game.load(fen);
@@ -12,7 +12,7 @@ export const FenToBoard = (fen: string): BoardType => {
     for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
       for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
         const square = boardArray[rankIndex][fileIndex];
-        const squareId = `${"abcdefgh"[fileIndex]}${8 - rankIndex}`;
+        const squareId: SquareId = `${"abcdefgh"[fileIndex]}${8 - rankIndex}`;
         board[squareId] = square ? { type: square.type, color: square.color } : null;
       }
     }
@@ -22,6 +22,9 @@ export const FenToBoard = (fen: string): BoardType => {
   return board;
 };
 
-export const GetPlayerToMove = (fen: string): string | undefined => {
-  return fen.split(" ")?.[1];
+export const GetPlayerToMove = (fen: string): PieceColor => {
+  if (fen.split(" ")?.[1] === "w") {
+    return 'w'
+  };
+  return 'b';
 };

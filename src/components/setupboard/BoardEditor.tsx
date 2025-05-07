@@ -19,6 +19,7 @@ import { clearBoardAction, resetBoardAction, setupBoardWithFenAction, flipBoardA
 import { RootState } from "../../redux/reducers/reducers";
 import { BoardState } from "../../CustomTypes/CustomTypes";
 import CastlingFlagsComponent from "./CastlingFlagsComponent";
+import { selectBoardEditorProps } from "../../selector/boardEditorSelector";
 
 const BoardEditor: React.FC = () => {
   const {
@@ -26,14 +27,9 @@ const BoardEditor: React.FC = () => {
     isFlipped,
     playerToMove,
     castlingFlags,
-  } = useSelector((state: RootState) => ({
-    board: state.boardeditor.board,
-    isFlipped: state.boardeditor.isFlipped,
-    playerToMove: state.boardeditor.playerToMove,
-    castlingFlags: state.boardeditor.castlingFlags,
-  }) as BoardState);
-  
-  const count = useRef(0);
+  } = useSelector(selectBoardEditorProps);
+ 
+  // const count = useRef(0);
   const [isValidFen, setIsValidFen] = useState<boolean>(false);
   const [fenErrorMsg, setFenErrorMsg] = useState<string>("");
   const dispatch = useDispatch();
@@ -53,7 +49,7 @@ const BoardEditor: React.FC = () => {
   };
 
   const handleFenSubmit = useCallback((fenString: string) => {
-    console.log("Received FEN:", fenString);
+    // console.log("Received FEN:", fenString);
     dispatch(setupBoardWithFenAction(fenString));
   }, [dispatch]);
 
@@ -64,7 +60,7 @@ const BoardEditor: React.FC = () => {
   },[board, playerToMove, castlingFlags.K, castlingFlags.k, castlingFlags.Q, castlingFlags.q]);
 
   // console.log("--- BoardEditor rendered", count.current);
-  count.current += 1;
+  // count.current += 1;
   useEffect(() => {
     const currentFen = generateFenFromBoard();
     const {isValid, msg } = IsValidFen(currentFen);
@@ -72,7 +68,7 @@ const BoardEditor: React.FC = () => {
     setFenErrorMsg(prev => (prev !== msg ? msg : prev));
     setFen(currentFen);
   }, [generateFenFromBoard, board]);
-  console.log("board editor rendered", count.current);
+  // console.log("board editor rendered", count.current);
   return (
     <div className="main-container">
       <div className="top-container"> 
@@ -93,7 +89,6 @@ const BoardEditor: React.FC = () => {
           <Board isFlipped={isFlipped}/>
         <Palette handleDragStart={handleDragStart} handlePaletteClick={handlePaletteClick}/>
         <CastlingFlagsComponent isValidFen={isValidFen} fenErrorMsg={fenErrorMsg}/>
-        <NoticeBoard messages={[{type: isValidFen ? "ok" : "error", text: fenErrorMsg}]} isValid={isValidFen}/>
         </div>
       </div>
       </div>
