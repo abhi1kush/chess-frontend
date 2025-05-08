@@ -2,6 +2,7 @@
 
 A modern, interactive chess board editor built with **React**, **Redux**, and **TypeScript**. This tool allows users to visually create, edit, and analyze chess positions, supporting features like FEN input/output, board flipping, piece placement/removal, castling rights, and move toggling.
 
+Visit https://abhi1kush.github.io/chess-frontend/ for Editing Fen or Chess positions.
 ---
 
 ## 🚀 Features
@@ -47,7 +48,7 @@ src/
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/chess-position-editor.git
+1. git clone https://github.com/your-username/chess-position-editor.git
 cd chess-position-editor
 2. Install Dependencies
 
