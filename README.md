@@ -29,7 +29,7 @@ Visit https://abhi1kush.github.io/chess-frontend/ for Editing Fen or Chess posit
 ---
 
 ## 📂 Project Structure
-
+```
 src/
 |--- components/ # Reusable UI components (Board, PiecePalette, etc.)
 |--- redux
@@ -40,8 +40,7 @@ src/
 │       |---fen/fenparser.ts
 |--- config.ts # Constants like starting positions, colors
 |--- App.tsx # Main entry component
-
----
+```
 
 ## 🧪 Getting Started
 
