@@ -30,18 +30,15 @@ A modern, interactive chess board editor built with **React**, **Redux**, and **
 ## 📂 Project Structure
 
 src/
-├── components/ # Reusable UI components (Board, PiecePalette, etc.)
-├── store/ # Redux logic (reducers, actions, types)
-│ └── reducers/boardEditorReducer.ts
-│ └── actions/boardEditorActions.ts
-├── services/ # Utility functions (e.g., FEN parser)
-│ └── fen/fenparser.ts
-├── config.ts # Constants like starting positions, colors
-└── App.tsx # Main entry component
-
-yaml
-Copy
-Edit
+|--- components/ # Reusable UI components (Board, PiecePalette, etc.)
+|--- redux
+|       |---store/ # Redux logic (reducers, actions, types)
+|       |---reducers/boardEditorReducer.ts
+|       |---actions/boardEditorActions.ts
+|--- services/ # Utility functions (e.g., FEN parser)
+│       |---fen/fenparser.ts
+|--- config.ts # Constants like starting positions, colors
+|--- App.tsx # Main entry component
 
 ---
 
@@ -53,16 +50,12 @@ Edit
 git clone https://github.com/your-username/chess-position-editor.git
 cd chess-position-editor
 2. Install Dependencies
-bash
-Copy
-Edit
+
 npm install
 # or
 yarn install
+
 3. Run the App
-bash
-Copy
-Edit
 npm run dev
 # or
 yarn dev
