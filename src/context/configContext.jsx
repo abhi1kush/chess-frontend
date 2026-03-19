@@ -5,10 +5,17 @@ const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
 
-   // Load settings from LocalStorage (or use defaults)
+   // Load settings from LocalStorage (or use defaults). Safe against invalid/corrupted JSON
+   // (e.g. raw "system" or other non-JSON values that break JSON.parse).
    const getStoredConfig = (key, defaultValue) => {
-    const storedValue = localStorage.getItem(key);
-    return storedValue !== null ? JSON.parse(storedValue) : defaultValue;
+    try {
+      const storedValue = localStorage.getItem(key);
+      if (storedValue === null || storedValue === undefined) return defaultValue;
+      const parsed = JSON.parse(storedValue);
+      return parsed !== undefined ? parsed : defaultValue;
+    } catch {
+      return defaultValue;
+    }
   };
 
    const [theme, setTheme] = useState(() => getStoredConfig(CONFIG.THEME_KEY, CONFIG.THEME));

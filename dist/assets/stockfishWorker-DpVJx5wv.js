@@ -1,0 +1,1 @@
+(function(){"use strict";let s;self.onmessage=function(t){t.data.type==="init"?(importScripts("/stockfish/stockfish-17.js"),s=typeof Stockfish=="function"?Stockfish():Stockfish,s.onmessage=function(i){self.postMessage(i.data||i)}):s?s.postMessage(t.data):postMessage(t.data)}})();
