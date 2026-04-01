@@ -177,7 +177,6 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
 
   const startSearch = useCallback((fen) => {
     if (!engineEnabledRef.current) {
-      console.warn("Engine disabled. Search not started.");
       return;
     }
     

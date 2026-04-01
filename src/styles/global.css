@@ -152,6 +152,7 @@ html, body {
     top: 8%;
     gap: 10px;
     text-align: center;
+    z-index: 10; /* Above fixed engine panels in the same column */
   }
   
   .no-decoration {

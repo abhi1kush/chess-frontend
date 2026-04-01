@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-D_FMYT0P.js","assets/Settings-DOtldTu3.js","assets/Settings-DS8xGtQf.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-CYbrSzam.js","assets/AnalysisGame-D3T61-kv.css"])))=>i.map(i=>d[i]);
-let wi, Cb, c2, nn, an, m2, _e, S2, T2, v2, A2, xb, Mb, H, q1, R2, p2, _2, a2, E2, Vp, A, y2, g2, Xn, b2;
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BEPrLyFA.js","assets/Settings-C6n1zLtO.js","assets/Settings-DS8xGtQf.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-COfmzGhn.js","assets/AnalysisGame-BkyhXRPk.css"])))=>i.map(i=>d[i]);
+let wi, Cb, c2, nn, an, m2, _e, S2, T2, v2, A2, xb, Mb, H, l2, R2, p2, _2, a2, E2, q1, A, y2, Vp, Xn, g2, b2;
 let __tla = (async ()=>{
     (function() {
         const i = document.createElement("link").relList;
@@ -14615,9 +14615,9 @@ Please change the parent <Route path="${L}"> to <Route path="${L === "/" ? "*" :
             ]
         });
     };
-    function l2(u) {
+    l2 = function(u) {
         return u == null || Number.isNaN(u) ? "—" : `${u >= 0 ? "+" : ""}${u.toFixed(2)}`;
-    }
+    };
     let n2, u2, i2;
     n2 = (u, i)=>i.split(" ")[1] === "w" ? u : -u;
     a2 = (u, i, c, s, o)=>{
@@ -14922,7 +14922,7 @@ Please change the parent <Route path="${L}"> to <Route path="${L === "/" ? "*" :
                 })
             ]
         });
-    }, o2 = A.lazy(()=>Xp(()=>import("./ChessGame-D_FMYT0P.js"), __vite__mapDeps([0,1,2,3]))), f2 = A.lazy(()=>Xp(()=>import("./AnalysisGame-CYbrSzam.js"), __vite__mapDeps([4,1,2,5]))), d2 = ()=>H.jsx(Nb, {
+    }, o2 = A.lazy(()=>Xp(()=>import("./ChessGame-BEPrLyFA.js"), __vite__mapDeps([0,1,2,3]))), f2 = A.lazy(()=>Xp(()=>import("./AnalysisGame-COfmzGhn.js"), __vite__mapDeps([4,1,2,5]))), d2 = ()=>H.jsx(Nb, {
             children: H.jsxs(yb, {
                 children: [
                     H.jsxs("nav", {
@@ -15002,4 +15002,4 @@ Please change the parent <Route path="${L}"> to <Route path="${L === "/" ? "*" :
         children: H.jsx(d2, {})
     }));
 })();
-export { wi as C, Cb as D, c2 as E, nn as R, an as a, m2 as b, _e as c, S2 as d, T2 as e, v2 as f, A2 as g, xb as h, Mb as i, H as j, q1 as k, R2 as l, p2 as m, _2 as n, a2 as o, E2 as p, Vp as q, A as r, y2 as s, g2 as t, Xn as u, b2 as v, __tla };
+export { wi as C, Cb as D, c2 as E, nn as R, an as a, m2 as b, _e as c, S2 as d, T2 as e, v2 as f, A2 as g, xb as h, Mb as i, H as j, l2 as k, R2 as l, p2 as m, _2 as n, a2 as o, E2 as p, q1 as q, A as r, y2 as s, Vp as t, Xn as u, g2 as v, b2 as w, __tla };

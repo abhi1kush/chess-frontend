@@ -10,6 +10,7 @@ import AnalysisBoard from "./AnalysisBoard";
 import EvalBar from "./EvalBar";
 import '../../styles/components/AnalysisLayout.css';
 import {onMessage} from "../../utils/onMessage";
+import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
 import EngineEnabledListener from "./EngineEnabledListener"
 
@@ -63,29 +64,42 @@ const AnalysisGame = () => {
     try {
       const move = game.move({from, to, promotion: 'q'});
       if (!move) return;
-      setupEngine();
       setPosition(game.fen());
+      if (!enabledChessEngine) return;
+      setupEngine();
       stopSearch("handleMove");
       startSearch(game.fen());
     } catch (error) {
       console.error(error);
     }
-  }, [position]);
+  }, [position, enabledChessEngine, startSearch, stopSearch]);
 
   const navigateMove = useCallback(() => {
     stopSearch("navigateMove");
-    startSearch(positionRef.current);
-  }, []);
+    if (enabledChessEngine) {
+      startSearch(positionRef.current);
+    }
+  }, [enabledChessEngine, startSearch, stopSearch]);
+
+  const bestMoveUci = bestLine.trim().split(/\s+/).filter(Boolean)[0] ?? "";
 
   return (
-    <div>
+    <div className="analysis-game-page">
       <EngineEnabledListener fen={position} />
       <AnalysisTopContainer/>
-      <div className='middle-container'>
-        <div className='left-menu-bar'>          
-          <p style={{ color: "black", marginTop: "0.5rem" }}>Eval: {evalScore}</p>
-          <p style={{ color: "black", marginTop: "0.5rem" }}>Best Line: {bestLine}</p>
+      <aside className="analysis-game-engine-shell" aria-label="Engine analysis">
+        <div className="analysis-game-engine-panel" aria-live="polite">
+          <div className="analysis-game-engine-row">
+            <span className="analysis-game-engine-label">Eval Score</span>
+            <span className="analysis-game-engine-value">{formatEvalDisplay(evalScore)}</span>
+          </div>
+          <div className="analysis-game-engine-row">
+            <span className="analysis-game-engine-label">Best Move</span>
+            <span className="analysis-game-engine-value">{bestMoveUci || "—"}</span>
+          </div>
         </div>
+      </aside>
+      <div className='middle-container'>
         <div className={`analysis-container ${theme}-theme `}>
           <div className="main-area">
           <div className="top-name">              
