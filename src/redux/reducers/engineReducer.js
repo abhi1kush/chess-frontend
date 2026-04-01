@@ -1,7 +1,7 @@
 import { TOGGLE_ENGINE, SET_MULTIPV, SET_MAX_DEPTH, SET_AUTO_STOP_TIME } from '../actions/engineActions';
 
 const initialState = {
-  enabled: false,
+  enabled: true,
   multiPV: 1,
   maxDepth: 20,
   autoStopTime: 8000, // in ms

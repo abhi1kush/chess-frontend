@@ -1,9 +1,10 @@
 .move-history {
     width: 100%;
-    height: 60vh;
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevents outer scrolling */
+    overflow: hidden;
     border-radius: 8px;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -11,16 +12,82 @@
     text-align: center;
 }
 
+/* Scrolls the whole table — normal table layout so the first row isn’t clipped. */
+.move-history-scroll {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-block: 6px;
+}
+
+.move-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.move-history-scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: var(--background-color1);
+    color: var(--text-color);
+    font-weight: bold;
+    padding: 10px 5px;
+    box-shadow: 0 1px 0 var(--background-color);
+}
+
+.move-history-scroll tbody tr {
+    scroll-margin-block: 6px;
+}
+
 .move-history-wrapper {
     width: 100%;
     height: 65vh;
+    max-height: 65vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: stretch;
     border-radius: 8px;
     font-size: 1rem;
     text-align: center;
+    gap: 0.5rem;
+    min-height: 0;
+    box-sizing: border-box;
+}
+
+.moves-start-review-btn {
+    flex-shrink: 0;
+    align-self: stretch;
+    max-width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1b5e20;
+    background-color: #c8e6c9;
+    border: 1px solid #81c784;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.moves-start-review-btn:hover {
+    background-color: #a5d6a7;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.moves-start-review-btn:active {
+    background-color: #9ccc9c;
+}
+
+.moves-start-review-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.85;
+    color: #2e7d32;
 }
 
 .move-history h3 {
@@ -28,38 +95,8 @@
     margin-bottom: 5px;
 }
 
-.move-history table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.move-history thead {
-    position: sticky;
-    top: 0;
-    background-color: var(--text-color);
-    z-index: 2;
-}
-
-.move-history tbody {
-    display: block;
-    height: 450px; /* Ensures tbody is scrollable */
-    overflow-y: auto;
-}
-
-.move-history tr {
-    display: flex;
-    justify-content: space-between;
-}
-
-.move-history th {
-    background-color: var(--background-color1);
-    color: var(--text-color);
-    font-weight: bold;
-    padding: 10px;
-}
-
-.move-history th,
-.move-history td {
+.move-history-scroll th,
+.move-history-scroll td {
     width: 33%;
     text-align: center;
     padding: 5px;
@@ -67,15 +104,14 @@
 }
 
 
-/* Fix last move visibility */
-.move-history tbody tr:last-child td {
+.move-history-scroll tbody tr:last-child td {
     padding-bottom: 10px;
 }
 
-.move-history table tbody tr:nth-child(even) {
-    background-color: var(--background-color1); 
-  }
-  
-  .move-history table tbody tr:nth-child(odd) {
-    background-color: var(--background-color2); 
-  }
+.move-history-scroll tbody tr:nth-child(even) {
+    background-color: var(--background-color1);
+}
+
+.move-history-scroll tbody tr:nth-child(odd) {
+    background-color: var(--background-color2);
+}
