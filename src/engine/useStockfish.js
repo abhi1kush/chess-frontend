@@ -218,12 +218,10 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
   }, []);
 
   const syncEnabledState = useCallback((enabled) => {
+    engineEnabledRef.current = enabled;
     if (!enabled) {
-      console.log("Permission revoked: stopping engine");
       stopSearch("permission revoked");
       terminateEngine();
-    } else {
-      console.log("Permission granted: engine allowed to start if needed");
     }
   }, [stopSearch, terminateEngine]);
 

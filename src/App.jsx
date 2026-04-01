@@ -25,8 +25,16 @@ const App = () => {
               </StockfishProvider>
             } />
             <Route path="/gameplay" element={<ChessGame/>} />
-            <Route path="/boardeditor" element={<BoardEditor/>} />
-            <Route path="*" element={<BoardEditor/>} /> {/* fallback route */}
+            <Route path="/boardeditor" element={
+              <StockfishProvider>
+                <BoardEditor/>
+              </StockfishProvider>
+            } />
+            <Route path="*" element={
+              <StockfishProvider>
+                <BoardEditor/>
+              </StockfishProvider>
+            } />
           </Routes>
         </Suspense>
       </Router>

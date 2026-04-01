@@ -1,9 +1,13 @@
 export const normalizeEval = (evalScore, fen) => {
   const sideToMove = fen.split(" ")[1];
   return sideToMove === "w" ? evalScore : -evalScore;
-}
+};
 
-export const onMessage = (data, setEvalScore, setBestLine, fen) => {
+/**
+ * Stockfish reports score from the side-to-move’s perspective (UCI).
+ * normalizeEval converts to White’s perspective for display.
+ */
+export const onMessage = (data, setEvalScore, setBestLine, fen, setBestMove) => {
   if (typeof data === "string") {
     if (data.startsWith("info") && data.includes("score")) {
       const match = data.match(/score (cp|mate) (-?\d+)/);
@@ -24,6 +28,12 @@ export const onMessage = (data, setEvalScore, setBestLine, fen) => {
       if (pvMatch) {
         setBestLine(pvMatch[1]);
       }
+    }
+    if (data.startsWith("bestmove") && setBestMove) {
+      const parts = data.trim().split(/\s+/);
+      const m = parts[1];
+      if (m && m !== "(none)") setBestMove(m);
+      else setBestMove("");
     }
   }
 };

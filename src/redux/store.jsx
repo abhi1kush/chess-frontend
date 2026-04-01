@@ -28,6 +28,7 @@ const safeStorage = {
         localStorage.setItem(key, JSON.stringify(value));
         resolve();
       } catch (e) {
+        console.error('Failed to remove item from storage:', e);
         resolve();
       }
     });
@@ -38,6 +39,7 @@ const safeStorage = {
         localStorage.removeItem(key);
         resolve();
       } catch (e) {
+        console.error('Failed to remove item from storage:', e);
         resolve();
       }
     });

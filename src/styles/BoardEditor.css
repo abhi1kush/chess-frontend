@@ -243,3 +243,93 @@
 
 
   }
+
+/* Engine panel: fixed under app nav (.routes), same column as “Play Game” link */
+.board-editor-analysis-shell {
+  position: fixed;
+  left: 0;
+  top: calc(8% + 10.5rem);
+  width: 13%;
+  max-width: 13vw;
+  max-height: min(32vh, 280px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 5;
+  padding: 0 6px 8px 10px;
+  box-sizing: border-box;
+}
+
+.board-editor-page .middle-container {
+  margin-left: 13%;
+  width: calc(100% - 13%);
+  max-width: calc(100vw - 13%);
+  box-sizing: border-box;
+}
+
+.board-editor-analysis-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.4rem 0.35rem;
+  margin: 0;
+  max-width: 100%;
+  font-size: 0.8rem;
+  border-left: 3px solid var(--accent-color, #4a90d9);
+  background: var(--background-color1, rgba(0, 0, 0, 0.04));
+  border-radius: 4px;
+}
+
+.board-editor-analysis-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .board-editor-analysis-row {
+    grid-template-columns: minmax(0, 5.5rem) 1fr;
+  }
+}
+
+.board-editor-analysis-pv .board-editor-analysis-value {
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  word-break: break-word;
+}
+
+.board-editor-analysis-label {
+  color: var(--text-muted, #666);
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.board-editor-analysis-value {
+  font-weight: 600;
+}
+
+.board-editor-analysis-error {
+  color: #b00020;
+  padding: 0.25rem 0.35rem;
+  margin: 0 0 0.35rem 0;
+  font-size: 0.75rem;
+}
+
+/* Eval bar + board row (same idea as Analysis Game) */
+.board-editor-evalbar-board-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--board-gap, 5px);
+  width: 100%;
+}
+
+.board-editor-evalbar-wrap {
+  flex-shrink: 0;
+  width: var(--eval-bar-width);
+  height: var(--max-board-size);
+}
+
+.board-editor-evalbar-wrap .eval-container {
+  height: 100%;
+}
