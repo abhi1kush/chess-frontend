@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BpWH3aej.js","assets/Settings-Cr9qga4J.js","assets/Settings-Chtm3krz.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-CUFGgXJ0.js","assets/AnalysisGame-cxKv7SGa.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-CWFdfPZb.js","assets/Settings-BtyAgI8h.js","assets/Settings-CkJF95SR.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-TtxtHpJ7.js","assets/AnalysisGame-cxKv7SGa.css"])))=>i.map(i=>d[i]);
 let zi, Ub, f2, nn, an, g2, Ae, T2, O2, S2, zb, x2, r2, k, wb, N2, v2, A2, Db, R2, H1, A, b2, Zp, Xn, E2, _2;
 let __tla = (async ()=>{
     (function() {
@@ -11066,13 +11066,9 @@ Error generating stack: ` + l.message + `
         ENABLE_SOUND_KEY: "enableSound",
         TIMER_DURATION_KEY: "timerDuration",
         IS_FLIPPED_KEY: "isFlipped",
-        CHESS_GAME_KEY: "chessGame",
         START_FEN: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        CLEAR_FEN: "8/8/8/8/8/8/8/8 w KQkq - 0 1",
-        FINAL_FEN_KEY: "finalFen",
         CHECKMATE_MESSAGE: "Wins by Checkmate!",
         WHITE: "w",
-        BLACK: "b",
         BOARD_PIECE: "boardPiece",
         PALLETE_ITEM: "palleteItem",
         ERASER_ID: "p-g-eraser"
@@ -12126,7 +12122,7 @@ Error generating stack: ` + l.message + `
     jv = "SET_MAX_DEPTH";
     kv = "SET_AUTO_STOP_TIME";
     Hv = {
-        enabled: !1,
+        enabled: !0,
         multiPV: 1,
         maxDepth: 20,
         autoStopTime: 8e3
@@ -14985,7 +14981,7 @@ Please change the parent <Route path="${H}"> to <Route path="${H === "/" ? "*" :
                 })
             ]
         });
-    }, h2 = A.lazy(()=>$p(()=>import("./ChessGame-BpWH3aej.js"), __vite__mapDeps([0,1,2,3]))), p2 = A.lazy(()=>$p(()=>import("./AnalysisGame-CUFGgXJ0.js"), __vite__mapDeps([4,1,2,5]))), m2 = ()=>k.jsx(Cb, {
+    }, h2 = A.lazy(()=>$p(()=>import("./ChessGame-CWFdfPZb.js"), __vite__mapDeps([0,1,2,3]))), p2 = A.lazy(()=>$p(()=>import("./AnalysisGame-TtxtHpJ7.js"), __vite__mapDeps([4,1,2,5]))), m2 = ()=>k.jsx(Cb, {
             children: k.jsxs(bb, {
                 children: [
                     k.jsxs("nav", {

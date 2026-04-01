@@ -1,11 +1,9 @@
 // src/components/MoveHistory.js
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Chess } from 'chess.js';
 import { useSelector, useDispatch } from 'react-redux';
 import '../../styles/components/moveHistory.css';
 import { jumpToMove, startPos } from '../../redux/actions/analysisActions';
 import { playBoardSetupSound } from '../../utils/soundUtils';
-import CONFIG from '../../config';
 import { useStockfishContext } from '../../context/StockfishContext';
 import { formatEvalDisplay } from '../../utils/formatEval';
 
@@ -16,7 +14,7 @@ const Moves = () => {
   const reviewTimeoutRef = useRef(null);
   const reviewSessionRef = useRef(0);
   const [isReviewing, setIsReviewing] = useState(false);
-  const { moves, termination} = useSelector((state) => state.pgn);
+  const { moves, termination, fens } = useSelector((state) => state.pgn);
   const { currentMoveIndex, fenLength } = useSelector((state) => state.analysis);
   const engineEnabled = useSelector((state) => state.engine.enabled);
   const dispatch = useDispatch();
@@ -87,6 +85,12 @@ const Moves = () => {
       console.warn('[Review] No moves to replay. Load a PGN first.');
       return;
     }
+    if (!fens?.length || fens.length !== moves.length + 1) {
+      console.warn(
+        '[Review] Stored FENs are missing or do not match moves (expected fens.length === moves.length + 1).',
+      );
+      return;
+    }
 
     clearReviewSchedule();
     reviewSessionRef.current += 1;
@@ -143,8 +147,7 @@ const Moves = () => {
       };
 
       try {
-        const game = new Chess(CONFIG.START_FEN);
-        await logPly(0, 'start', game.fen(), null);
+        await logPly(0, 'start', fens[0], null);
 
         for (let i = 0; i < moves.length; i++) {
           if (session !== reviewSessionRef.current) return;
@@ -152,14 +155,8 @@ const Moves = () => {
             reviewTimeoutRef.current = setTimeout(resolve, REVIEW_STEP_MS);
           });
           if (session !== reviewSessionRef.current) return;
-          const san = moves[i];
-          const result = game.move(san);
-          if (!result) {
-            console.error('[Review] Illegal move:', san, 'at index', i);
-            return;
-          }
           dispatch(jumpToMove(i + 1));
-          await logPly(i + 1, san, game.fen(), san);
+          await logPly(i + 1, moves[i], fens[i + 1], moves[i]);
         }
       } finally {
         if (session === reviewSessionRef.current) {
