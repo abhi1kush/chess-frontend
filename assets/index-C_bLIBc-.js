@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-FuzOqY9R.js","assets/Settings-Bie6c0tT.js","assets/Settings-Dnu627Lx.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-BZYZ5Pt3.js","assets/AnalysisGame-CP1Vpdfr.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BDP4kk-4.js","assets/Settings-DntlGfxj.js","assets/Settings-BeYbQfL8.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-D6KBd1Kh.js","assets/AnalysisGame-CP1Vpdfr.css"])))=>i.map(i=>d[i]);
 let Ui, Kb, b2, an, un, O2, Re, D2, z2, x2, Lb, k2, P2, L, q2, U2, A2, w2, m2, B2, wb, A, N2, Q1, Zn, $p, M2, C2;
 let __tla = (async ()=>{
     (function() {
@@ -14140,8 +14140,8 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
     mm = A.createContext();
     Lb = ()=>A.useContext(mm);
     Qb = ({ children: u })=>{
-        const i = A.useRef(null), [c, s] = A.useState(!1), [o, f] = A.useState(!1), m = A.useCallback((b)=>{
-            i.current && i.current(b);
+        const i = A.useRef(null), [c, s] = A.useState(!1), [o, f] = A.useState(!1), m = A.useCallback((_)=>{
+            i.current && i.current(_);
         }, []), p = Hb(m, "lite", 8e3, {
             onUciReady: ()=>s(!0),
             onReadyOk: ()=>f(!0)
@@ -14151,15 +14151,19 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
         }, [
             h
         ]);
-        const y = A.useCallback((b)=>{
-            i.current = b;
+        const y = A.useMemo(()=>o ? 100 : c ? 66 : 33, [
+            c,
+            o
+        ]), b = A.useCallback((_)=>{
+            i.current = _;
         }, []);
         return L.jsx(mm.Provider, {
             value: {
                 ...p,
-                setOnMessage: y,
+                setOnMessage: b,
                 engineUciOk: c,
-                engineReadyOk: o
+                engineReadyOk: o,
+                engineWarmupPercent: y
             },
             children: u
         });
@@ -15083,7 +15087,7 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
                 })
             ]
         });
-    }, E2 = A.lazy(()=>Jp(()=>import("./ChessGame-FuzOqY9R.js"), __vite__mapDeps([0,1,2,3]))), _2 = A.lazy(()=>Jp(()=>import("./AnalysisGame-BZYZ5Pt3.js"), __vite__mapDeps([4,1,2,5]))), T2 = ()=>L.jsx(Bb, {
+    }, E2 = A.lazy(()=>Jp(()=>import("./ChessGame-BDP4kk-4.js"), __vite__mapDeps([0,1,2,3]))), _2 = A.lazy(()=>Jp(()=>import("./AnalysisGame-D6KBd1Kh.js"), __vite__mapDeps([4,1,2,5]))), T2 = ()=>L.jsx(Bb, {
             children: L.jsx(Qb, {
                 children: L.jsxs(Eb, {
                     children: [
