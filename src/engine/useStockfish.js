@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { normalizeEval } from '../utils/onMessage';
+import { fenCacheGet, fenCacheSet } from './stockfishFenCache';
 
 const STOCKFISH_LITE_PATH = `${import.meta.env.BASE_URL}stockfish/stockfish-17-lite-single.js`;
 
@@ -35,22 +36,37 @@ function parseScoreFromInfoLine(line) {
   return evalValue;
 }
 
-export default function useStockfish(onMessage, version = 'lite', autoStopTime = 8000) {
+function scheduleIdle(fn) {
+  if (typeof requestIdleCallback !== 'undefined') {
+    requestIdleCallback(fn, { timeout: 48 });
+  } else {
+    queueMicrotask(fn);
+  }
+}
+
+/**
+ * @param {((data: string) => void) | null | undefined} onMessage
+ * @param {'lite' | string} [version]
+ * @param {number} [autoStopTime]
+ * @param {{ onUciReady?: () => void; onReadyOk?: () => void }} [lifecycle]
+ */
+export default function useStockfish(onMessage, version = 'lite', autoStopTime = 8000, lifecycle = {}) {
+  const lifecycleRef = useRef(lifecycle);
+  lifecycleRef.current = lifecycle;
+
   const workerRef = useRef(null);
-  const resolveRef = useRef(null);
   const stopTimeoutRef = useRef(null);
   const searchTimeoutRef = useRef(null);
   const isSearchingRef = useRef(false);
   const commandQueueRef = useRef([]);
-  const isEngineReadyRef = useRef(true);
   const queueRunningRef = useRef(false);
   const engineEnabledRef = useRef(false);
   const quickAnalyzePendingRef = useRef(null);
   const lastQuickEvalRef = useRef(null);
-  /** False until we see `uciok` — commands sent before that are ignored by Stockfish. */
   const uciReadyRef = useRef(false);
-  /** Run after `uciok` when quick-analyze was queued before the engine was ready. */
+  const readyOkRef = useRef(false);
   const deferredQuickAnalyzeSendRef = useRef(null);
+  const quickAnalyzeCacheRef = useRef(new Map());
 
   const processQueue = useCallback(() => {
     if (queueRunningRef.current || !workerRef.current) return;
@@ -58,10 +74,9 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     queueRunningRef.current = true;
 
     while (commandQueueRef.current.length > 0) {
-      // Prioritize stop commands first
       const stopCmdIndex = commandQueueRef.current.findIndex(item => item.type === 'stop');
-      const cmdObj = stopCmdIndex >= 0 
-        ? commandQueueRef.current.splice(stopCmdIndex, 1)[0] 
+      const cmdObj = stopCmdIndex >= 0
+        ? commandQueueRef.current.splice(stopCmdIndex, 1)[0]
         : commandQueueRef.current.shift();
 
       if (cmdObj) {
@@ -72,7 +87,6 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     queueRunningRef.current = false;
   }, []);
 
-
   const enqueueCommand = useCallback((type, cmd) => {
     commandQueueRef.current.push({ type, cmd });
     processQueue();
@@ -80,59 +94,68 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
 
   const attachWorkerOnMessage = useCallback((worker) => {
     worker.onmessage = (e) => {
-      const lines = uciLinesFromWorkerData(e.data);
+      scheduleIdle(() => {
+        const lines = uciLinesFromWorkerData(e.data);
 
-      for (const data of lines) {
-        if (data === 'uciok') {
-          uciReadyRef.current = true;
-          const deferred = deferredQuickAnalyzeSendRef.current;
-          if (deferred) {
-            deferredQuickAnalyzeSendRef.current = null;
-            deferred();
+        for (const data of lines) {
+          if (data === 'uciok') {
+            uciReadyRef.current = true;
+            lifecycleRef.current.onUciReady?.();
+            enqueueCommand('normal', 'isready');
           }
-        }
 
-        const pending = quickAnalyzePendingRef.current;
-        if (pending) {
-          if (data.startsWith('info') && /\bscore\b/i.test(data)) {
-            const evalValue = parseScoreFromInfoLine(data);
-            if (evalValue != null) {
-              lastQuickEvalRef.current = normalizeEval(evalValue, pending.fen);
+          if (data === 'readyok') {
+            readyOkRef.current = true;
+            lifecycleRef.current.onReadyOk?.();
+            const deferred = deferredQuickAnalyzeSendRef.current;
+            if (deferred) {
+              deferredQuickAnalyzeSendRef.current = null;
+              deferred();
             }
           }
-          if (data.startsWith('bestmove')) {
-            const parts = data.trim().split(/\s+/);
-            const bm = parts[1];
-            const uci = bm && bm !== '(none)' ? bm : '';
-            const ev = lastQuickEvalRef.current;
-            clearTimeout(pending.timeoutId);
-            quickAnalyzePendingRef.current = null;
-            const evalScore =
-              ev != null && Number.isFinite(ev) ? ev : 0;
-            pending.resolve({
-              evalScore,
-              bestMoveUci: uci,
-            });
-          }
-        }
 
-        if (onMessage) onMessage(data);
+          const pending = quickAnalyzePendingRef.current;
+          if (pending) {
+            if (data.startsWith('info') && /\bscore\b/i.test(data)) {
+              const evalValue = parseScoreFromInfoLine(data);
+              if (evalValue != null) {
+                lastQuickEvalRef.current = normalizeEval(evalValue, pending.fen);
+              }
+            }
+            if (data.startsWith('bestmove')) {
+              const parts = data.trim().split(/\s+/);
+              const bm = parts[1];
+              const uci = bm && bm !== '(none)' ? bm : '';
+              const ev = lastQuickEvalRef.current;
+              const evalScore =
+                ev != null && Number.isFinite(ev) ? ev : 0;
 
-        if (data === 'readyok' || data.startsWith('bestmove')) {
-          isEngineReadyRef.current = true;
-        } else if (data.startsWith('info') && /\bscore\b/i.test(data)) {
-          const match = data.match(/\bscore\s+(cp|mate)\s+(-?\d+)/i);
-          if (match) {
-            const type = match[1].toLowerCase();
-            const value = parseInt(match[2], 10);
-            const evalScore = type === 'cp' ? value / 100 : (value > 0 ? 10 : -10);
-            if (resolveRef.current) {
-              resolveRef.current(evalScore);
-              resolveRef.current = null;
+              if (
+                pending.depths &&
+                pending.depthIndex < pending.depths.length - 1
+              ) {
+                pending.depthIndex += 1;
+                const nextDepth = pending.depths[pending.depthIndex];
+                lastQuickEvalRef.current = null;
+                enqueueCommand('stop', 'stop');
+                isSearchingRef.current = false;
+                enqueueCommand('normal', 'setoption name MultiPV value 1');
+                enqueueCommand('normal', `position fen ${pending.fen}`);
+                enqueueCommand('normal', `go depth ${nextDepth}`);
+                continue;
+              }
+
+              clearTimeout(pending.timeoutId);
+              quickAnalyzePendingRef.current = null;
+              const result = { evalScore, bestMoveUci: uci };
+              fenCacheSet(quickAnalyzeCacheRef.current, pending.fen, result);
+              pending.resolve(result);
             }
           }
+
+          if (onMessage) onMessage(data);
         }
-      }
+      });
     };
 
     worker.onerror = (ev) => {
@@ -145,27 +168,13 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
         quickAnalyzePendingRef.current = null;
       }
     };
-  }, [onMessage]);
-
-  // const processNextCommand = () => {
-  //   if (!workerRef.current || !isEngineReadyRef.current) return;
-
-  //   // Prioritize 'stop' type commands
-  //   const stopIndex = commandQueueRef.current.findIndex(c => c.type === 'stop');
-  //   const nextCommand = stopIndex !== -1
-  //     ? commandQueueRef.current.splice(stopIndex, 1)[0]
-  //     : commandQueueRef.current.shift();
-
-  //   if (nextCommand) {
-  //     isEngineReadyRef.current = false;
-  //     workerRef.current.postMessage(nextCommand.cmd);
-  //   }
-  // };
+  }, [onMessage, enqueueCommand]);
 
   const internalInitEngine = useCallback(() => {
     if (workerRef.current) return;
 
     uciReadyRef.current = false;
+    readyOkRef.current = false;
 
     if (version === 'lite') {
       workerRef.current = new Worker(STOCKFISH_LITE_PATH);
@@ -175,43 +184,29 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
 
     attachWorkerOnMessage(workerRef.current);
     workerRef.current.postMessage('uci');
-    console.log("Initializing worker ...");
   }, [attachWorkerOnMessage, version]);
 
-  // Initialize Stockfish
+  /** Singleton: only creates worker if missing — do not terminate here. */
   const initEngine = useCallback(() => {
-    if (workerRef.current) workerRef.current.terminate();
+    internalInitEngine();
+  }, [internalInitEngine]);
 
-    uciReadyRef.current = false;
+  const preloadEngine = useCallback(() => {
+    internalInitEngine();
+  }, [internalInitEngine]);
 
-    if (version === 'lite') {
-      workerRef.current = new Worker(STOCKFISH_LITE_PATH);
-    } else {
-      workerRef.current = new Worker(new URL('./stockfishWorker.js', import.meta.url), {
-        type: 'classic',
-      });
-    }
-
-    attachWorkerOnMessage(workerRef.current);
-    workerRef.current.postMessage('uci');
-    // console.log("Intialising worker ...");
-  }, [attachWorkerOnMessage, version]);
-
-  // Send command to Stockfish
   const sendCommand = useCallback((cmd) => {
     if (workerRef.current) {
       enqueueCommand('normal', cmd);
     }
-  }, []);
+  }, [enqueueCommand]);
 
-  // Set UCI options
   const setOptions = useCallback((options) => {
     options.forEach(opt => {
       enqueueCommand('normal', `setoption name ${opt.name} value ${opt.value}`);
     });
-  }, [sendCommand]);
+  }, [enqueueCommand]);
 
-  // Set position (fen and moves)
   const setFen = useCallback((fen, moves = []) => {
     let command = `position fen ${fen}`;
     if (moves.length > 0) {
@@ -219,52 +214,48 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
       command += ` moves ${movesStr}`;
     }
     enqueueCommand('normal', command);
-  }, [sendCommand]);
+  }, [enqueueCommand]);
 
-    // Stop search
   const stopSearch = useCallback((id) => {
-    // console.log("Attempt stopSearch..", id);
     if (!workerRef.current) return;
-    // console.log("try stopSearch ...", id);
     if (!isSearchingRef.current) return;
-    // console.log("Interrupting current search...", id);
     enqueueCommand('stop', 'stop');
     isSearchingRef.current = false;
     if (stopTimeoutRef.current) {
       clearTimeout(stopTimeoutRef.current);
       stopTimeoutRef.current = null;
     }
-  }, []);
+  }, [enqueueCommand]);
 
   const startSearch = useCallback((fen) => {
     if (!engineEnabledRef.current) {
       return;
     }
-    
+
     if (!workerRef.current) {
-      // console.log("Starting engine on demand...");
       internalInitEngine();
     }
 
-    clearTimeout(stopTimeoutRef.current); // clear any existing timeout
-    stopSearch("pre startSearch"); 
+    clearTimeout(stopTimeoutRef.current);
+    stopSearch('pre startSearch');
 
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
-    } 
-    searchTimeoutRef.current = setTimeout(() => {  
-      isSearchingRef.current = true;                     // Always stop the previous search
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      isSearchingRef.current = true;
       enqueueCommand('normal', `position fen ${fen}`);
-      enqueueCommand('normal', "go infinite");
+      enqueueCommand('normal', 'go infinite');
 
-      // Auto-stop after X milliseconds
       stopTimeoutRef.current = setTimeout(() => {
-        stopSearch("startSearch timer expire");
-      }, autoStopTime);}, 50);
-  }, [autoStopTime, stopSearch]);
+        stopSearch('startSearch timer expire');
+      }, autoStopTime);
+    }, 50);
+  }, [autoStopTime, stopSearch, enqueueCommand, internalInitEngine]);
 
   const terminateEngine = useCallback(() => {
     uciReadyRef.current = false;
+    readyOkRef.current = false;
     deferredQuickAnalyzeSendRef.current = null;
     if (quickAnalyzePendingRef.current) {
       clearTimeout(quickAnalyzePendingRef.current.timeoutId);
@@ -272,12 +263,10 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
       quickAnalyzePendingRef.current = null;
     }
     if (workerRef.current) {
-      // console.log("Terminating worker...");
       workerRef.current.terminate();
       workerRef.current = null;
     }
     isSearchingRef.current = false;
-    isEngineReadyRef.current = true;
     if (stopTimeoutRef.current) {
       clearTimeout(stopTimeoutRef.current);
       stopTimeoutRef.current = null;
@@ -292,21 +281,32 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
         quickAnalyzePendingRef.current.reject(new Error('Engine disabled'));
         quickAnalyzePendingRef.current = null;
       }
-      stopSearch("permission revoked");
-      terminateEngine();
+      stopSearch('permission revoked');
+      /** Keep worker alive (singleton) — do not terminate on toggle off. */
     }
-  }, [stopSearch, terminateEngine]);
+  }, [stopSearch]);
 
-  /** Default depth for `quickAnalyzeFen` — lower = faster `bestmove` (important for Start Review). */
-  const DEFAULT_QUICK_ANALYZE_DEPTH = 14;
-  /** Default max wait before rejecting (slow devices / WASM / complex positions). */
+  const DEFAULT_QUICK_ANALYZE_DEPTH = 8;
   const DEFAULT_QUICK_ANALYZE_TIMEOUT_MS = 120000;
 
   /**
    * @param {string} fen
-   * @param {{ timeoutMs?: number; depth?: number }} [options]
+   * @param {{ timeoutMs?: number; depth?: number; progressiveDepths?: number[]; skipCache?: boolean }} [options]
    */
   const quickAnalyzeFen = useCallback((fen, options = {}) => {
+    const skipCache = options.skipCache === true;
+    if (!skipCache && fen) {
+      const hit = fenCacheGet(quickAnalyzeCacheRef.current, fen);
+      if (hit) {
+        return Promise.resolve(hit);
+      }
+    }
+
+    const progressiveDepths =
+      Array.isArray(options.progressiveDepths) && options.progressiveDepths.length > 0
+        ? options.progressiveDepths.map((d) => Math.min(24, Math.max(1, d)))
+        : null;
+
     const depth =
       typeof options.depth === 'number' && options.depth > 0
         ? Math.min(24, options.depth)
@@ -346,11 +346,16 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
         }
       }, timeoutMs);
 
+      const depths = progressiveDepths || [depth];
+      const firstDepth = depths[0];
+
       quickAnalyzePendingRef.current = {
         resolve,
         reject,
         fen,
         timeoutId,
+        depths: progressiveDepths || null,
+        depthIndex: 0,
       };
 
       const sendQuickAnalyzeCommands = () => {
@@ -358,17 +363,17 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
         isSearchingRef.current = false;
         enqueueCommand('normal', 'setoption name MultiPV value 1');
         enqueueCommand('normal', `position fen ${fen}`);
-        enqueueCommand('normal', `go depth ${depth}`);
+        enqueueCommand('normal', `go depth ${firstDepth}`);
       };
 
-      const runAfterUciReady = () => {
+      const runAfterEngineReady = () => {
         setTimeout(sendQuickAnalyzeCommands, 50);
       };
 
-      if (uciReadyRef.current) {
-        runAfterUciReady();
+      if (uciReadyRef.current && readyOkRef.current) {
+        runAfterEngineReady();
       } else {
-        deferredQuickAnalyzeSendRef.current = runAfterUciReady;
+        deferredQuickAnalyzeSendRef.current = runAfterEngineReady;
       }
     });
   }, [enqueueCommand, internalInitEngine]);
@@ -382,10 +387,11 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
       }
       terminateEngine();
     };
-  }, []);
+  }, [terminateEngine]);
 
   return {
     initEngine,
+    preloadEngine,
     setOptions,
     setFen,
     startSearch,

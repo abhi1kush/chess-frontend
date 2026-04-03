@@ -18,8 +18,8 @@ import {
 } from '../../utils/moveClassification';
 
 const REVIEW_STEP_MS = 400;
-/** Shallower than default quick-analyze so `bestmove` returns sooner (fewer timeouts on slow devices). */
-const REVIEW_QUICK_DEPTH = 11;
+/** Fast first result, then refine (depth 8 → 12 → 16). */
+const REVIEW_PROGRESSIVE_DEPTHS = [8, 12, 16];
 const REVIEW_QUICK_TIMEOUT_MS = 120000;
 
 const Moves = ({ onReviewingChange }) => {
@@ -31,7 +31,8 @@ const Moves = ({ onReviewingChange }) => {
   const { currentMoveIndex, fenLength } = useSelector((state) => state.analysis);
   const engineEnabled = useSelector((state) => state.engine.enabled);
   const dispatch = useDispatch();
-  const { quickAnalyzeFen, syncEnabledState } = useStockfishContext();
+  const { quickAnalyzeFen, syncEnabledState, engineReadyOk } =
+    useStockfishContext();
 
   const clearReviewSchedule = useCallback(() => {
     if (reviewTimeoutRef.current !== null) {
@@ -120,7 +121,7 @@ const Moves = ({ onReviewingChange }) => {
 
     const run = async () => {
       const quickOpts = {
-        depth: REVIEW_QUICK_DEPTH,
+        progressiveDepths: REVIEW_PROGRESSIVE_DEPTHS,
         timeoutMs: REVIEW_QUICK_TIMEOUT_MS,
       };
 
@@ -225,8 +226,15 @@ const Moves = ({ onReviewingChange }) => {
     void run();
   };
 
+  const showEngineWarming = engineEnabled && !engineReadyOk;
+
   return (
     <div className="move-history-wrapper">
+      {showEngineWarming && (
+        <div className="moves-engine-warming" role="status" aria-live="polite">
+          Engine warming up…
+        </div>
+      )}
       <button
         type="button"
         className="moves-start-review-btn"

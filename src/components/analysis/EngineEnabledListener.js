@@ -1,41 +1,29 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import useStockfish from '../../engine/useStockfish';
-
-const onEngineMessage = (msg) => {
-  console.log("Stockfish message:", msg);
-};
+import { useStockfishContext } from '../../context/StockfishContext';
 
 const EngineEnabledListener = ({ fen, pauseSearch = false }) => {
-  const engineEnabled = useSelector(state => state.engine.enabled);
-  const {
-    initEngine,
-    startSearch,
-    stopSearch,
-    terminateEngine,
-  } = useStockfish(onEngineMessage, 'lite', 8000);
+  const engineEnabled = useSelector((state) => state.engine.enabled);
+  const { initEngine, startSearch, stopSearch } = useStockfishContext();
 
   useEffect(() => {
     if (!engineEnabled) {
-      stopSearch("disabled by UI toggle");
-      terminateEngine();
+      stopSearch('disabled by UI toggle');
       return;
     }
-    /** Second Stockfish worker — pause infinite search during Start Review so the context worker can finish quick-analyze without CPU contention. */
     if (pauseSearch) {
-      stopSearch("paused for Start Review");
-      terminateEngine();
+      stopSearch('paused for Start Review');
       return;
     }
     initEngine();
     startSearch(fen);
 
     return () => {
-      terminateEngine();
+      stopSearch('listener cleanup');
     };
-  }, [engineEnabled, fen, pauseSearch, initEngine, startSearch, stopSearch, terminateEngine]);
+  }, [engineEnabled, fen, pauseSearch, initEngine, startSearch, stopSearch]);
 
-  return null; // No UI, just a controller
+  return null;
 };
 
 export default EngineEnabledListener;
