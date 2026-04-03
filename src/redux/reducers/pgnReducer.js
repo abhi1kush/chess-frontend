@@ -1,5 +1,6 @@
 // src/redux/reducers/pgnReducer.js
-import {LOAD_PGN} from '../actions/analysisActions';
+import { LOAD_PGN, SET_PGN_ANALYSIS_AT_INDEX, SET_REVIEW_ANALYSIS_COMPLETE } from '../actions/analysisActions';
+import { createEmptyAnalysisData } from '../../utils/analysisData';
 
 const initialState = {
   finalFen: "5rk1/1P3Bp1/R6p/8/6P1/2B1rQ2/2K3P1/6q1 b - - 0 36",
@@ -31,6 +32,10 @@ const initialState = {
   result: "1-0",
   blackPlayerName: "Frank James Marshall",
   whitePlayerName: "Jose Raul Capablanca",
+  /** Same indices as `fens` (default game has 72 positions). */
+  analysisData: createEmptyAnalysisData(72),
+  /** True after Start Review has finished; navigation then uses `analysisData` for eval bar + best move. */
+  reviewAnalysisComplete: false,
 };
 
 const pgnReducer = (state = initialState, action) => {
@@ -41,12 +46,29 @@ const pgnReducer = (state = initialState, action) => {
             finalFen: action.payload.finalPos,
             moves: action.payload.moves,
             fens: action.payload.fens,
+            analysisData: createEmptyAnalysisData(action.payload.fens.length),
+            reviewAnalysisComplete: false,
             fromToSquares: action.payload.fromToSquares,
             termination: action.payload.termination,
             result: action.payload.result, 
             blackPlayerName: action.payload.blackPlayerName,
             whitePlayerName: action.payload.whitePlayerName, 
         };
+    case SET_REVIEW_ANALYSIS_COMPLETE:
+        return {
+            ...state,
+            reviewAnalysisComplete: Boolean(action.payload),
+        };
+    case SET_PGN_ANALYSIS_AT_INDEX: {
+      const { index, evalScore, bestMove } = action.payload;
+      if (!state.analysisData || index < 0 || index >= state.analysisData.length) {
+        return state;
+      }
+      const analysisData = state.analysisData.map((row, i) =>
+        i === index ? { evalScore, bestMove: bestMove ?? '' } : row
+      );
+      return { ...state, analysisData };
+    }
     default:
       return state;
   }

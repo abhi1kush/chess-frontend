@@ -2,14 +2,19 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import '../../styles/components/moveHistory.css';
-import { jumpToMove, startPos } from '../../redux/actions/analysisActions';
+import {
+  jumpToMove,
+  startPos,
+  setPgnAnalysisAtIndex,
+  setReviewAnalysisComplete,
+} from '../../redux/actions/analysisActions';
 import { playBoardSetupSound } from '../../utils/soundUtils';
 import { useStockfishContext } from '../../context/StockfishContext';
 import { formatEvalDisplay } from '../../utils/formatEval';
 
 const REVIEW_STEP_MS = 400;
 
-const Moves = () => {
+const Moves = ({ onReviewingChange }) => {
   const scrollRef = useRef(null);
   const reviewTimeoutRef = useRef(null);
   const reviewSessionRef = useRef(0);
@@ -99,9 +104,11 @@ const Moves = () => {
     syncEnabledState(engineEnabled);
 
     playBoardSetupSound();
+    dispatch(setReviewAnalysisComplete(false));
     dispatch(startPos());
 
     setIsReviewing(true);
+    onReviewingChange?.(true);
 
     const run = async () => {
       /** SAN of the move that produced this position (none at start). */
@@ -135,6 +142,15 @@ const Moves = () => {
           const r = await quickAnalyzeFen(currentFen);
           evalScoreStr = formatEvalDisplay(r?.evalScore);
           bestMove = r?.bestMoveUci ? r.bestMoveUci : '—';
+          const evalPawns =
+            r?.evalScore != null && Number.isFinite(r.evalScore) ? r.evalScore : null;
+          dispatch(
+            setPgnAnalysisAtIndex({
+              index: ply,
+              evalScore: evalPawns,
+              bestMove: r?.bestMoveUci ?? '',
+            }),
+          );
         } catch (err) {
           console.warn('[Review] Engine analysis failed:', err?.message ?? err);
         }
@@ -159,8 +175,10 @@ const Moves = () => {
           await logPly(i + 1, moves[i], fens[i + 1], moves[i]);
         }
       } finally {
+        setIsReviewing(false);
+        onReviewingChange?.(false);
         if (session === reviewSessionRef.current) {
-          setIsReviewing(false);
+          dispatch(setReviewAnalysisComplete(true));
         }
       }
     };

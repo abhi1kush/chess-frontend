@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Chess } from "chess.js";
-import {useSelector} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
 import CONFIG from "../../config";
@@ -12,18 +12,30 @@ import '../../styles/components/AnalysisLayout.css';
 import {onMessage} from "../../utils/onMessage";
 import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
-import EngineEnabledListener from "./EngineEnabledListener"
+import EngineEnabledListener from "./EngineEnabledListener";
+import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
 
 const AnalysisGame = () => {
-  const { fens, fromToSquares, moves, blackPlayerName, whitePlayerName} = useSelector((state) => state.pgn);
+  const dispatch = useDispatch();
+  const {
+    fens,
+    fromToSquares,
+    moves,
+    blackPlayerName,
+    whitePlayerName,
+    analysisData,
+    reviewAnalysisComplete,
+  } = useSelector((state) => state.pgn);
   const { currentMoveIndex} = useSelector((state) => state.analysis);
   const { result} = useSelector((state) => state.pgn);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const positionRef = useRef(position); 
   const { isFlipped, theme } = useSelector((state) => state.settings);
-  const [evalScore, setEvalScore] = useState(0);
+  const [evalScore, setEvalScore] = useState(null);
   const [bestLine, setBestLine] = useState("");
+  const [isReviewing, setIsReviewing] = useState(false);
   const enabledChessEngine = useSelector(state => state.engine.enabled);
+  const analysisWriteTimerRef = useRef(null);
 
   const stockfishOptions = [
     { name: 'Threads', value: 1 },
@@ -58,6 +70,52 @@ const AnalysisGame = () => {
     // setBlackEvalBarHeight(Math. random() * (100 - 1) + 1);
   }, [currentMoveIndex, fens, fromToSquares]);
 
+  /** After Start Review finishes, UI reads only from `analysisData` (live engine must not overwrite Redux). */
+  const useReviewCache = reviewAnalysisComplete && !isReviewing;
+
+  /** Clear live engine state when navigating (only before review cache is active). */
+  useEffect(() => {
+    if (isReviewing || reviewAnalysisComplete) return;
+    const row = analysisData?.[currentMoveIndex];
+    if (!(row?.evalScore != null && Number.isFinite(row.evalScore))) {
+      setEvalScore(null);
+      setBestLine("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when index or review phase changes
+  }, [currentMoveIndex, isReviewing, reviewAnalysisComplete]);
+
+  const bestMoveUci = bestLine.trim().split(/\s+/).filter(Boolean)[0] ?? "";
+
+  const analysisEntry = analysisData?.[currentMoveIndex];
+  const hasCachedEval =
+    analysisEntry?.evalScore != null && Number.isFinite(analysisEntry.evalScore);
+  const displayEvalScore = useReviewCache
+    ? hasCachedEval
+      ? analysisEntry.evalScore
+      : null
+    : evalScore;
+  const displayBestMove = useReviewCache
+    ? String(analysisEntry?.bestMove ?? "").trim()
+    : bestMoveUci;
+
+  useEffect(() => {
+    if (reviewAnalysisComplete || isReviewing) return;
+    if (!enabledChessEngine || !fens?.length) return;
+    if (analysisWriteTimerRef.current) clearTimeout(analysisWriteTimerRef.current);
+    analysisWriteTimerRef.current = setTimeout(() => {
+      dispatch(
+        setPgnAnalysisAtIndex({
+          index: currentMoveIndex,
+          evalScore: Number.isFinite(evalScore) ? evalScore : null,
+          bestMove: bestMoveUci,
+        }),
+      );
+    }, 400);
+    return () => {
+      if (analysisWriteTimerRef.current) clearTimeout(analysisWriteTimerRef.current);
+    };
+  }, [reviewAnalysisComplete, isReviewing, enabledChessEngine, fens?.length, currentMoveIndex, evalScore, bestMoveUci, dispatch]);
+
   const handleMove = useCallback(({ from, to }) => {
     console.log("handleMove", from, to);
     const game = new Chess(position);
@@ -81,8 +139,6 @@ const AnalysisGame = () => {
     }
   }, [enabledChessEngine, startSearch, stopSearch]);
 
-  const bestMoveUci = bestLine.trim().split(/\s+/).filter(Boolean)[0] ?? "";
-
   return (
     <div className="analysis-game-page">
       <EngineEnabledListener fen={position} />
@@ -91,11 +147,11 @@ const AnalysisGame = () => {
         <div className="analysis-game-engine-panel" aria-live="polite">
           <div className="analysis-game-engine-row">
             <span className="analysis-game-engine-label">Eval Score</span>
-            <span className="analysis-game-engine-value">{formatEvalDisplay(evalScore)}</span>
+            <span className="analysis-game-engine-value">{formatEvalDisplay(displayEvalScore)}</span>
           </div>
           <div className="analysis-game-engine-row">
             <span className="analysis-game-engine-label">Best Move</span>
-            <span className="analysis-game-engine-value">{bestMoveUci || "—"}</span>
+            <span className="analysis-game-engine-value">{displayBestMove || "—"}</span>
           </div>
         </div>
       </aside>
@@ -110,7 +166,7 @@ const AnalysisGame = () => {
           <div className='evalbar-board-container'>
               <EvalBar
                 isFlipped={isFlipped}
-                evalScore={evalScore}
+                evalScore={displayEvalScore}
               />
             <div className="board-wrapper">
                   <AnalysisBoard
@@ -131,7 +187,7 @@ const AnalysisGame = () => {
           </div>
           </div>
          <div className="sidebar right-panel">
-          <Moves moves={moves} />
+          <Moves moves={moves} onReviewingChange={setIsReviewing} />
           <MoveNavigation 
             setPosition={setPosition}
             handleMove={navigateMove}
