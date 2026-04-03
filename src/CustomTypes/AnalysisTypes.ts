@@ -4,6 +4,8 @@ import { PieceCode, SquareIdType } from "./CustomTypes"
 export type PgnAnalysisEntry = {
   evalScore: number | null;
   bestMove: string;
+  /** Set for `i >= 1`: quality label for the move that created `fens[i]` (after Start Review). */
+  moveClassification: string | null;
 };
 
 export interface LoadPgnParams {

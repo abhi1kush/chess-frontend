@@ -14,6 +14,7 @@ import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
 import EngineEnabledListener from "./EngineEnabledListener";
 import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
+import { moveQualityClassFromLabel } from "../../utils/moveClassification";
 
 const AnalysisGame = () => {
   const dispatch = useDispatch();
@@ -98,6 +99,8 @@ const AnalysisGame = () => {
     ? String(analysisEntry?.bestMove ?? "").trim()
     : bestMoveUci;
 
+  const moveQualityClass = moveQualityClassFromLabel(analysisEntry?.moveClassification);
+
   useEffect(() => {
     if (reviewAnalysisComplete || isReviewing) return;
     if (!enabledChessEngine || !fens?.length) return;
@@ -141,7 +144,7 @@ const AnalysisGame = () => {
 
   return (
     <div className="analysis-game-page">
-      <EngineEnabledListener fen={position} />
+      <EngineEnabledListener fen={position} pauseSearch={isReviewing} />
       <AnalysisTopContainer/>
       <aside className="analysis-game-engine-shell" aria-label="Engine analysis">
         <div className="analysis-game-engine-panel" aria-live="polite">
@@ -153,6 +156,20 @@ const AnalysisGame = () => {
             <span className="analysis-game-engine-label">Best Move</span>
             <span className="analysis-game-engine-value">{displayBestMove || "—"}</span>
           </div>
+          {useReviewCache && currentMoveIndex >= 1 && (
+            <div className="analysis-game-engine-row">
+              <span className="analysis-game-engine-label">Move quality</span>
+              <span
+                className={
+                  moveQualityClass
+                    ? `analysis-game-engine-value analysis-game-move-quality analysis-game-move-quality--${moveQualityClass}`
+                    : "analysis-game-engine-value"
+                }
+              >
+                {analysisEntry?.moveClassification ?? "—"}
+              </span>
+            </div>
+          )}
         </div>
       </aside>
       <div className='middle-container'>

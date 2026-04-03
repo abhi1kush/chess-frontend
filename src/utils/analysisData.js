@@ -5,5 +5,6 @@ export function createEmptyAnalysisData(length) {
   return Array.from({ length }, () => ({
     evalScore: null,
     bestMove: '',
+    moveClassification: null,
   }));
 }

@@ -207,6 +207,43 @@
     font-weight: 600;
   }
 
+  /* Move quality colors (Start Review classification) */
+  .analysis-game-move-quality--best {
+    color: #15803d;
+  }
+
+  .analysis-game-move-quality--good {
+    color: #6d8f6d;
+  }
+
+  .analysis-game-move-quality--excellent {
+    color: #8fa650;
+  }
+
+  .analysis-game-move-quality--brilliant {
+    color: #7c3aed;
+  }
+
+  .analysis-game-move-quality--inaccuracy {
+    color: #ea580c;
+  }
+
+  .analysis-game-move-quality--great {
+    color: #5b8db8;
+  }
+
+  .analysis-game-move-quality--mistake {
+    color: #dc2626;
+  }
+
+  .analysis-game-move-quality--blunder {
+    color: #ef4444;
+  }
+
+  .analysis-game-move-quality--missed_win {
+    color: #be123c;
+  }
+
   @media (max-width: 450px) {
 
     .body, .html{

@@ -297,10 +297,25 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
     }
   }, [stopSearch, terminateEngine]);
 
-  /** Depth search — slower but reliably emits `info` + `score` before `bestmove`. */
-  const QUICK_ANALYZE_DEPTH = 14;
+  /** Default depth for `quickAnalyzeFen` — lower = faster `bestmove` (important for Start Review). */
+  const DEFAULT_QUICK_ANALYZE_DEPTH = 14;
+  /** Default max wait before rejecting (slow devices / WASM / complex positions). */
+  const DEFAULT_QUICK_ANALYZE_TIMEOUT_MS = 120000;
 
-  const quickAnalyzeFen = useCallback((fen) => {
+  /**
+   * @param {string} fen
+   * @param {{ timeoutMs?: number; depth?: number }} [options]
+   */
+  const quickAnalyzeFen = useCallback((fen, options = {}) => {
+    const depth =
+      typeof options.depth === 'number' && options.depth > 0
+        ? Math.min(24, options.depth)
+        : DEFAULT_QUICK_ANALYZE_DEPTH;
+    const timeoutMs =
+      typeof options.timeoutMs === 'number' && options.timeoutMs > 0
+        ? options.timeoutMs
+        : DEFAULT_QUICK_ANALYZE_TIMEOUT_MS;
+
     return new Promise((resolve, reject) => {
       if (!engineEnabledRef.current) {
         reject(new Error('Engine disabled'));
@@ -329,7 +344,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
           quickAnalyzePendingRef.current = null;
           p.reject(new Error('Quick analyze timeout'));
         }
-      }, 60000);
+      }, timeoutMs);
 
       quickAnalyzePendingRef.current = {
         resolve,
@@ -343,7 +358,7 @@ export default function useStockfish(onMessage, version = 'lite', autoStopTime =
         isSearchingRef.current = false;
         enqueueCommand('normal', 'setoption name MultiPV value 1');
         enqueueCommand('normal', `position fen ${fen}`);
-        enqueueCommand('normal', `go depth ${QUICK_ANALYZE_DEPTH}`);
+        enqueueCommand('normal', `go depth ${depth}`);
       };
 
       const runAfterUciReady = () => {

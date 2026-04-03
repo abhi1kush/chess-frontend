@@ -60,12 +60,21 @@ const pgnReducer = (state = initialState, action) => {
             reviewAnalysisComplete: Boolean(action.payload),
         };
     case SET_PGN_ANALYSIS_AT_INDEX: {
-      const { index, evalScore, bestMove } = action.payload;
+      const { index, evalScore, bestMove, moveClassification } = action.payload;
       if (!state.analysisData || index < 0 || index >= state.analysisData.length) {
         return state;
       }
       const analysisData = state.analysisData.map((row, i) =>
-        i === index ? { evalScore, bestMove: bestMove ?? '' } : row
+        i === index
+          ? {
+              evalScore,
+              bestMove: bestMove ?? '',
+              moveClassification:
+                moveClassification !== undefined
+                  ? moveClassification
+                  : (row.moveClassification ?? null),
+            }
+          : row
       );
       return { ...state, analysisData };
     }

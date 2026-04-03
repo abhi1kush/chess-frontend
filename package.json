@@ -9,6 +9,7 @@
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build",
     "lint": "eslint .",
+    "test": "node --test src/**/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "typescript": "^5.8.3",
     "vite": "^6.2.0",
     "vite-plugin-top-level-await": "^1.5.0",
-    "vite-plugin-wasm": "^3.4.1"
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^2.1.9"
   }
 }

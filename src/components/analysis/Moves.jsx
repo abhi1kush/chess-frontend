@@ -11,15 +11,23 @@ import {
 import { playBoardSetupSound } from '../../utils/soundUtils';
 import { useStockfishContext } from '../../context/StockfishContext';
 import { formatEvalDisplay } from '../../utils/formatEval';
+import {
+  classifyMove,
+  playedUciFromSan,
+  toUci,
+} from '../../utils/moveClassification';
 
 const REVIEW_STEP_MS = 400;
+/** Shallower than default quick-analyze so `bestmove` returns sooner (fewer timeouts on slow devices). */
+const REVIEW_QUICK_DEPTH = 11;
+const REVIEW_QUICK_TIMEOUT_MS = 120000;
 
 const Moves = ({ onReviewingChange }) => {
   const scrollRef = useRef(null);
   const reviewTimeoutRef = useRef(null);
   const reviewSessionRef = useRef(0);
   const [isReviewing, setIsReviewing] = useState(false);
-  const { moves, termination, fens } = useSelector((state) => state.pgn);
+  const { moves, termination, fens, fromToSquares } = useSelector((state) => state.pgn);
   const { currentMoveIndex, fenLength } = useSelector((state) => state.analysis);
   const engineEnabled = useSelector((state) => state.engine.enabled);
   const dispatch = useDispatch();
@@ -111,59 +119,49 @@ const Moves = ({ onReviewingChange }) => {
     onReviewingChange?.(true);
 
     const run = async () => {
-      /** SAN of the move that produced this position (none at start). */
-      const logPly = async (ply, sanLabel, currentFen, previousMoveSan) => {
-        let evalScoreStr = '—';
-        let bestMove = '—';
-        const prevMoveDisplay =
-          previousMoveSan != null && previousMoveSan !== ''
-            ? previousMoveSan
-            : '—';
-        if (!engineEnabled) {
-          console.log(`[Review] ply ${ply} (${sanLabel})`, {
-            fen: currentFen,
-            previousMove: prevMoveDisplay,
-            evalScore: '(enable engine in settings)',
-            bestMove: '(enable engine in settings)',
-          });
-          return;
-        }
-        if (typeof quickAnalyzeFen !== 'function') {
-          console.error('[Review] quickAnalyzeFen is not available (Stockfish context).');
-          console.log(`[Review] ply ${ply} (${sanLabel})`, {
-            fen: currentFen,
-            previousMove: prevMoveDisplay,
-            evalScoreStr,
-            bestMove,
-          });
-          return;
-        }
+      const quickOpts = {
+        depth: REVIEW_QUICK_DEPTH,
+        timeoutMs: REVIEW_QUICK_TIMEOUT_MS,
+      };
+
+      const analyzeFen = async (fen) => {
+        if (!engineEnabled || typeof quickAnalyzeFen !== 'function') return null;
         try {
-          const r = await quickAnalyzeFen(currentFen);
-          evalScoreStr = formatEvalDisplay(r?.evalScore);
-          bestMove = r?.bestMoveUci ? r.bestMoveUci : '—';
-          const evalPawns =
-            r?.evalScore != null && Number.isFinite(r.evalScore) ? r.evalScore : null;
-          dispatch(
-            setPgnAnalysisAtIndex({
-              index: ply,
-              evalScore: evalPawns,
-              bestMove: r?.bestMoveUci ?? '',
-            }),
-          );
+          return await quickAnalyzeFen(fen, quickOpts);
         } catch (err) {
           console.warn('[Review] Engine analysis failed:', err?.message ?? err);
+          return null;
         }
-        console.log(`[Review] ply ${ply} (${sanLabel})`, {
-          fen: currentFen,
-          previousMove: prevMoveDisplay,
-          evalScore: evalScoreStr,
-          bestMove,
-        });
       };
 
       try {
-        await logPly(0, 'start', fens[0], null);
+        if (!engineEnabled) {
+          console.warn('[Review] Enable engine in settings to analyze and classify moves.');
+        }
+
+        const r0 = await analyzeFen(fens[0]);
+        if (session !== reviewSessionRef.current) return;
+        if (r0) {
+          const evalPawns =
+            r0.evalScore != null && Number.isFinite(r0.evalScore) ? r0.evalScore : null;
+          dispatch(
+            setPgnAnalysisAtIndex({
+              index: 0,
+              evalScore: evalPawns,
+              bestMove: r0.bestMoveUci ?? '',
+              moveClassification: null,
+            }),
+          );
+          console.log('[Review] ply 0 (start)', {
+            fen: fens[0],
+            evalScore: formatEvalDisplay(r0.evalScore),
+            bestMove: r0.bestMoveUci ?? '—',
+          });
+        }
+
+        let prevEval =
+          r0?.evalScore != null && Number.isFinite(r0.evalScore) ? r0.evalScore : null;
+        let prevBest = r0?.bestMoveUci ?? '';
 
         for (let i = 0; i < moves.length; i++) {
           if (session !== reviewSessionRef.current) return;
@@ -172,7 +170,48 @@ const Moves = ({ onReviewingChange }) => {
           });
           if (session !== reviewSessionRef.current) return;
           dispatch(jumpToMove(i + 1));
-          await logPly(i + 1, moves[i], fens[i + 1], moves[i]);
+
+          const r = await analyzeFen(fens[i + 1]);
+          if (session !== reviewSessionRef.current) return;
+
+          let playedUci = playedUciFromSan(fens[i], moves[i]);
+          if (!playedUci && fromToSquares?.[i]) {
+            playedUci = toUci(fromToSquares[i]);
+          }
+
+          const evalAfter =
+            r?.evalScore != null && Number.isFinite(r.evalScore) ? r.evalScore : null;
+          const classified =
+            prevEval != null && evalAfter != null
+              ? classifyMove({
+                  evalBefore: prevEval,
+                  evalAfter,
+                  bestMoveUci: prevBest,
+                  playedUci,
+                  fenBefore: fens[i],
+                  fenAfter: fens[i + 1],
+                })
+              : null;
+
+          dispatch(
+            setPgnAnalysisAtIndex({
+              index: i + 1,
+              evalScore: evalAfter,
+              bestMove: r?.bestMoveUci ?? '',
+              moveClassification: classified ? classified.label : null,
+            }),
+          );
+
+          console.log(`[Review] ply ${i + 1} (${moves[i]})`, {
+            fen: fens[i + 1],
+            previousMove: moves[i],
+            evalScore: r ? formatEvalDisplay(r.evalScore) : '—',
+            bestMove: r?.bestMoveUci ?? '—',
+            classification: classified?.label ?? '—',
+          });
+
+          prevEval = evalAfter;
+          prevBest = r?.bestMoveUci ?? '';
         }
       } finally {
         setIsReviewing(false);

@@ -33,6 +33,7 @@ export const setPgnAnalysisAtIndex = (payload: {
   index: number;
   evalScore: PgnAnalysisEntry['evalScore'];
   bestMove: string;
+  moveClassification?: PgnAnalysisEntry['moveClassification'];
 }) => ({
   type: SET_PGN_ANALYSIS_AT_INDEX,
   payload,
