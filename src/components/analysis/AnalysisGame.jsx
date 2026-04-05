@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Chess } from "chess.js";
 import { useSelector, useDispatch } from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
@@ -16,6 +16,11 @@ import EngineEnabledListener from "./EngineEnabledListener";
 import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
 import { moveQualityClassFromLabel } from "../../utils/moveClassification";
 import GameReviewSummary from "./GameReviewSummary";
+import {
+  bestMoveUciToCustomArrows,
+  uciToArrowFromSquares,
+} from "../../utils/uciArrow";
+import { normalizeFenKey } from "../../engine/stockfishFenCache";
 
 const AnalysisGame = () => {
   const dispatch = useDispatch();
@@ -99,6 +104,47 @@ const AnalysisGame = () => {
   const displayBestMove = useReviewCache
     ? String(analysisEntry?.bestMove ?? "").trim()
     : bestMoveUci;
+
+  /**
+   * Green arrow: engine best **from the position before the move that reached here** vs the move
+   * actually played — `analysisData[k].bestMove` for `fens[k]` (k ≥ 1). Not the “next move” hint.
+   * That UCI is legal on `fens[k-1]`; on `fens[k]` we draw by squares only.
+   */
+  const comparisonArrowUci = useMemo(() => {
+    if (!useReviewCache || !analysisData?.length) return '';
+    const k = currentMoveIndex;
+    if (k < 1) return '';
+    const row = analysisData[k];
+    return String(row?.bestMove ?? '').trim();
+  }, [useReviewCache, analysisData, currentMoveIndex]);
+
+  const bestMoveArrows = useMemo(() => {
+    if (!useReviewCache) {
+      return bestMoveUciToCustomArrows(position, bestMoveUci);
+    }
+    const uci = comparisonArrowUci;
+    if (!uci) return [];
+    const k = currentMoveIndex;
+    if (k < 1) return [];
+
+    const parentFen = fens?.[k - 1];
+    const onParent =
+      parentFen &&
+      normalizeFenKey(position) === normalizeFenKey(parentFen);
+
+    if (onParent && parentFen) {
+      return bestMoveUciToCustomArrows(parentFen, uci);
+    }
+    /** Current board is after the move (or a try-line): keep from→to for comparison. */
+    return uciToArrowFromSquares(uci);
+  }, [
+    useReviewCache,
+    position,
+    fens,
+    currentMoveIndex,
+    comparisonArrowUci,
+    bestMoveUci,
+  ]);
 
   const moveQualityClass = moveQualityClassFromLabel(analysisEntry?.moveClassification);
 
@@ -206,6 +252,7 @@ const AnalysisGame = () => {
                   handleMove={handleMove}
                   isFinalMove={currentMoveIndex === fens.length - 1}
                   result={result}
+                  customArrows={bestMoveArrows}
                 />
             </div>
           </div>

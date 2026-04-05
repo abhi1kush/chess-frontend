@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-CsKAOWC4.js","assets/Settings-D2vm299F.js","assets/Settings-BeYbQfL8.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-CqBntuha.js","assets/AnalysisGame-BV_d1rWx.css"])))=>i.map(i=>d[i]);
-let Ui, Kb, b2, an, un, O2, Re, D2, z2, x2, Lb, k2, P2, L, q2, U2, A2, w2, m2, B2, wb, A, N2, Q1, Zn, $p, M2, C2;
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BryeU_W8.js","assets/Settings-B3iCCiwT.js","assets/Settings-BeYbQfL8.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-Cegc66xt.js","assets/AnalysisGame-BV_d1rWx.css"])))=>i.map(i=>d[i]);
+let Ui, Kb, b2, an, un, O2, Re, D2, z2, x2, Lb, k2, P2, L, q2, U2, A2, w2, m2, B2, wb, A, N2, pm, Zn, Q1, $p, M2, C2;
 let __tla = (async ()=>{
     (function() {
         const i = document.createElement("link").relList;
@@ -13933,9 +13933,9 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
             u.delete(f);
         }
     }
-    function pm(u) {
+    pm = function(u) {
         return u == null || typeof u != "string" ? "" : u.trim().replace(/\s+/g, " ");
-    }
+    };
     const qb = "/chess-frontend/stockfish/stockfish-17-lite-single.js";
     function tu(u) {
         return u == null ? [] : typeof u == "string" ? u.split(/\r?\n/).map((i)=>i.trim()).filter(Boolean) : typeof ArrayBuffer < "u" && u instanceof ArrayBuffer ? tu(new TextDecoder().decode(u)) : ArrayBuffer.isView && ArrayBuffer.isView(u) ? tu(new TextDecoder().decode(u)) : Array.isArray(u) ? u.flatMap((i)=>tu(i)) : typeof u == "object" && u !== null && typeof u.data == "string" ? tu(u.data) : [
@@ -15087,7 +15087,7 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
                 })
             ]
         });
-    }, E2 = A.lazy(()=>Jp(()=>import("./ChessGame-CsKAOWC4.js"), __vite__mapDeps([0,1,2,3]))), _2 = A.lazy(()=>Jp(()=>import("./AnalysisGame-CqBntuha.js"), __vite__mapDeps([4,1,2,5]))), T2 = ()=>L.jsx(Bb, {
+    }, E2 = A.lazy(()=>Jp(()=>import("./ChessGame-BryeU_W8.js"), __vite__mapDeps([0,1,2,3]))), _2 = A.lazy(()=>Jp(()=>import("./AnalysisGame-Cegc66xt.js"), __vite__mapDeps([4,1,2,5]))), T2 = ()=>L.jsx(Bb, {
             children: L.jsx(Qb, {
                 children: L.jsxs(Eb, {
                     children: [
@@ -15163,4 +15163,4 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
         children: L.jsx(T2, {})
     }));
 })();
-export { Ui as C, Kb as D, b2 as E, an as R, un as a, O2 as b, Re as c, D2 as d, z2 as e, x2 as f, Lb as g, k2 as h, P2 as i, L as j, q2 as k, U2 as l, A2 as m, w2 as n, m2 as o, B2 as p, wb as q, A as r, N2 as s, Q1 as t, Zn as u, $p as v, M2 as w, C2 as x, __tla };
+export { Ui as C, Kb as D, b2 as E, an as R, un as a, O2 as b, Re as c, D2 as d, z2 as e, x2 as f, Lb as g, k2 as h, P2 as i, L as j, q2 as k, U2 as l, A2 as m, w2 as n, m2 as o, B2 as p, wb as q, A as r, N2 as s, pm as t, Zn as u, Q1 as v, $p as w, M2 as x, C2 as y, __tla };

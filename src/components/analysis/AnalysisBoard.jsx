@@ -6,7 +6,16 @@ import '../../styles/themes.css';
 import PropTypes from 'prop-types';
 import { getKingPosition, getLastMoveSquareStyles } from '../../utils/helpers';
 
-const AnalysisBoard = ({ className, handleMove, fen, lastMove, isFlipped, isFinalMove, result}) => {
+const AnalysisBoard = ({
+  className,
+  handleMove,
+  fen,
+  lastMove,
+  isFlipped,
+  isFinalMove,
+  result,
+  customArrows = [],
+}) => {
   const handlePieceDrop = (source, target) => {
     handleMove({ from: source, to: target });
   };
@@ -25,6 +34,7 @@ const AnalysisBoard = ({ className, handleMove, fen, lastMove, isFlipped, isFina
         onPieceDrop={handlePieceDrop}
         boardOrientation={isFlipped ? 'black' : 'white'}
         customSquareStyles={getSquareStyles()}
+        customArrows={customArrows}
         customDarkSquareStyle={{ backgroundColor: 'var(--dark-square)' }}
         customLightSquareStyle={{ backgroundColor: 'var(--light-square)' }}
       />
