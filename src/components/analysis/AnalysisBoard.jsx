@@ -1,16 +1,62 @@
 // src/components/ChessboardComponent.js
-import React from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import {Chess} from "chess.js"
 import { Chessboard } from 'react-chessboard';
 import '../../styles/themes.css';
 import PropTypes from 'prop-types';
-import { getKingPosition, getLastMoveSquareStyles } from '../../utils/helpers';
+import { getKingPosition } from '../../utils/helpers';
+import { getLastMoveSquareStylesForAnalysis } from '../../utils/moveClassification';
+
+/**
+ * @param {{ toSquare: string; emoji: string } | null | undefined} badge
+ */
+function makeCustomSquare(badge) {
+  return forwardRef(function AnalysisCustomSquare(
+    { square, squareColor: _squareColor, style, children },
+    ref,
+  ) {
+    const b = badge;
+    const sq = typeof square === 'string' ? square.toLowerCase() : '';
+    const toSq = b?.toSquare ? String(b.toSquare).toLowerCase() : '';
+    const show = Boolean(b?.emoji && toSq && sq === toSq);
+    const w = style?.width;
+    const fontSize =
+      typeof w === 'number' && Number.isFinite(w)
+        ? Math.max(10, Math.round(Number(w) * 0.26))
+        : 14;
+
+    return (
+      <div
+        ref={ref}
+        style={{
+          ...style,
+          ...(show ? { position: 'relative' } : {}),
+        }}
+      >
+        {children}
+        {show ? (
+          <span
+            className="analysis-board-move-category-badge"
+            style={{ fontSize }}
+            aria-hidden
+          >
+            {b.emoji}
+          </span>
+        ) : null}
+      </div>
+    );
+  });
+}
 
 const AnalysisBoard = ({
   className,
   handleMove,
   fen,
   lastMove,
+  /** After review: CSS category id from `moveQualityClassFromLabel` (empty = default last-move colors). */
+  lastMoveCategoryId = '',
+  /** After review on main line: show category emoji on last move “to” square. */
+  moveCategoryBadge = null,
   isFlipped,
   isFinalMove,
   result,
@@ -24,8 +70,13 @@ const AnalysisBoard = ({
     if (isFinalMove) {
       return winerLoserHighlights(fen, result);
     }
-    return getLastMoveSquareStyles(lastMove);
+    return getLastMoveSquareStylesForAnalysis(lastMove, lastMoveCategoryId);
   };
+
+  const CustomSquare = useMemo(
+    () => makeCustomSquare(moveCategoryBadge),
+    [moveCategoryBadge],
+  );
 
   return (
     <div className={className}>
@@ -33,6 +84,7 @@ const AnalysisBoard = ({
         position={fen}
         onPieceDrop={handlePieceDrop}
         boardOrientation={isFlipped ? 'black' : 'white'}
+        customSquare={CustomSquare}
         customSquareStyles={getSquareStyles()}
         customArrows={customArrows}
         customDarkSquareStyle={{ backgroundColor: 'var(--dark-square)' }}

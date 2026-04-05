@@ -52,6 +52,15 @@ export const DISPLAY = {
 };
 
 /**
+ * Emoji shown on the board for a review category (empty if none).
+ * @param {string} categoryId from {@link moveQualityClassFromLabel}
+ */
+export function categoryEmojiFromCategoryId(categoryId) {
+  if (!categoryId) return '';
+  return DISPLAY[categoryId]?.emoji ?? '';
+}
+
+/**
  * @param {string} uci
  */
 export function normalizeUci(uci) {
@@ -232,6 +241,86 @@ export function moveQualityClassFromLabel(label) {
     if (label.includes(name)) return id;
   }
   return '';
+}
+
+/**
+ * Board last-move tints (aligned with AnalysisLayout move-quality text colors).
+ * Slightly stronger on `to` so the destination reads clearly on light and dark squares.
+ * @type {Record<string, { from: string; to: string }>}
+ */
+const MOVE_QUALITY_HIGHLIGHT_RGBA = {
+  [CATEGORY_IDS.BRILLIANT]: {
+    from: 'rgba(124, 58, 237, 0.38)',
+    to: 'rgba(124, 58, 237, 0.55)',
+  },
+  [CATEGORY_IDS.GREAT]: {
+    from: 'rgba(91, 141, 184, 0.38)',
+    to: 'rgba(91, 141, 184, 0.55)',
+  },
+  [CATEGORY_IDS.BEST]: {
+    from: 'rgba(21, 128, 61, 0.38)',
+    to: 'rgba(21, 128, 61, 0.55)',
+  },
+  [CATEGORY_IDS.EXCELLENT]: {
+    from: 'rgba(143, 166, 80, 0.4)',
+    to: 'rgba(143, 166, 80, 0.58)',
+  },
+  [CATEGORY_IDS.GOOD]: {
+    from: 'rgba(109, 143, 109, 0.4)',
+    to: 'rgba(109, 143, 109, 0.58)',
+  },
+  [CATEGORY_IDS.INACCURACY]: {
+    from: 'rgba(234, 88, 12, 0.38)',
+    to: 'rgba(234, 88, 12, 0.55)',
+  },
+  [CATEGORY_IDS.MISTAKE]: {
+    from: 'rgba(220, 38, 38, 0.38)',
+    to: 'rgba(220, 38, 38, 0.55)',
+  },
+  [CATEGORY_IDS.BLUNDER]: {
+    from: 'rgba(239, 68, 68, 0.4)',
+    to: 'rgba(239, 68, 68, 0.58)',
+  },
+  [CATEGORY_IDS.MISSED_WIN]: {
+    from: 'rgba(190, 18, 60, 0.38)',
+    to: 'rgba(190, 18, 60, 0.55)',
+  },
+};
+
+/**
+ * Last-move square highlights tinted by review category (main line after Start Review).
+ * @param {{ from: string; to: string } | null | undefined} lastMove
+ * @param {string} categoryId from {@link moveQualityClassFromLabel}
+ * @returns {Record<string, { backgroundColor: string }> | null}
+ */
+export function getReviewLastMoveSquareStyles(lastMove, categoryId) {
+  if (!lastMove?.from || !lastMove?.to) return null;
+  if (!categoryId) return null;
+  const palette = MOVE_QUALITY_HIGHLIGHT_RGBA[categoryId];
+  if (!palette) return null;
+  return {
+    [lastMove.from]: { backgroundColor: palette.from },
+    [lastMove.to]: { backgroundColor: palette.to },
+  };
+}
+
+function defaultLastMoveSquareStyles(lastMove) {
+  if (!lastMove?.from || !lastMove?.to) return null;
+  return {
+    [lastMove.from]: { backgroundColor: 'var(--last-move-from)' },
+    [lastMove.to]: { backgroundColor: 'var(--last-move-to)' },
+  };
+}
+
+/**
+ * Last-move styles: category tint after review on main line, else default CSS vars.
+ * @param {{ from: string; to: string } | null | undefined} lastMove
+ * @param {string} categoryId
+ */
+export function getLastMoveSquareStylesForAnalysis(lastMove, categoryId) {
+  const tinted = getReviewLastMoveSquareStyles(lastMove, categoryId);
+  if (tinted) return tinted;
+  return defaultLastMoveSquareStyles(lastMove);
 }
 
 /**

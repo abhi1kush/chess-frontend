@@ -5,6 +5,8 @@ import {
   normalizeUci,
   playedUciFromSan,
   moveQualityClassFromLabel,
+  categoryEmojiFromCategoryId,
+  getLastMoveSquareStylesForAnalysis,
   CATEGORY_IDS,
   THRESH_EXCELLENT,
 } from './moveClassification.js';
@@ -73,6 +75,11 @@ describe('moveClassification', () => {
     assert.equal(r.categoryId, CATEGORY_IDS.MISSED_WIN);
   });
 
+  it('categoryEmojiFromCategoryId returns DISPLAY emoji', () => {
+    assert.equal(categoryEmojiFromCategoryId(CATEGORY_IDS.BEST), '✅');
+    assert.equal(categoryEmojiFromCategoryId(''), '');
+  });
+
   it('moveQualityClassFromLabel maps display label to category id', () => {
     assert.equal(
       moveQualityClassFromLabel('✅ Best'),
@@ -86,6 +93,20 @@ describe('moveClassification', () => {
       moveQualityClassFromLabel('🚫 Missed Win'),
       CATEGORY_IDS.MISSED_WIN,
     );
+  });
+
+  it('getLastMoveSquareStylesForAnalysis uses category tint when category id set', () => {
+    const styles = getLastMoveSquareStylesForAnalysis(
+      { from: 'e2', to: 'e4' },
+      CATEGORY_IDS.BEST,
+    );
+    assert.ok(styles?.e2?.backgroundColor?.includes('rgba'));
+    assert.ok(styles?.e4?.backgroundColor?.includes('rgba'));
+  });
+
+  it('getLastMoveSquareStylesForAnalysis falls back to default when no category', () => {
+    const styles = getLastMoveSquareStylesForAnalysis({ from: 'e2', to: 'e4' }, '');
+    assert.ok(styles?.e2?.backgroundColor?.includes('var(--last-move-from)'));
   });
 
   it('returns unknown label for invalid evals', () => {

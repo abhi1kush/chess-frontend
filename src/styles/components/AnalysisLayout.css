@@ -252,6 +252,19 @@
     color: #be123c;
   }
 
+  /* Last-move “to” square: review category emoji (react-chessboard custom square) */
+  .analysis-board-move-category-badge {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 4;
+    user-select: none;
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95))
+      drop-shadow(0 0 1px rgba(0, 0, 0, 0.4));
+  }
+
   @media (max-width: 450px) {
 
     .body, .html{

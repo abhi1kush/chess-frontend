@@ -6,13 +6,15 @@ Visit https://abhi1kush.github.io/chess-frontend/ for Editing Fen or Chess posit
 ---
 
 Product Backlog:
-1. Moves should use icon of the piece instead of Alphabet.
-2. Moves is categorized in multiple catogries
-3. AI speaker who told us about review.
-4. Board shows highlighted square and arrows for last move made.
-5. When user deviates from the move list and make move by dragging the piece, then anaylse this new position and show evalBar move category etc but keep it temporary dont need to store it
-6. Recognize book move and add in categorization. 
-7. Make available option of backend server analysis.
+* When user deviates from the move list and make move by dragging the piece, then anaylse this new position and show evalBar move category etc but keep it temporary dont need to store it
+* Recognize book move and add in categorization. 
+* Make available option of backend server analysis.
+* Improve move category color mapping and icons.
+* Moves should use icon of the piece instead of Alphabet.
+* AI speaker who told us about review.
+
+* DONE - Moves is categorized in multiple categories
+* DONE - Board shows highlighted square and arrows for last move made.
 
 ## 🚀 Features
 

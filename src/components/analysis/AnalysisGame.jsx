@@ -14,7 +14,10 @@ import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
 import EngineEnabledListener from "./EngineEnabledListener";
 import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
-import { moveQualityClassFromLabel } from "../../utils/moveClassification";
+import {
+  categoryEmojiFromCategoryId,
+  moveQualityClassFromLabel,
+} from "../../utils/moveClassification";
 import GameReviewSummary from "./GameReviewSummary";
 import {
   bestMoveUciToCustomArrows,
@@ -148,6 +151,36 @@ const AnalysisGame = () => {
 
   const moveQualityClass = moveQualityClassFromLabel(analysisEntry?.moveClassification);
 
+  const onMainLinePosition = useMemo(
+    () =>
+      Boolean(fens?.length && fens[currentMoveIndex] != null) &&
+      normalizeFenKey(position) === normalizeFenKey(fens[currentMoveIndex]),
+    [position, fens, currentMoveIndex],
+  );
+
+  const lastMoveForHighlight = useMemo(() => {
+    if (!fens?.length) return null;
+    if (
+      currentMoveIndex <= 0 ||
+      currentMoveIndex >= fens.length - 1 ||
+      !fromToSquares?.length
+    ) {
+      return null;
+    }
+    return fromToSquares[currentMoveIndex - 1];
+  }, [currentMoveIndex, fens?.length, fromToSquares]);
+
+  /** Tint from/to by review category on the main line; variations keep default last-move colors. */
+  const boardLastMoveCategoryId =
+    useReviewCache && onMainLinePosition ? moveQualityClass : '';
+
+  const moveCategoryBadge = useMemo(() => {
+    if (!boardLastMoveCategoryId || !lastMoveForHighlight?.to) return null;
+    const emoji = categoryEmojiFromCategoryId(boardLastMoveCategoryId);
+    if (!emoji) return null;
+    return { toSquare: lastMoveForHighlight.to, emoji };
+  }, [boardLastMoveCategoryId, lastMoveForHighlight]);
+
   useEffect(() => {
     if (reviewAnalysisComplete || isReviewing) return;
     if (!enabledChessEngine || !fens?.length) return;
@@ -248,7 +281,9 @@ const AnalysisGame = () => {
                   className={'board'}
                   fen={position}
                   isFlipped={isFlipped}
-                  lastMove={currentMoveIndex > 0 && currentMoveIndex < fens.length - 1  && fromToSquares ? fromToSquares[currentMoveIndex - 1]: null}
+                  lastMove={lastMoveForHighlight}
+                  lastMoveCategoryId={boardLastMoveCategoryId}
+                  moveCategoryBadge={moveCategoryBadge}
                   handleMove={handleMove}
                   isFinalMove={currentMoveIndex === fens.length - 1}
                   result={result}
