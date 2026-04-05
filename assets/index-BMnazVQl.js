@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BDP4kk-4.js","assets/Settings-DntlGfxj.js","assets/Settings-BeYbQfL8.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-D6KBd1Kh.js","assets/AnalysisGame-CP1Vpdfr.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ChessGame-BniWbjcy.js","assets/Settings-fULOQ3oP.js","assets/Settings-BeYbQfL8.css","assets/ChessGame-DhAK7FyC.css","assets/AnalysisGame-B8ie4uuK.js","assets/AnalysisGame-CP1Vpdfr.css"])))=>i.map(i=>d[i]);
 let Ui, Kb, b2, an, un, O2, Re, D2, z2, x2, Lb, k2, P2, L, q2, U2, A2, w2, m2, B2, wb, A, N2, Q1, Zn, $p, M2, C2;
 let __tla = (async ()=>{
     (function() {
@@ -15087,7 +15087,7 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
                 })
             ]
         });
-    }, E2 = A.lazy(()=>Jp(()=>import("./ChessGame-BDP4kk-4.js"), __vite__mapDeps([0,1,2,3]))), _2 = A.lazy(()=>Jp(()=>import("./AnalysisGame-D6KBd1Kh.js"), __vite__mapDeps([4,1,2,5]))), T2 = ()=>L.jsx(Bb, {
+    }, E2 = A.lazy(()=>Jp(()=>import("./ChessGame-BniWbjcy.js"), __vite__mapDeps([0,1,2,3]))), _2 = A.lazy(()=>Jp(()=>import("./AnalysisGame-B8ie4uuK.js"), __vite__mapDeps([4,1,2,5]))), T2 = ()=>L.jsx(Bb, {
             children: L.jsx(Qb, {
                 children: L.jsxs(Eb, {
                     children: [
