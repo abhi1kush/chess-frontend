@@ -15,6 +15,7 @@ import { useStockfishContext } from "../../context/StockfishContext";
 import EngineEnabledListener from "./EngineEnabledListener";
 import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
 import { moveQualityClassFromLabel } from "../../utils/moveClassification";
+import GameReviewSummary from "./GameReviewSummary";
 
 const AnalysisGame = () => {
   const dispatch = useDispatch();
@@ -152,10 +153,13 @@ const AnalysisGame = () => {
             <span className="analysis-game-engine-label">Eval Score</span>
             <span className="analysis-game-engine-value">{formatEvalDisplay(displayEvalScore)}</span>
           </div>
-          <div className="analysis-game-engine-row">
-            <span className="analysis-game-engine-label">Best Move</span>
-            <span className="analysis-game-engine-value">{displayBestMove || "—"}</span>
-          </div>
+          {/** After review: hide best move at start position; show from first move onward (index ≥ 1). Live engine still shows at index 0. */}
+          {(!useReviewCache || currentMoveIndex >= 1) && (
+            <div className="analysis-game-engine-row">
+              <span className="analysis-game-engine-label">Best Move</span>
+              <span className="analysis-game-engine-value">{displayBestMove || "—"}</span>
+            </div>
+          )}
           {useReviewCache && currentMoveIndex >= 1 && (
             <div className="analysis-game-engine-row">
               <span className="analysis-game-engine-label">Move quality</span>
@@ -171,6 +175,14 @@ const AnalysisGame = () => {
             </div>
           )}
         </div>
+        {reviewAnalysisComplete && moves?.length > 0 && (
+          <GameReviewSummary
+            analysisData={analysisData}
+            numMoves={moves.length}
+            whitePlayerName={whitePlayerName}
+            blackPlayerName={blackPlayerName}
+          />
+        )}
       </aside>
       <div className='middle-container'>
         <div className={`analysis-container ${theme}-theme `}>

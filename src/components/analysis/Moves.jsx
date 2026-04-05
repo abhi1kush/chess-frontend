@@ -31,8 +31,12 @@ const Moves = ({ onReviewingChange }) => {
   const { currentMoveIndex, fenLength } = useSelector((state) => state.analysis);
   const engineEnabled = useSelector((state) => state.engine.enabled);
   const dispatch = useDispatch();
-  const { quickAnalyzeFen, syncEnabledState, engineReadyOk } =
-    useStockfishContext();
+  const {
+    quickAnalyzeFen,
+    syncEnabledState,
+    engineReadyOk,
+    engineWarmupPercent,
+  } = useStockfishContext();
 
   const clearReviewSchedule = useCallback(() => {
     if (reviewTimeoutRef.current !== null) {
@@ -194,20 +198,24 @@ const Moves = ({ onReviewingChange }) => {
                 })
               : null;
 
+          /** Best move from the position before this ply (fens[i]) — matches classifyMove / on-screen comparison vs played move. */
+          const bestMoveForComparison = prevBest;
+
           dispatch(
             setPgnAnalysisAtIndex({
               index: i + 1,
               evalScore: evalAfter,
-              bestMove: r?.bestMoveUci ?? '',
+              bestMove: bestMoveForComparison,
               moveClassification: classified ? classified.label : null,
             }),
           );
 
           console.log(`[Review] ply ${i + 1} (${moves[i]})`, {
-            fen: fens[i + 1],
+            fenAfter: fens[i + 1],
+            fenBefore: fens[i],
             previousMove: moves[i],
             evalScore: r ? formatEvalDisplay(r.evalScore) : '—',
-            bestMove: r?.bestMoveUci ?? '—',
+            bestMove: bestMoveForComparison || '—',
             classification: classified?.label ?? '—',
           });
 
@@ -231,8 +239,24 @@ const Moves = ({ onReviewingChange }) => {
   return (
     <div className="move-history-wrapper">
       {showEngineWarming && (
-        <div className="moves-engine-warming" role="status" aria-live="polite">
-          Engine warming up…
+        <div
+          className="moves-engine-warming"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={engineWarmupPercent}
+          aria-label="Engine loading"
+        >
+          <div className="moves-engine-warming-header">
+            <span className="moves-engine-warming-label">Engine warming up…</span>
+            <span className="moves-engine-warming-pct">{engineWarmupPercent}%</span>
+          </div>
+          <div className="moves-engine-warming-track">
+            <div
+              className="moves-engine-warming-fill"
+              style={{ width: `${engineWarmupPercent}%` }}
+            />
+          </div>
         </div>
       )}
       <button

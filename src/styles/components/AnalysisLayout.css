@@ -16,12 +16,20 @@
   top: calc(8% + 10.5rem);
   width: 13%;
   max-width: 13vw;
-  max-height: min(32vh, 280px);
+  max-height: calc(100vh - 9rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 5;
   padding: 0 6px 8px 10px;
   box-sizing: border-box;
+}
+
+.analysis-game-engine-shell > .analysis-game-engine-panel {
+  flex-shrink: 0;
 }
 
 .analysis-game-page .analysis-container {

@@ -10,7 +10,9 @@ Product Backlog:
 2. Moves is categorized in multiple catogries
 3. AI speaker who told us about review.
 4. Board shows highlighted square and arrows for last move made.
-5. When user deviates from the move list and make move by dragging the piece, then anaylse this new position and show evalBar move category etc but keep it temporary dont need to store it 
+5. When user deviates from the move list and make move by dragging the piece, then anaylse this new position and show evalBar move category etc but keep it temporary dont need to store it
+6. Recognize book move and add in categorization. 
+7. Make available option of backend server analysis.
 
 ## 🚀 Features
 

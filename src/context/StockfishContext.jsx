@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useState,
   useEffect,
+  useMemo,
 } from 'react';
 import useStockfish from '../engine/useStockfish';
 
@@ -33,6 +34,13 @@ const StockfishProvider = ({ children }) => {
     preloadEngine();
   }, [preloadEngine]);
 
+  /** Stages: worker + UCI (33%) → uciok (66%) → readyok (100%, banner hidden). */
+  const engineWarmupPercent = useMemo(() => {
+    if (engineReadyOk) return 100;
+    if (engineUciOk) return 66;
+    return 33;
+  }, [engineUciOk, engineReadyOk]);
+
   const setOnMessage = useCallback((handler) => {
     onMessageRef.current = handler;
   }, []);
@@ -44,6 +52,7 @@ const StockfishProvider = ({ children }) => {
         setOnMessage,
         engineUciOk,
         engineReadyOk,
+        engineWarmupPercent,
       }}
     >
       {children}
