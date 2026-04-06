@@ -4,13 +4,10 @@ import {
   computePlayerAccuracy,
   GAME_REVIEW_ROWS,
 } from '../../utils/gameReviewStats';
-import { DISPLAY } from '../../utils/moveClassification';
 import '../../styles/components/gameReviewSummary.css';
+import { MoveCategoryBoardIcon } from './MoveCategoryBoardIcons';
 
-function emojiForCategoryId(id) {
-  const d = DISPLAY[id];
-  return d?.emoji || '—';
-}
+const REVIEW_SUMMARY_ICON_PX = 18;
 
 export default function GameReviewSummary({
   analysisData,
@@ -145,7 +142,14 @@ export default function GameReviewSummary({
                     title={row.name}
                     aria-hidden
                   >
-                    {emojiForCategoryId(row.id)}
+                    {row.id === 'unknown' ? (
+                      <span className="game-review-summary__icon-unknown">—</span>
+                    ) : (
+                      <MoveCategoryBoardIcon
+                        categoryId={row.id}
+                        size={REVIEW_SUMMARY_ICON_PX}
+                      />
+                    )}
                   </span>
                 </div>
                 <div

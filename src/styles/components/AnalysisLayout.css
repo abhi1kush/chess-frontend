@@ -215,41 +215,41 @@
     font-weight: 600;
   }
 
-  /* Move quality colors (Start Review classification) */
+  /* Move quality colors — match MoveCategoryBoardIcons.jsx circle fills */
   .analysis-game-move-quality--best {
-    color: #15803d;
+    color: #81b64c;
   }
 
   .analysis-game-move-quality--good {
-    color: #6d8f6d;
+    color: #95b776;
   }
 
   .analysis-game-move-quality--excellent {
-    color: #8fa650;
+    color: #81b64c;
   }
 
   .analysis-game-move-quality--brilliant {
-    color: #7c3aed;
+    color: #26c2a3;
   }
 
   .analysis-game-move-quality--inaccuracy {
-    color: #ea580c;
+    color: #f7c631;
   }
 
   .analysis-game-move-quality--great {
-    color: #5b8db8;
+    color: #749bbf;
   }
 
   .analysis-game-move-quality--mistake {
-    color: #dc2626;
+    color: #ffa459;
   }
 
   .analysis-game-move-quality--blunder {
-    color: #ef4444;
+    color: #fa412d;
   }
 
   .analysis-game-move-quality--missed_win {
-    color: #be123c;
+    color: #ff7769;
   }
 
   /* Last-move “to” square: category icon — center of circle on the square’s top-right vertex */

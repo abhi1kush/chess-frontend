@@ -190,15 +190,60 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.45rem;
-  height: 1.45rem;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  font-size: 0.72rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  line-height: 0;
+  background: transparent;
+}
+
+.game-review-summary__icon-badge svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.game-review-summary__icon-unknown {
+  font-size: 0.75rem;
+  color: #9ca3af;
   line-height: 1;
 }
 
-/* Category tint on label + counts (reuse analysis palette where defined) */
+/* Category colors — match MoveCategoryBoardIcons.jsx circle fills (panel is outside `.analysis-container`) */
+.game-review-summary .analysis-game-move-quality--brilliant {
+  color: #26c2a3;
+}
+
+.game-review-summary .analysis-game-move-quality--great {
+  color: #749bbf;
+}
+
+.game-review-summary .analysis-game-move-quality--best {
+  color: #81b64c;
+}
+
+.game-review-summary .analysis-game-move-quality--excellent {
+  color: #81b64c;
+}
+
+.game-review-summary .analysis-game-move-quality--good {
+  color: #95b776;
+}
+
+.game-review-summary .analysis-game-move-quality--inaccuracy {
+  color: #f7c631;
+}
+
+.game-review-summary .analysis-game-move-quality--mistake {
+  color: #ffa459;
+}
+
+.game-review-summary .analysis-game-move-quality--missed_win {
+  color: #ff7769;
+}
+
+.game-review-summary .analysis-game-move-quality--blunder {
+  color: #fa412d;
+}
+
 .game-review-summary .analysis-game-move-quality--unknown {
   color: #9ca3af;
 }
