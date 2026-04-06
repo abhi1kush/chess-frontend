@@ -284,13 +284,15 @@ const Moves = ({ onReviewingChange }) => {
               index % 2 === 0 ? (
                 <tr key={index / 2} className={`move-row-${index}`}>
                   <td>{Math.floor(index / 2) + 1}.</td>
-                  <td className="clickable" style={{backgroundColor: index + 1 === currentMoveIndex ? 'lightblue' : 'transparent'}} 
-                  onClick={() => handleMoveClick(index + 1)}
+                  <td
+                    className={`clickable${index + 1 === currentMoveIndex ? ' move-history-cell--current' : ''}`}
+                    onClick={() => handleMoveClick(index + 1)}
                   >
                     {move}
                   </td>
-                  <td className="clickable" style={{backgroundColor: index + 2 === currentMoveIndex ? 'lightblue' : 'transparent'}}
-                  onClick={() => handleMoveClick(index + 2)}
+                  <td
+                    className={`clickable${index + 2 === currentMoveIndex ? ' move-history-cell--current' : ''}`}
+                    onClick={() => handleMoveClick(index + 2)}
                   >
                     {moves[index + 1] || ''}
                   </td>

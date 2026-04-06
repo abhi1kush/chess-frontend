@@ -118,6 +118,16 @@ const AnalysisGame = () => {
     return String(row?.bestMove ?? '').trim();
   }, [useReviewCache, analysisData, currentMoveIndex]);
 
+  const sideToMove = useMemo(() => {
+    const t = position.split(/\s+/)[1];
+    return t === "b" ? "b" : "w";
+  }, [position]);
+
+  const topNameActive =
+    (isFlipped && sideToMove === "w") || (!isFlipped && sideToMove === "b");
+  const bottomNameActive =
+    (isFlipped && sideToMove === "b") || (!isFlipped && sideToMove === "w");
+
   const bestMoveArrows = useMemo(() => {
     if (!useReviewCache) {
       return bestMoveUciToCustomArrows(position, bestMoveUci);
@@ -225,6 +235,7 @@ const AnalysisGame = () => {
       <EngineEnabledListener fen={position} pauseSearch={isReviewing} />
       <AnalysisTopContainer/>
       <aside className="analysis-game-engine-shell" aria-label="Engine analysis">
+        {!(reviewAnalysisComplete && moves?.length > 0) && (
         <div className="analysis-game-engine-panel" aria-live="polite">
           <div className="analysis-game-engine-row">
             <span className="analysis-game-engine-label">Eval Score</span>
@@ -252,6 +263,7 @@ const AnalysisGame = () => {
             </div>
           )}
         </div>
+        )}
         {reviewAnalysisComplete && moves?.length > 0 && (
           <GameReviewSummary
             analysisData={analysisData}
@@ -266,7 +278,11 @@ const AnalysisGame = () => {
           <div className="main-area">
           <div className="top-name">              
             <div className="player-names-wrapper">
-                  <div className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}`}>{isFlipped ? whitePlayerName : blackPlayerName}</div>
+                  <div
+                    className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}${topNameActive ? " player-name--active" : ""}`}
+                  >
+                    {isFlipped ? whitePlayerName : blackPlayerName}
+                  </div>
             </div>
           </div>
           <div className='evalbar-board-container'>
@@ -291,7 +307,11 @@ const AnalysisGame = () => {
           </div>
           <div className="bottom-name">
             <div className="player-names-wrapper">
-                  <div className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}`}>{isFlipped ? blackPlayerName : whitePlayerName}</div>
+                  <div
+                    className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}${bottomNameActive ? " player-name--active" : ""}`}
+                  >
+                    {isFlipped ? blackPlayerName : whitePlayerName}
+                  </div>
             </div>
           </div>
           </div>

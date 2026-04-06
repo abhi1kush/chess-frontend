@@ -1,19 +1,22 @@
 /* Game Review panel — dark card below engine eval, scrollable category table */
 
 .game-review-summary {
-  --game-review-cols: minmax(0, 1.2fr) minmax(0, 0.75fr) var(--game-review-mid-col, 2.5rem) minmax(0, 0.75fr);
+  /* Label | White count | icon | Black count — wider shell via --analysis-engine-shell-width */
+  --game-review-cols: minmax(6rem, 1.5fr) minmax(2rem, 0.68fr) var(--game-review-mid-col, 1.65rem) minmax(2rem, 0.68fr);
+  --game-review-col-gap: 0.62rem;
 
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
   min-height: 0;
   flex: 1 1 auto;
-  padding: 0.5rem 0.55rem 0.45rem;
+  padding: 0.55rem 0.65rem 0.5rem;
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
-  font-size: 0.72rem;
-  line-height: 1.25;
+  /* Match .move-navigation button (moveNavigation.css) */
+  font-size: 14px;
+  line-height: 1.35;
   color: #e8e8ec;
   background: linear-gradient(165deg, #1e1e24 0%, #141418 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -27,7 +30,7 @@
 
 .game-review-summary__title {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #f4f4f8;
@@ -40,7 +43,7 @@
 
 .game-review-summary__section-label {
   display: block;
-  font-size: 0.65rem;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -52,7 +55,7 @@
 .game-review-summary__grid {
   display: grid;
   grid-template-columns: var(--game-review-cols);
-  column-gap: 0.35rem;
+  column-gap: var(--game-review-col-gap);
   row-gap: 0.2rem;
   align-items: center;
 }
@@ -113,7 +116,7 @@
   padding: 0.25rem 0.4rem;
   border-radius: 6px;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -154,8 +157,8 @@
 .game-review-summary__stat-row {
   display: grid;
   grid-template-columns: var(--game-review-cols);
-  column-gap: 0.35rem;
-  align-items: center;
+  column-gap: var(--game-review-col-gap);
+  align-items: start;
   min-width: 0;
 }
 
@@ -163,11 +166,12 @@
   text-align: left;
   color: #f3f4f6;
   font-weight: 500;
-  font-size: 0.7rem;
+  font-size: 14px;
   padding: 0.28rem 0.15rem 0.28rem 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.25;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
   min-width: 0;
 }
 
@@ -175,7 +179,16 @@
   text-align: center;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  padding: 0.28rem 0.2rem;
+  padding: 0.28rem 0.25rem;
+  line-height: 1.25;
+}
+
+.game-review-summary__count--white {
+  padding-right: 0.4rem;
+}
+
+.game-review-summary__count--black {
+  padding-left: 0.4rem;
 }
 
 .game-review-summary__icon-cell {
@@ -183,7 +196,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.28rem 0.1rem;
+  padding: 0.28rem 0.45rem;
+  box-sizing: border-box;
 }
 
 .game-review-summary__icon-badge {
@@ -202,7 +216,7 @@
 }
 
 .game-review-summary__icon-unknown {
-  font-size: 0.75rem;
+  font-size: 14px;
   color: #9ca3af;
   line-height: 1;
 }

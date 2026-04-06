@@ -1,8 +1,8 @@
 /* Main row clears fixed .routes; engine panel is fixed below route links (not overlapping them) */
 .analysis-game-page .middle-container {
-  margin-left: 13%;
-  width: calc(100% - 13%);
-  max-width: calc(100vw - 13%);
+  margin-left: var(--analysis-engine-shell-width);
+  width: calc(100% - var(--analysis-engine-shell-width));
+  max-width: calc(100vw - var(--analysis-engine-shell-width));
   box-sizing: border-box;
   justify-content: flex-start;
   align-items: flex-start;
@@ -14,8 +14,7 @@
   position: fixed;
   left: 0;
   top: calc(8% + 10.5rem);
-  width: 13%;
-  max-width: 13vw;
+  width: var(--analysis-engine-shell-width);
   max-height: calc(100vh - 9rem);
   display: flex;
   flex-direction: column;
@@ -109,6 +108,13 @@
     max-width: 100%;
     padding: 2px 10px;
     box-sizing: border-box;
+  }
+
+  .analysis-container .player-name.player-name--active {
+    font-weight: 800;
+    color: #000000;
+    background-color: var(--analysis-current-move-bg);
+    text-decoration: none;
   }
 
   .board-wrapper {

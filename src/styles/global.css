@@ -30,7 +30,9 @@
   --shadow: rgba(0, 0, 0, 0.2);
 
   --dvh: 1vh;
-  --evalbar-width: 30px;
+  /* Wide enough for tabular eval (+10.00) above the bar; drives main-area width calcs */
+  --evalbar-width: clamp(46px, 3.25vw, 58px);
+  --eval-bar-width: var(--evalbar-width);
   --sidebar-width: 250px;
   --players-height: 40px;
   --top-container-height: 6dvh;
@@ -39,6 +41,10 @@
   --chess-board-start-col: 1;
   --chess-board-end-col: -1;
   --board-gap: 5px;
+  /* Analysis: current ply in move list + “to move” player name (CSS named color lightblue) */
+  --analysis-current-move-bg: #add8e6;
+  /* Analysis: left fixed column (engine + game review) — keep in sync with .middle-container offset */
+  --analysis-engine-shell-width: clamp(248px, 19vw, 360px);
   --square-size: calc(var(--max-board-size) / 8);
   --selected-border-color: rgb(35, 193, 53);
   --selected-shadow: rgb(151, 212, 177);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatEvalDisplay } from '../../utils/formatEval';
 import '../../styles/components/EvalBar.css';
 
 /**
@@ -14,12 +15,19 @@ const EvalBar = ({ isFlipped, evalScore }) => {
     return normalized * 100;
   };
 
+  const label = formatEvalDisplay(evalScore);
+
   return (
-    <div className={`eval-bar eval-container ${isFlipped ? 'flipped' : ''}`}>
-      <div
-        className="white-bar"
-        style={{ height: `${evalScoreToWhiteHeight(evalScore)}%` }}
-      />
+    <div className="eval-bar evalbar">
+      <div className={`eval-container ${isFlipped ? 'flipped' : ''}`}>
+        <div
+          className="white-bar"
+          style={{ height: `${evalScoreToWhiteHeight(evalScore)}%` }}
+        />
+        <div className="eval-bar__score-wrap" aria-label={`Evaluation ${label}`}>
+          <span className="eval-bar__score">{label}</span>
+        </div>
+      </div>
     </div>
   );
 };

@@ -44,6 +44,10 @@
     scroll-margin-block: 6px;
 }
 
+.move-history-table td.move-history-cell--current {
+    background-color: var(--analysis-current-move-bg);
+}
+
 .moves-engine-warming {
     flex-shrink: 0;
     align-self: stretch;

@@ -1,32 +1,61 @@
-.eval-wrapper {
-    height: 100%;
-    width: var(--eval-bar-width);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  }
-  
-  .eval-container {
-    height: 100%;
-    width: 30px;
-    border: 2px solid black;
-    border-radius: 3px;
-    background-color: black;
-    display: flex;
-    flex-direction: column-reverse;
-    overflow: hidden;
-    transition: all 0.5s ease-in-out;
-  }
+/* Full board height: bar fills column; score overlaid inside */
+.eval-bar {
+  height: 100%;
+  width: var(--evalbar-width);
+  min-width: var(--evalbar-width);
+  max-width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
 
-  .white-bar {
-    background-color: white;
-    width: 100%;
-    transition: height 0.5s ease-in-out;
-  }
-  
-  .eval-container.flipped {
-    flex-direction: column;
-  }
-  
+.eval-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border: 2px solid black;
+  border-radius: 3px;
+  background-color: black;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+  transition: all 0.5s ease-in-out;
+}
+
+.white-bar {
+  background-color: white;
+  width: 100%;
+  transition: height 0.5s ease-in-out;
+}
+
+.eval-container.flipped {
+  flex-direction: column;
+}
+
+/* Flex centering (no translate) keeps text sharp */
+.eval-bar__score-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+  padding: 0 3px;
+  box-sizing: border-box;
+}
+
+/* Mid gray between black and white bar halves; no outline/shadow on glyphs */
+.eval-bar__score {
+  max-width: 100%;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  color: #808080;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
