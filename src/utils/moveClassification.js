@@ -244,46 +244,46 @@ export function moveQualityClassFromLabel(label) {
 }
 
 /**
- * Board last-move tints (aligned with AnalysisLayout move-quality text colors).
+ * Board last-move tints — RGB from MoveCategoryBoardIcons.jsx circle fill (same hex per category).
  * Slightly stronger on `to` so the destination reads clearly on light and dark squares.
  * @type {Record<string, { from: string; to: string }>}
  */
 const MOVE_QUALITY_HIGHLIGHT_RGBA = {
   [CATEGORY_IDS.BRILLIANT]: {
-    from: 'rgba(124, 58, 237, 0.38)',
-    to: 'rgba(124, 58, 237, 0.55)',
+    from: 'rgba(38, 194, 163, 0.38)',
+    to: 'rgba(38, 194, 163, 0.55)',
   },
   [CATEGORY_IDS.GREAT]: {
-    from: 'rgba(91, 141, 184, 0.38)',
-    to: 'rgba(91, 141, 184, 0.55)',
+    from: 'rgba(116, 155, 191, 0.38)',
+    to: 'rgba(116, 155, 191, 0.55)',
   },
   [CATEGORY_IDS.BEST]: {
-    from: 'rgba(21, 128, 61, 0.38)',
-    to: 'rgba(21, 128, 61, 0.55)',
+    from: 'rgba(129, 182, 76, 0.38)',
+    to: 'rgba(129, 182, 76, 0.55)',
   },
   [CATEGORY_IDS.EXCELLENT]: {
-    from: 'rgba(143, 166, 80, 0.4)',
-    to: 'rgba(143, 166, 80, 0.58)',
+    from: 'rgba(129, 182, 76, 0.38)',
+    to: 'rgba(129, 182, 76, 0.55)',
   },
   [CATEGORY_IDS.GOOD]: {
-    from: 'rgba(109, 143, 109, 0.4)',
-    to: 'rgba(109, 143, 109, 0.58)',
+    from: 'rgba(149, 183, 118, 0.38)',
+    to: 'rgba(149, 183, 118, 0.55)',
   },
   [CATEGORY_IDS.INACCURACY]: {
-    from: 'rgba(234, 88, 12, 0.38)',
-    to: 'rgba(234, 88, 12, 0.55)',
+    from: 'rgba(247, 198, 49, 0.38)',
+    to: 'rgba(247, 198, 49, 0.55)',
   },
   [CATEGORY_IDS.MISTAKE]: {
-    from: 'rgba(220, 38, 38, 0.38)',
-    to: 'rgba(220, 38, 38, 0.55)',
+    from: 'rgba(255, 164, 89, 0.38)',
+    to: 'rgba(255, 164, 89, 0.55)',
   },
   [CATEGORY_IDS.BLUNDER]: {
-    from: 'rgba(239, 68, 68, 0.4)',
-    to: 'rgba(239, 68, 68, 0.58)',
+    from: 'rgba(250, 65, 45, 0.38)',
+    to: 'rgba(250, 65, 45, 0.55)',
   },
   [CATEGORY_IDS.MISSED_WIN]: {
-    from: 'rgba(190, 18, 60, 0.38)',
-    to: 'rgba(190, 18, 60, 0.55)',
+    from: 'rgba(255, 119, 105, 0.38)',
+    to: 'rgba(255, 119, 105, 0.55)',
   },
 };
 

@@ -14,10 +14,7 @@ import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
 import EngineEnabledListener from "./EngineEnabledListener";
 import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
-import {
-  categoryEmojiFromCategoryId,
-  moveQualityClassFromLabel,
-} from "../../utils/moveClassification";
+import { moveQualityClassFromLabel } from "../../utils/moveClassification";
 import GameReviewSummary from "./GameReviewSummary";
 import {
   bestMoveUciToCustomArrows,
@@ -176,9 +173,10 @@ const AnalysisGame = () => {
 
   const moveCategoryBadge = useMemo(() => {
     if (!boardLastMoveCategoryId || !lastMoveForHighlight?.to) return null;
-    const emoji = categoryEmojiFromCategoryId(boardLastMoveCategoryId);
-    if (!emoji) return null;
-    return { toSquare: lastMoveForHighlight.to, emoji };
+    return {
+      toSquare: lastMoveForHighlight.to,
+      categoryId: boardLastMoveCategoryId,
+    };
   }, [boardLastMoveCategoryId, lastMoveForHighlight]);
 
   useEffect(() => {

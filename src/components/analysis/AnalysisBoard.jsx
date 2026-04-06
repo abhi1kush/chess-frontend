@@ -6,24 +6,25 @@ import '../../styles/themes.css';
 import PropTypes from 'prop-types';
 import { getKingPosition } from '../../utils/helpers';
 import { getLastMoveSquareStylesForAnalysis } from '../../utils/moveClassification';
+import { MoveCategoryBoardIcon } from './MoveCategoryBoardIcons';
 
 /**
- * @param {{ toSquare: string; emoji: string } | null | undefined} badge
+ * @param {{ toSquare: string; categoryId: string } | null | undefined} badge
  */
 function makeCustomSquare(badge) {
   return forwardRef(function AnalysisCustomSquare(
-    { square, squareColor: _squareColor, style, children },
+    { square, style, children },
     ref,
   ) {
     const b = badge;
     const sq = typeof square === 'string' ? square.toLowerCase() : '';
     const toSq = b?.toSquare ? String(b.toSquare).toLowerCase() : '';
-    const show = Boolean(b?.emoji && toSq && sq === toSq);
+    const show = Boolean(b?.categoryId && toSq && sq === toSq);
     const w = style?.width;
-    const fontSize =
+    const iconSize =
       typeof w === 'number' && Number.isFinite(w)
-        ? Math.max(10, Math.round(Number(w) * 0.26))
-        : 14;
+        ? Math.max(10, Math.round(Number(w) * 0.36))
+        : 16;
 
     return (
       <div
@@ -35,12 +36,8 @@ function makeCustomSquare(badge) {
       >
         {children}
         {show ? (
-          <span
-            className="analysis-board-move-category-badge"
-            style={{ fontSize }}
-            aria-hidden
-          >
-            {b.emoji}
+          <span className="analysis-board-move-category-badge" aria-hidden>
+            <MoveCategoryBoardIcon categoryId={b.categoryId} size={iconSize} />
           </span>
         ) : null}
       </div>
@@ -55,7 +52,7 @@ const AnalysisBoard = ({
   lastMove,
   /** After review: CSS category id from `moveQualityClassFromLabel` (empty = default last-move colors). */
   lastMoveCategoryId = '',
-  /** After review on main line: show category emoji on last move “to” square. */
+  /** After review on main line: show category SVG on last move “to” square. */
   moveCategoryBadge = null,
   isFlipped,
   isFinalMove,

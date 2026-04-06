@@ -252,17 +252,24 @@
     color: #be123c;
   }
 
-  /* Last-move “to” square: review category emoji (react-chessboard custom square) */
+  /* Last-move “to” square: category icon — center of circle on the square’s top-right vertex */
+  /* react-chessboard Piece uses z-index 5–6; arrows overlay uses 10 */
   .analysis-board-move-category-badge {
     position: absolute;
-    top: 1px;
-    right: 2px;
-    line-height: 1;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    line-height: 0;
+    display: block;
     pointer-events: none;
-    z-index: 4;
+    z-index: 20;
     user-select: none;
     filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95))
-      drop-shadow(0 0 1px rgba(0, 0, 0, 0.4));
+      drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
+  }
+
+  .analysis-board-move-category-badge svg {
+    display: block;
   }
 
   @media (max-width: 450px) {
