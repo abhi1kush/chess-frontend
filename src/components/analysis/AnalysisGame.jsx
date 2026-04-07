@@ -208,7 +208,6 @@ const AnalysisGame = () => {
   }, [reviewAnalysisComplete, isReviewing, enabledChessEngine, fens?.length, currentMoveIndex, evalScore, bestMoveUci, dispatch]);
 
   const handleMove = useCallback(({ from, to }) => {
-    console.log("handleMove", from, to);
     const game = new Chess(position);
     try {
       const move = game.move({from, to, promotion: 'q'});
@@ -218,8 +217,8 @@ const AnalysisGame = () => {
       setupEngine();
       stopSearch("handleMove");
       startSearch(game.fen());
-    } catch (error) {
-      console.error(error);
+    } catch {
+      /* invalid move */
     }
   }, [position, enabledChessEngine, startSearch, stopSearch]);
 

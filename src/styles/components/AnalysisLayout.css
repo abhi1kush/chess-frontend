@@ -212,13 +212,15 @@
   }
 
   .analysis-game-engine-label {
-    color: #000000;
+    color: var(--text-color);
+    opacity: 0.85;
     font-weight: 500;
     font-size: 0.75rem;
   }
 
   .analysis-game-engine-value {
     font-weight: 600;
+    color: var(--text-color);
   }
 
   /* Move quality colors — match MoveCategoryBoardIcons.jsx circle fills */

@@ -43,6 +43,18 @@
   --board-gap: 5px;
   /* Analysis: current ply in move list + “to move” player name (CSS named color lightblue) */
   --analysis-current-move-bg: #add8e6;
+  /* Game Review card — strong contrast vs shell (don’t use --background-color1: too close to chrome) */
+  --game-review-surface: #ffffff;
+  --game-review-border: #64748b;
+  --game-review-border-subtle: #cbd5e1;
+  --game-review-text-muted: #334155;
+  --game-review-avatar-bg: #e2e8f0;
+  --game-review-avatar-black-ring: #475569;
+  --game-review-pill-white-bg: #f1f5f9;
+  --game-review-pill-white-fg: #0f172a;
+  --game-review-pill-black-bg: #1e293b;
+  --game-review-pill-black-fg: #f8fafc;
+  --game-review-shadow: rgba(15, 23, 42, 0.12);
   /* Analysis: left fixed column (engine + game review) — keep in sync with .middle-container offset */
   --analysis-engine-shell-width: clamp(248px, 19vw, 360px);
   --square-size: calc(var(--max-board-size) / 8);
@@ -79,6 +91,17 @@
   --settings-color: #0b3c78;
   --settings-hover: #042247;
   --shadow: rgba(255, 255, 255, 0.287);
+  --game-review-surface: #121214;
+  --game-review-border: rgba(255, 255, 255, 0.22);
+  --game-review-border-subtle: rgba(255, 255, 255, 0.12);
+  --game-review-text-muted: #b4bcc8;
+  --game-review-avatar-bg: #25252c;
+  --game-review-avatar-black-ring: #71717a;
+  --game-review-pill-white-bg: #e4e4ea;
+  --game-review-pill-white-fg: #0a0a0f;
+  --game-review-pill-black-bg: #0a0a0d;
+  --game-review-pill-black-fg: #f4f4f8;
+  --game-review-shadow: rgba(0, 0, 0, 0.45);
 }
 
 html, body {

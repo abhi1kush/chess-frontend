@@ -30,8 +30,7 @@ const gameReducer = (state = initialState, action) => {
               moveHistory: newHistory,
               lastMove: { from: action.payload.from, to: action.payload.to },
             };
-          } catch (error) {
-            console.warn('Invalid move:', error);
+          } catch {
             return state;
           }
     case RESET_GAME:

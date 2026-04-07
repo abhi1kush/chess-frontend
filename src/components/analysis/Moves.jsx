@@ -10,7 +10,6 @@ import {
 } from '../../redux/actions/analysisActions';
 import { playBoardSetupSound } from '../../utils/soundUtils';
 import { useStockfishContext } from '../../context/StockfishContext';
-import { formatEvalDisplay } from '../../utils/formatEval';
 import {
   classifyMove,
   playedUciFromSan,
@@ -100,13 +99,9 @@ const Moves = ({ onReviewingChange }) => {
   const handleStartReview = () => {
     if (isReviewing) return;
     if (!moves?.length) {
-      console.warn('[Review] No moves to replay. Load a PGN first.');
       return;
     }
     if (!fens?.length || fens.length !== moves.length + 1) {
-      console.warn(
-        '[Review] Stored FENs are missing or do not match moves (expected fens.length === moves.length + 1).',
-      );
       return;
     }
 
@@ -133,17 +128,12 @@ const Moves = ({ onReviewingChange }) => {
         if (!engineEnabled || typeof quickAnalyzeFen !== 'function') return null;
         try {
           return await quickAnalyzeFen(fen, quickOpts);
-        } catch (err) {
-          console.warn('[Review] Engine analysis failed:', err?.message ?? err);
+        } catch {
           return null;
         }
       };
 
       try {
-        if (!engineEnabled) {
-          console.warn('[Review] Enable engine in settings to analyze and classify moves.');
-        }
-
         const r0 = await analyzeFen(fens[0]);
         if (session !== reviewSessionRef.current) return;
         if (r0) {
@@ -157,11 +147,6 @@ const Moves = ({ onReviewingChange }) => {
               moveClassification: null,
             }),
           );
-          console.log('[Review] ply 0 (start)', {
-            fen: fens[0],
-            evalScore: formatEvalDisplay(r0.evalScore),
-            bestMove: r0.bestMoveUci ?? '—',
-          });
         }
 
         let prevEval =
@@ -209,15 +194,6 @@ const Moves = ({ onReviewingChange }) => {
               moveClassification: classified ? classified.label : null,
             }),
           );
-
-          console.log(`[Review] ply ${i + 1} (${moves[i]})`, {
-            fenAfter: fens[i + 1],
-            fenBefore: fens[i],
-            previousMove: moves[i],
-            evalScore: r ? formatEvalDisplay(r.evalScore) : '—',
-            bestMove: bestMoveForComparison || '—',
-            classification: classified?.label ?? '—',
-          });
 
           prevEval = evalAfter;
           prevBest = r?.bestMoveUci ?? '';

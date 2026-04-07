@@ -30,8 +30,8 @@ const ChessGame = () => {
       playMoveSound(getMoveType(move, game));
       const {isGameOver, gameResult } = checkGameOver(game);
       isGameOver && dispatch(setGameOver(isGameOver, gameResult))
-    } catch (error) {
-      console.error(error);
+    } catch {
+      /* invalid move */
     }
   }, [isGameOver, dispatch, fen]);
 

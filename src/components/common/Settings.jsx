@@ -33,7 +33,6 @@ const Settings = React.memo(() => {
   const handleSoundChange = (event) => {
     dispatch(setSound(event.target.checked));
   };
-  console.log("render setting");
   return (
     <div className="settings-container" ref={settingsRef}>
       <button id="settings-button" className="action-button" onClick={toggleDropdown}>

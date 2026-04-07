@@ -22,7 +22,7 @@ const GamePlayTopBar = () => {
   );
 
   const downloadPGN = () => {
-    console.log("downloadPGN TODO")
+    /* TODO: PGN export */
   }
 
   const DownloadPgnButton = () => (

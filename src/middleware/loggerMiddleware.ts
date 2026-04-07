@@ -1,9 +1,4 @@
-// loggerMiddleware.ts
+// loggerMiddleware.ts — disabled in production (no console I/O); enable locally if needed.
 import { Middleware } from 'redux';
 
-export const loggerMiddleware: Middleware = store => next => action => {
-  console.log('%cDispatching Action:', 'color: cyan', action);
-  const result = next(action);
-  console.log('%cNext State:', 'color: green', store.getState());
-  return result;
-};
+export const loggerMiddleware: Middleware = () => next => action => next(action);
