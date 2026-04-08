@@ -38,14 +38,102 @@
     font-weight: bold;
     padding: 10px 5px;
     box-shadow: 0 1px 0 var(--background-color);
+    text-align: left;
 }
 
 .move-history-scroll tbody tr {
     scroll-margin-block: 6px;
 }
 
+.move-history-table tbody td {
+    font-size: 1.15rem;
+    vertical-align: middle;
+    padding: 0.45rem 0.35rem;
+    line-height: 1.25;
+    text-align: left;
+}
+
 .move-history-table td.move-history-cell--current {
     background-color: var(--analysis-current-move-bg);
+    /* Sky-blue row: always dark text for contrast (light + dark app theme) */
+    color: #0f172a;
+}
+
+.move-history-table td.move-history-cell--current .move-history-san--figurine:not([class*="move-history-san--accent-"]),
+.move-history-table td.move-history-cell--current .move-history-move-with-review {
+    color: #0f172a;
+}
+
+/* Great / Brilliant / Blunder: keep category color on current (sky-blue) row */
+.move-history-table td.move-history-cell--current .move-history-san--accent-brilliant {
+    color: #1a8f78;
+}
+
+.move-history-table td.move-history-cell--current .move-history-san--accent-great {
+    color: #5a7fa3;
+}
+
+.move-history-table td.move-history-cell--current .move-history-san--accent-blunder {
+    color: #d63a24;
+}
+
+/* Display-only figurine SAN — Calibri first; symbol fonts for chess glyphs if missing */
+.move-history-san--figurine {
+    font-family: Calibri, "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", Candara, "Segoe UI",
+        sans-serif;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+/* After Start Review: category icon (colored) + SAN in theme text color for readability */
+.move-history-move-with-review {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 1.35em;
+}
+
+.move-history-move-review-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    line-height: 0;
+}
+
+.move-history-move-review-icon svg {
+    display: block;
+}
+
+/* SAN after review: theme foreground unless accent category below */
+.move-history-san--review {
+    color: var(--text-color);
+}
+
+/* Night mode: Black’s column — near-black SAN text (no background chip) */
+body.dark-theme
+    .move-history-table
+    .move-history-san--figurine.move-history-san--black-side:not([class*="move-history-san--accent-"]) {
+    color: #0a0a0a;
+}
+
+/* Match MoveCategoryBoardIcons — text color only for Great, Brilliant, Blunder */
+.move-history-table .move-history-san--accent-brilliant {
+    color: #26c2a3;
+}
+
+.move-history-table .move-history-san--accent-great {
+    color: #749bbf;
+}
+
+.move-history-table .move-history-san--accent-blunder {
+    color: #fa412d;
 }
 
 .moves-engine-warming {
@@ -107,6 +195,7 @@
     align-items: stretch;
     border-radius: 8px;
     font-size: 1rem;
+    font-family: Calibri, "Calibri Light", Candara, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     text-align: center;
     gap: 0.5rem;
     min-height: 0;
@@ -167,4 +256,9 @@
 
 .move-history-scroll tbody tr:nth-child(odd) {
     background-color: var(--background-color2);
+}
+
+/* Dark mode: soften zebra contrast — even rows were too dark vs odd */
+body.dark-theme .move-history-scroll tbody tr:nth-child(even) {
+    background-color: #7a7a84;
 }

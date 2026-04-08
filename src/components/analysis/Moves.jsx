@@ -14,9 +14,52 @@ import {
   classifyMove,
   playedUciFromSan,
   toUci,
+  moveQualityClassFromLabel,
 } from '../../utils/moveClassification';
+import { sanToFigurineDisplay } from '../../utils/sanFigurine';
+import { MoveCategoryBoardIcon } from './MoveCategoryBoardIcons';
 
 const REVIEW_STEP_MS = 400;
+
+/** SAN text uses category hue only for these (rest stay theme foreground). */
+const SAN_TEXT_CATEGORY_ACCENTS = new Set(['brilliant', 'great', 'blunder']);
+
+/**
+ * `moves[moveIdx]` matches `analysisData[moveIdx + 1]` (position after that ply).
+ */
+function renderMoveCell({ san, isWhite, moveIdx, reviewComplete, analysisData }) {
+  if (san == null || String(san).trim() === '') return null;
+  const figurine = sanToFigurineDisplay(san, isWhite);
+  const categoryId =
+    reviewComplete && analysisData?.[moveIdx + 1]
+      ? moveQualityClassFromLabel(analysisData[moveIdx + 1].moveClassification)
+      : '';
+
+  const blackSideClass = !isWhite ? ' move-history-san--black-side' : '';
+
+  if (!reviewComplete || !categoryId) {
+    return (
+      <span className={`move-history-san--figurine${blackSideClass}`}>{figurine}</span>
+    );
+  }
+
+  const accentClass = SAN_TEXT_CATEGORY_ACCENTS.has(categoryId)
+    ? ` move-history-san--accent-${categoryId}`
+    : '';
+
+  return (
+    <span className="move-history-move-with-review">
+      <span className="move-history-move-review-icon" aria-hidden>
+        <MoveCategoryBoardIcon categoryId={categoryId} size={16} />
+      </span>
+      <span
+        className={`move-history-san--figurine move-history-san--review${accentClass}${blackSideClass}`}
+      >
+        {figurine}
+      </span>
+    </span>
+  );
+}
 /** Fast first result, then refine (depth 8 → 12 → 16). */
 const REVIEW_PROGRESSIVE_DEPTHS = [8, 12, 16];
 const REVIEW_QUICK_TIMEOUT_MS = 120000;
@@ -26,7 +69,8 @@ const Moves = ({ onReviewingChange }) => {
   const reviewTimeoutRef = useRef(null);
   const reviewSessionRef = useRef(0);
   const [isReviewing, setIsReviewing] = useState(false);
-  const { moves, termination, fens, fromToSquares } = useSelector((state) => state.pgn);
+  const { moves, termination, fens, fromToSquares, analysisData, reviewAnalysisComplete } =
+    useSelector((state) => state.pgn);
   const { currentMoveIndex, fenLength } = useSelector((state) => state.analysis);
   const engineEnabled = useSelector((state) => state.engine.enabled);
   const dispatch = useDispatch();
@@ -264,13 +308,25 @@ const Moves = ({ onReviewingChange }) => {
                     className={`clickable${index + 1 === currentMoveIndex ? ' move-history-cell--current' : ''}`}
                     onClick={() => handleMoveClick(index + 1)}
                   >
-                    {move}
+                    {renderMoveCell({
+                      san: move,
+                      isWhite: true,
+                      moveIdx: index,
+                      reviewComplete: reviewAnalysisComplete,
+                      analysisData,
+                    })}
                   </td>
                   <td
                     className={`clickable${index + 2 === currentMoveIndex ? ' move-history-cell--current' : ''}`}
                     onClick={() => handleMoveClick(index + 2)}
                   >
-                    {moves[index + 1] || ''}
+                    {renderMoveCell({
+                      san: moves[index + 1],
+                      isWhite: false,
+                      moveIdx: index + 1,
+                      reviewComplete: reviewAnalysisComplete,
+                      analysisData,
+                    })}
                   </td>
                 </tr>
               ) : null

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 
 import { ConfigProvider } from './context/configContext';
 import './styles/global.css';
@@ -26,10 +26,11 @@ const App = () => {
           </nav>
           <Suspense fallback={<div className="loading-screen">Loading...</div>}>
             <Routes>
+              <Route path="/" element={<Navigate to="/analysis" replace />} />
               <Route path="/analysis" element={<AnalysisGame />} />
               <Route path="/gameplay" element={<ChessGame />} />
               <Route path="/boardeditor" element={<BoardEditor />} />
-              <Route path="*" element={<BoardEditor />} />
+              <Route path="*" element={<Navigate to="/analysis" replace />} />
             </Routes>
           </Suspense>
         </Router>

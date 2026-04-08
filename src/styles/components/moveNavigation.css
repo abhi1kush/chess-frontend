@@ -1,22 +1,43 @@
 .move-navigation {
-    display: flex;
-    position: relative;
-    justify-content: space-around;
-    padding: 10px;
-  }
-  
-  .move-navigation button {
-    background-color: #333;
-    color: white;
-    padding: 8px;
-    margin: 2px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 5px;
-  }
-  
-  .move-navigation button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  display: flex;
+  position: relative;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 8px;
+}
+
+.move-navigation button {
+  flex: 1 1 auto;
+  min-width: 0;
+  background-color: var(--move-nav-btn-bg);
+  color: var(--move-nav-btn-fg);
+  border: 1px solid var(--move-nav-btn-border);
+  padding: 8px 10px;
+  margin: 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: var(--move-nav-btn-shadow);
+}
+
+.move-navigation button:hover:not(:disabled) {
+  background-color: var(--move-nav-btn-hover-bg);
+  border-color: var(--move-nav-btn-hover-border);
+}
+
+.move-navigation button:focus-visible {
+  outline: 2px solid var(--accent-color, #4a90d9);
+  outline-offset: 2px;
+}
+
+.move-navigation button:disabled {
+  opacity: 1;
+  background-color: var(--move-nav-btn-disabled-bg);
+  color: var(--move-nav-btn-disabled-fg);
+  border-color: var(--move-nav-btn-disabled-border);
+  box-shadow: none;
+  cursor: not-allowed;
+}

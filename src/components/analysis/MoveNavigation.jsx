@@ -1,6 +1,7 @@
 import React from "react";
 import "../../styles/components/moveNavigation.css";
-import PropTypes from "prop-types";import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import { startPos, prev, next, finalPosition } from "../../redux/actions/analysisActions";
 import { playMoveSound, playBoardSetupSound} from "../../utils/soundUtils"
 
@@ -43,10 +44,18 @@ const MoveNavigation = ({setPosition, handleMove}) => {
 
   return (
     <div className="move-navigation">
-      <button onClick={goToStart} disabled={currentMoveIndex === 0}><span role="img" aria-label="gotostart">⏮️</span> Start</button>
-      <button onClick={prevMove} disabled={currentMoveIndex === 0}><span role="img" aria-label="previous">⬅️</span> Prev</button>
-      <button onClick={nextMove} disabled={currentMoveIndex >= (fens.length - 1)}><span role="img" aria-label="next">➡️</span> Next</button>
-      <button onClick={goToLatest} disabled={currentMoveIndex === (fens.length - 1)}><span role="img" aria-label="last">⏭️</span> Latest</button>
+      <button onClick={goToStart} disabled={currentMoveIndex === 0}>
+        <span role="img" aria-label="go to start">⏮️</span> Start
+      </button>
+      <button onClick={prevMove} disabled={currentMoveIndex === 0}>
+        <span role="img" aria-label="previous">⬅️</span> Prev
+      </button>
+      <button onClick={nextMove} disabled={currentMoveIndex >= (fens.length - 1)}>
+        <span role="img" aria-label="next">➡️</span> Next
+      </button>
+      <button onClick={goToLatest} disabled={currentMoveIndex === (fens.length - 1)}>
+        <span role="img" aria-label="last">⏭️</span> Latest
+      </button>
     </div>
   );
 };

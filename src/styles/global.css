@@ -55,6 +55,16 @@
   --game-review-pill-black-bg: #1e293b;
   --game-review-pill-black-fg: #f8fafc;
   --game-review-shadow: rgba(15, 23, 42, 0.12);
+  /* Analysis move nav — dark controls on light sidebar */
+  --move-nav-btn-bg: #0f172a;
+  --move-nav-btn-fg: #f8fafc;
+  --move-nav-btn-border: #1e3a8a;
+  --move-nav-btn-hover-bg: #1e293b;
+  --move-nav-btn-hover-border: #334155;
+  --move-nav-btn-shadow: 0 1px 3px rgba(15, 23, 42, 0.22);
+  --move-nav-btn-disabled-bg: #e2e8f0;
+  --move-nav-btn-disabled-fg: #64748b;
+  --move-nav-btn-disabled-border: #cbd5e1;
   /* Analysis: left fixed column (engine + game review) — keep in sync with .middle-container offset */
   --analysis-engine-shell-width: clamp(248px, 19vw, 360px);
   --square-size: calc(var(--max-board-size) / 8);
@@ -102,6 +112,15 @@
   --game-review-pill-black-bg: #0a0a0d;
   --game-review-pill-black-fg: #f4f4f8;
   --game-review-shadow: rgba(0, 0, 0, 0.45);
+  --move-nav-btn-bg: #e8eaef;
+  --move-nav-btn-fg: #0f172a;
+  --move-nav-btn-border: #c5cad4;
+  --move-nav-btn-hover-bg: #f4f6f8;
+  --move-nav-btn-hover-border: #d8dce3;
+  --move-nav-btn-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  --move-nav-btn-disabled-bg: #3a3a42;
+  --move-nav-btn-disabled-fg: #9ca3af;
+  --move-nav-btn-disabled-border: #52525b;
 }
 
 html, body {
