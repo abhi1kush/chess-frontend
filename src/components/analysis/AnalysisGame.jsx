@@ -232,7 +232,7 @@ const AnalysisGame = () => {
   return (
     <div className="analysis-game-page">
       <EngineEnabledListener fen={position} pauseSearch={isReviewing} />
-      <AnalysisTopContainer/>
+      <AnalysisTopContainer fen={position} />
       <aside className="analysis-game-engine-shell" aria-label="Engine analysis">
         {!(reviewAnalysisComplete && moves?.length > 0) && (
         <div className="analysis-game-engine-panel" aria-live="polite">

@@ -63,3 +63,52 @@
   .theme-toggle-btn:hover {
     background-color: var(--button-hover-color);
   }
+
+.fen-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.fen-overlay-box {
+  background: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  max-width: min(90vw, 42rem);
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.fen-overlay-title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.fen-overlay-text {
+  width: 100%;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--text-color);
+  background: var(--background-color);
+  color: var(--text-color);
+  resize: vertical;
+}
+
+.fen-overlay-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
