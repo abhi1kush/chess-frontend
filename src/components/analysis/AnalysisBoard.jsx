@@ -58,6 +58,7 @@ const AnalysisBoard = ({
   isFinalMove,
   result,
   customArrows = [],
+  arePiecesDraggable = true,
 }) => {
   const handlePieceDrop = (source, target) => {
     handleMove({ from: source, to: target });
@@ -80,6 +81,7 @@ const AnalysisBoard = ({
       <Chessboard
         position={fen}
         onPieceDrop={handlePieceDrop}
+        arePiecesDraggable={arePiecesDraggable}
         boardOrientation={isFlipped ? 'black' : 'white'}
         customSquare={CustomSquare}
         customSquareStyles={getSquareStyles()}

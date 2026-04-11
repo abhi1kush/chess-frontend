@@ -13,7 +13,12 @@ import {onMessage} from "../../utils/onMessage";
 import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
 import EngineEnabledListener from "./EngineEnabledListener";
-import { setPgnAnalysisAtIndex } from "../../redux/actions/analysisActions";
+import {
+  setPgnAnalysisAtIndex,
+  jumpToMove,
+  startPos,
+  finalPosition,
+} from "../../redux/actions/analysisActions";
 import { moveQualityClassFromLabel } from "../../utils/moveClassification";
 import GameReviewSummary from "./GameReviewSummary";
 import {
@@ -21,6 +26,12 @@ import {
   uciToArrowFromSquares,
 } from "../../utils/uciArrow";
 import { normalizeFenKey } from "../../engine/stockfishFenCache";
+
+const STOCKFISH_OPTIONS_ANALYSIS = [
+  { name: 'Threads', value: 1 },
+  { name: 'Hash', value: 16 },
+  { name: 'MultiPV', value: 1 },
+];
 
 const AnalysisGame = () => {
   const dispatch = useDispatch();
@@ -41,14 +52,15 @@ const AnalysisGame = () => {
   const [evalScore, setEvalScore] = useState(null);
   const [bestLine, setBestLine] = useState("");
   const [isReviewing, setIsReviewing] = useState(false);
+  /** User try-line: fork at main-line index `branchIndex`, half-moves in `plies`, cursor = plies entered (0..plies.length). */
+  const [lineBranchIndex, setLineBranchIndex] = useState(null);
+  const [linePlies, setLinePlies] = useState([]);
+  const [lineCursor, setLineCursor] = useState(0);
+  /** When true, prev/next walk `lineCursor`; when false, only `currentMoveIndex` drives the board (skips user line). */
+  const [exploreLine, setExploreLine] = useState(false);
   const enabledChessEngine = useSelector(state => state.engine.enabled);
   const analysisWriteTimerRef = useRef(null);
 
-  const stockfishOptions = [
-    { name: 'Threads', value: 1 },
-    { name: 'Hash', value: 16 },
-    { name: 'MultiPV', value: 1 },
-  ];
   const { initEngine, setOptions, startSearch, stopSearch, setOnMessage, syncEnabledState} = useStockfishContext();
   const handleEngineMessage = useCallback((data) => {
     onMessage(data, setEvalScore, setBestLine, positionRef.current);
@@ -64,18 +76,40 @@ const AnalysisGame = () => {
       positionRef.current = position;
     }, [position]);
 
-  const setupEngine = () => {
+  const setupEngine = useCallback(() => {
     initEngine();
-    setOptions(stockfishOptions);
+    setOptions(STOCKFISH_OPTIONS_ANALYSIS);
     setOnMessage(handleEngineMessage);
-  };
+  }, [initEngine, setOptions, setOnMessage, handleEngineMessage]);
+
+  /** Reset user line when loading a new game. */
+  useEffect(() => {
+    setLineBranchIndex(null);
+    setLinePlies([]);
+    setLineCursor(0);
+    setExploreLine(false);
+  }, [fens?.[0], moves?.length]);
 
   useEffect(() => {
-    if (fens && fens.length > 0) {
+    if (!fens?.length) return;
+    if (exploreLine && lineBranchIndex != null && linePlies.length > 0) {
+      if (lineCursor === 0) {
+        setPosition(fens[lineBranchIndex]);
+      } else {
+        setPosition(linePlies[lineCursor - 1].fenAfter);
+      }
+    } else {
       setPosition(fens[currentMoveIndex]);
     }
-    // setBlackEvalBarHeight(Math. random() * (100 - 1) + 1);
-  }, [currentMoveIndex, fens, fromToSquares]);
+  }, [
+    currentMoveIndex,
+    fens,
+    fromToSquares,
+    exploreLine,
+    lineBranchIndex,
+    linePlies,
+    lineCursor,
+  ]);
 
   /** After Start Review finishes, UI reads only from `analysisData` (live engine must not overwrite Redux). */
   const useReviewCache = reviewAnalysisComplete && !isReviewing;
@@ -128,8 +162,14 @@ const AnalysisGame = () => {
   const bottomNameActive =
     (isFlipped && sideToMove === "b") || (!isFlipped && sideToMove === "w");
 
+  const onMainLinePosition = useMemo(() => {
+    if (!fens?.length || fens[currentMoveIndex] == null) return false;
+    if (exploreLine) return false;
+    return normalizeFenKey(position) === normalizeFenKey(fens[currentMoveIndex]);
+  }, [position, fens, currentMoveIndex, exploreLine]);
+
   const bestMoveArrows = useMemo(() => {
-    if (!useReviewCache) {
+    if (!useReviewCache || exploreLine || !onMainLinePosition) {
       return bestMoveUciToCustomArrows(position, bestMoveUci);
     }
     const uci = comparisonArrowUci;
@@ -154,18 +194,26 @@ const AnalysisGame = () => {
     currentMoveIndex,
     comparisonArrowUci,
     bestMoveUci,
+    exploreLine,
+    onMainLinePosition,
   ]);
 
   const moveQualityClass = moveQualityClassFromLabel(analysisEntry?.moveClassification);
 
-  const onMainLinePosition = useMemo(
-    () =>
-      Boolean(fens?.length && fens[currentMoveIndex] != null) &&
-      normalizeFenKey(position) === normalizeFenKey(fens[currentMoveIndex]),
-    [position, fens, currentMoveIndex],
-  );
-
   const lastMoveForHighlight = useMemo(() => {
+    if (exploreLine && lineCursor > 0 && linePlies[lineCursor - 1]) {
+      const p = linePlies[lineCursor - 1];
+      if (p.from && p.to) return { from: p.from, to: p.to };
+    }
+    if (
+      exploreLine &&
+      lineCursor === 0 &&
+      lineBranchIndex != null &&
+      lineBranchIndex > 0 &&
+      fromToSquares?.[lineBranchIndex - 1]
+    ) {
+      return fromToSquares[lineBranchIndex - 1];
+    }
     if (!fens?.length) return null;
     if (
       currentMoveIndex <= 0 ||
@@ -175,7 +223,15 @@ const AnalysisGame = () => {
       return null;
     }
     return fromToSquares[currentMoveIndex - 1];
-  }, [currentMoveIndex, fens?.length, fromToSquares]);
+  }, [
+    exploreLine,
+    lineCursor,
+    linePlies,
+    lineBranchIndex,
+    currentMoveIndex,
+    fens?.length,
+    fromToSquares,
+  ]);
 
   /** Tint from/to by review category on the main line; variations keep default last-move colors. */
   const boardLastMoveCategoryId =
@@ -192,6 +248,7 @@ const AnalysisGame = () => {
   useEffect(() => {
     if (reviewAnalysisComplete || isReviewing) return;
     if (!enabledChessEngine || !fens?.length) return;
+    if (!onMainLinePosition) return;
     if (analysisWriteTimerRef.current) clearTimeout(analysisWriteTimerRef.current);
     analysisWriteTimerRef.current = setTimeout(() => {
       dispatch(
@@ -205,22 +262,95 @@ const AnalysisGame = () => {
     return () => {
       if (analysisWriteTimerRef.current) clearTimeout(analysisWriteTimerRef.current);
     };
-  }, [reviewAnalysisComplete, isReviewing, enabledChessEngine, fens?.length, currentMoveIndex, evalScore, bestMoveUci, dispatch]);
+  }, [
+    reviewAnalysisComplete,
+    isReviewing,
+    enabledChessEngine,
+    fens?.length,
+    currentMoveIndex,
+    evalScore,
+    bestMoveUci,
+    dispatch,
+    onMainLinePosition,
+  ]);
 
-  const handleMove = useCallback(({ from, to }) => {
-    const game = new Chess(position);
-    try {
-      const move = game.move({from, to, promotion: 'q'});
-      if (!move) return;
-      setPosition(game.fen());
+  const handleMove = useCallback(
+    ({ from, to }) => {
+      if (isReviewing) return;
+      const game = new Chess(position);
+      let m;
+      try {
+        m = game.move({ from, to, promotion: 'q' });
+        if (!m) return;
+      } catch {
+        return;
+      }
+      const newFen = game.fen();
+      const ply = {
+        san: m.san,
+        fenAfter: newFen,
+        from: m.from,
+        to: m.to,
+        color: m.color,
+      };
+
+      const matchesMainNext =
+        !exploreLine &&
+        currentMoveIndex < (fens?.length ?? 0) - 1 &&
+        normalizeFenKey(newFen) === normalizeFenKey(fens[currentMoveIndex + 1]);
+
+      if (matchesMainNext) {
+        dispatch(jumpToMove(currentMoveIndex + 1));
+        setExploreLine(false);
+        setLineBranchIndex(null);
+        setLinePlies([]);
+        setLineCursor(0);
+        setPosition(newFen);
+        if (!enabledChessEngine) return;
+        setupEngine();
+        stopSearch('handleMove');
+        startSearch(newFen);
+        return;
+      }
+
+      if (!exploreLine) {
+        setLineBranchIndex(currentMoveIndex);
+        setLinePlies([ply]);
+        setLineCursor(1);
+        setExploreLine(true);
+        setPosition(newFen);
+        if (!enabledChessEngine) return;
+        setupEngine();
+        stopSearch('handleMove');
+        startSearch(newFen);
+        return;
+      }
+
+      const nextPlies = [...linePlies.slice(0, lineCursor), ply];
+      setLinePlies(nextPlies);
+      setLineCursor(nextPlies.length);
+      setExploreLine(true);
+      setPosition(newFen);
       if (!enabledChessEngine) return;
       setupEngine();
-      stopSearch("handleMove");
-      startSearch(game.fen());
-    } catch {
-      /* invalid move */
-    }
-  }, [position, enabledChessEngine, startSearch, stopSearch]);
+      stopSearch('handleMove');
+      startSearch(newFen);
+    },
+    [
+      isReviewing,
+      position,
+      exploreLine,
+      linePlies,
+      lineCursor,
+      currentMoveIndex,
+      fens,
+      enabledChessEngine,
+      dispatch,
+      setupEngine,
+      stopSearch,
+      startSearch,
+    ],
+  );
 
   const navigateMove = useCallback(() => {
     stopSearch("navigateMove");
@@ -228,6 +358,142 @@ const AnalysisGame = () => {
       startSearch(positionRef.current);
     }
   }, [enabledChessEngine, startSearch, stopSearch]);
+
+  const navigationPrev = useCallback(() => {
+    if (exploreLine && linePlies.length && lineBranchIndex != null) {
+      if (lineCursor > 0) {
+        setLineCursor((c) => c - 1);
+        navigateMove();
+        return;
+      }
+      setExploreLine(false);
+      setLineCursor(0);
+      if (lineBranchIndex > 0) {
+        dispatch(jumpToMove(lineBranchIndex - 1));
+      }
+      navigateMove();
+      return;
+    }
+    if (currentMoveIndex > 0) {
+      setLineCursor(0);
+      dispatch(jumpToMove(currentMoveIndex - 1));
+      navigateMove();
+    }
+  }, [
+    exploreLine,
+    linePlies.length,
+    lineBranchIndex,
+    lineCursor,
+    currentMoveIndex,
+    dispatch,
+    navigateMove,
+  ]);
+
+  const navigationNext = useCallback(() => {
+    const flen = fens?.length ?? 0;
+
+    if (exploreLine && linePlies.length && lineBranchIndex != null) {
+      if (lineCursor < linePlies.length) {
+        setLineCursor((c) => c + 1);
+        navigateMove();
+        return;
+      }
+      if (lineBranchIndex < flen - 1) {
+        setExploreLine(false);
+        setLineCursor(0);
+        dispatch(jumpToMove(lineBranchIndex + 1));
+        navigateMove();
+      }
+      return;
+    }
+    if (currentMoveIndex < flen - 1) {
+      setLineCursor(0);
+      dispatch(jumpToMove(currentMoveIndex + 1));
+      navigateMove();
+    }
+  }, [
+    exploreLine,
+    linePlies.length,
+    lineBranchIndex,
+    lineCursor,
+    currentMoveIndex,
+    fens?.length,
+    dispatch,
+    navigateMove,
+  ]);
+
+  const canNavigatePrev = useMemo(() => {
+    if (exploreLine && linePlies.length && lineBranchIndex != null) {
+      if (lineCursor > 0) return true;
+      return lineBranchIndex > 0;
+    }
+    return currentMoveIndex > 0;
+  }, [
+    exploreLine,
+    linePlies.length,
+    lineBranchIndex,
+    lineCursor,
+    currentMoveIndex,
+  ]);
+
+  const canNavigateNext = useMemo(() => {
+    const flen = fens?.length ?? 0;
+    if (exploreLine && linePlies.length && lineBranchIndex != null) {
+      if (lineCursor < linePlies.length) return true;
+      return lineBranchIndex < flen - 1;
+    }
+    return currentMoveIndex < flen - 1;
+  }, [
+    exploreLine,
+    linePlies.length,
+    lineBranchIndex,
+    lineCursor,
+    currentMoveIndex,
+    fens?.length,
+  ]);
+
+  const jumpToMainLine = useCallback(
+    (index) => {
+      setExploreLine(false);
+      setLineCursor(0);
+      dispatch(jumpToMove(index));
+    },
+    [dispatch],
+  );
+
+  const enterUserLine = useCallback(() => {
+    if (!linePlies.length || lineBranchIndex == null) return;
+    setExploreLine(true);
+    setLineCursor(1);
+  }, [linePlies.length, lineBranchIndex]);
+
+  const clearUserLine = useCallback(() => {
+    setLineBranchIndex(null);
+    setLinePlies([]);
+    setLineCursor(0);
+    setExploreLine(false);
+  }, []);
+
+  const navigationGoStart = useCallback(() => {
+    setExploreLine(false);
+    setLineCursor(0);
+    dispatch(startPos());
+    navigateMove();
+  }, [dispatch, navigateMove]);
+
+  const navigationGoLatest = useCallback(() => {
+    setExploreLine(false);
+    setLineCursor(0);
+    dispatch(finalPosition());
+    navigateMove();
+  }, [dispatch, navigateMove]);
+
+  const goStartDisabled =
+    currentMoveIndex === 0 && !exploreLine;
+  const goLatestDisabled =
+    Boolean(fens?.length) &&
+    currentMoveIndex >= fens.length - 1 &&
+    !exploreLine;
 
   return (
     <div className="analysis-game-page">
@@ -298,7 +564,10 @@ const AnalysisGame = () => {
                   lastMoveCategoryId={boardLastMoveCategoryId}
                   moveCategoryBadge={moveCategoryBadge}
                   handleMove={handleMove}
-                  isFinalMove={currentMoveIndex === fens.length - 1}
+                  arePiecesDraggable={!isReviewing}
+                  isFinalMove={
+                    !exploreLine && currentMoveIndex === fens.length - 1
+                  }
                   result={result}
                   customArrows={bestMoveArrows}
                 />
@@ -315,11 +584,27 @@ const AnalysisGame = () => {
           </div>
           </div>
          <div className="sidebar right-panel">
-          <Moves moves={moves} onReviewingChange={setIsReviewing} />
-          <MoveNavigation 
-            setPosition={setPosition}
-            handleMove={navigateMove}
-            />
+          <Moves
+            moves={moves}
+            onReviewingChange={setIsReviewing}
+            lineBranchIndex={lineBranchIndex}
+            linePlies={linePlies}
+            exploreLine={exploreLine}
+            lineCursor={lineCursor}
+            onJumpToMainLine={jumpToMainLine}
+            onEnterUserLine={enterUserLine}
+            onBeginReview={clearUserLine}
+          />
+          <MoveNavigation
+            onNavigatePrev={navigationPrev}
+            onNavigateNext={navigationNext}
+            canNavigatePrev={canNavigatePrev}
+            canNavigateNext={canNavigateNext}
+            onGoStart={navigationGoStart}
+            onGoLatest={navigationGoLatest}
+            goStartDisabled={goStartDisabled}
+            goLatestDisabled={goLatestDisabled}
+          />
          </div>
          </div>
       </div>

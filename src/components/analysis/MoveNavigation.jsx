@@ -1,60 +1,65 @@
 import React from "react";
 import "../../styles/components/moveNavigation.css";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { startPos, prev, next, finalPosition } from "../../redux/actions/analysisActions";
-import { playMoveSound, playBoardSetupSound} from "../../utils/soundUtils"
+import { playMoveSound, playBoardSetupSound } from "../../utils/soundUtils";
 
-const MoveNavigation = ({setPosition, handleMove}) => {
-  const {fens} = useSelector((state) => state.pgn);
-  const {currentMoveIndex} = useSelector((state) => state.analysis);
-  const dispatch = useDispatch();
-
+const MoveNavigation = ({
+  onNavigatePrev,
+  onNavigateNext,
+  canNavigatePrev,
+  canNavigateNext,
+  onGoStart,
+  onGoLatest,
+  goStartDisabled,
+  goLatestDisabled,
+}) => {
   const goToStart = () => {
     playBoardSetupSound();
-    dispatch(startPos());
-    setPosition(fens[0]);
-    handleMove();
+    onGoStart();
   };
 
   const prevMove = () => {
-    if (currentMoveIndex > 0) {
-      playMoveSound("move");
-        dispatch(prev());
-        setPosition(fens[currentMoveIndex - 1]);
-        handleMove();
-      };
-  }
+    if (!canNavigatePrev) return;
+    playMoveSound("move");
+    onNavigatePrev();
+  };
 
   const nextMove = () => {
-    if (currentMoveIndex < fens.length - 1) {
-      playMoveSound("move");
-      dispatch(next());
-      setPosition(fens[currentMoveIndex + 1]);
-      handleMove();
-    }
+    if (!canNavigateNext) return;
+    playMoveSound("move");
+    onNavigateNext();
   };
 
   const goToLatest = () => {
     playBoardSetupSound();
-    dispatch(finalPosition());
-    setPosition(fens[fens.length - 1]);
-    handleMove();
+    onGoLatest();
   };
 
   return (
     <div className="move-navigation">
-      <button onClick={goToStart} disabled={currentMoveIndex === 0}>
-        <span role="img" aria-label="go to start">⏮️</span> Start
+      <button onClick={goToStart} disabled={goStartDisabled}>
+        <span role="img" aria-label="go to start">
+          ⏮️
+        </span>{" "}
+        Start
       </button>
-      <button onClick={prevMove} disabled={currentMoveIndex === 0}>
-        <span role="img" aria-label="previous">⬅️</span> Prev
+      <button onClick={prevMove} disabled={!canNavigatePrev}>
+        <span role="img" aria-label="previous">
+          ⬅️
+        </span>{" "}
+        Prev
       </button>
-      <button onClick={nextMove} disabled={currentMoveIndex >= (fens.length - 1)}>
-        <span role="img" aria-label="next">➡️</span> Next
+      <button onClick={nextMove} disabled={!canNavigateNext}>
+        <span role="img" aria-label="next">
+          ➡️
+        </span>{" "}
+        Next
       </button>
-      <button onClick={goToLatest} disabled={currentMoveIndex === (fens.length - 1)}>
-        <span role="img" aria-label="last">⏭️</span> Latest
+      <button onClick={goToLatest} disabled={goLatestDisabled}>
+        <span role="img" aria-label="last">
+          ⏭️
+        </span>{" "}
+        Latest
       </button>
     </div>
   );
@@ -63,6 +68,12 @@ const MoveNavigation = ({setPosition, handleMove}) => {
 export default MoveNavigation;
 
 MoveNavigation.propTypes = {
-    setPosition: PropTypes.func.isRequired
+  onNavigatePrev: PropTypes.func.isRequired,
+  onNavigateNext: PropTypes.func.isRequired,
+  canNavigatePrev: PropTypes.bool.isRequired,
+  canNavigateNext: PropTypes.bool.isRequired,
+  onGoStart: PropTypes.func.isRequired,
+  onGoLatest: PropTypes.func.isRequired,
+  goStartDisabled: PropTypes.bool.isRequired,
+  goLatestDisabled: PropTypes.bool.isRequired,
 };
-

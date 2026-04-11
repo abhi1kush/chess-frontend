@@ -1,5 +1,5 @@
 // src/components/MoveHistory.js
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import '../../styles/components/moveHistory.css';
 import {
@@ -64,7 +64,66 @@ function renderMoveCell({ san, isWhite, moveIdx, reviewComplete, analysisData })
 const REVIEW_PROGRESSIVE_DEPTHS = [8, 12, 16];
 const REVIEW_QUICK_TIMEOUT_MS = 120000;
 
-const Moves = ({ onReviewingChange }) => {
+function isMainLineCellCurrent(clickIndex, currentMoveIndex, exploreLine, lineCursor, lineBranchIndex) {
+  if (exploreLine && lineCursor > 0) return false;
+  if (exploreLine && lineCursor === 0 && lineBranchIndex != null) {
+    return clickIndex === lineBranchIndex;
+  }
+  return !exploreLine && clickIndex === currentMoveIndex;
+}
+
+/**
+ * Numbered user line from the fork FEN (fullmove + side to move).
+ * Segments are one White–Black pair each, joined with ", ".
+ * Incomplete tail: "N. san" (only White).
+ * If the first try-move is Black (fork with Black to move), "N. — san" (placeholder White
+ * slot, em dash) so the pair shape matches White-first rows.
+ */
+function formatUserLineWithNumbers(fenAtBranch, plies) {
+  if (!plies?.length || !fenAtBranch) return '';
+  const parts = fenAtBranch.trim().split(/\s+/);
+  let fullmove = parseInt(parts[5] || '1', 10);
+  if (!Number.isFinite(fullmove) || fullmove < 1) fullmove = 1;
+
+  const segments = [];
+  /** @type {{ fullmove: number; fig: string } | null} */
+  let pendingWhite = null;
+
+  for (let i = 0; i < plies.length; i++) {
+    const p = plies[i];
+    const isW = p.color === 'w';
+    const fig = sanToFigurineDisplay(p.san, isW);
+
+    if (isW) {
+      pendingWhite = { fullmove, fig };
+    } else if (pendingWhite) {
+      segments.push(`${pendingWhite.fullmove}. ${pendingWhite.fig} ${fig}`);
+      fullmove = pendingWhite.fullmove + 1;
+      pendingWhite = null;
+    } else {
+      /** Black to move at fork: show numbered white slot + black so pairs stay “W B”. */
+      segments.push(`${fullmove}. — ${fig}`);
+      fullmove += 1;
+    }
+  }
+
+  if (pendingWhite) {
+    segments.push(`${pendingWhite.fullmove}. ${pendingWhite.fig}`);
+  }
+
+  return segments.join(', ');
+}
+
+const Moves = ({
+  onReviewingChange,
+  lineBranchIndex = null,
+  linePlies = [],
+  exploreLine = false,
+  lineCursor = 0,
+  onJumpToMainLine,
+  onEnterUserLine,
+  onBeginReview,
+}) => {
   const scrollRef = useRef(null);
   const reviewTimeoutRef = useRef(null);
   const reviewSessionRef = useRef(0);
@@ -137,8 +196,23 @@ const Moves = ({ onReviewingChange }) => {
 
   const handleMoveClick = (index) => {
     playBoardSetupSound();
-    dispatch(jumpToMove(index));
+    onJumpToMainLine(index);
   };
+
+  const userLineInsertAfterRowStart =
+    lineBranchIndex != null && lineBranchIndex >= 1
+      ? 2 * Math.floor((lineBranchIndex - 1) / 2)
+      : null;
+
+  const fenAtBranch =
+    lineBranchIndex != null && fens?.[lineBranchIndex] != null
+      ? fens[lineBranchIndex]
+      : '';
+
+  const userLineText =
+    linePlies.length > 0 && fenAtBranch
+      ? formatUserLineWithNumbers(fenAtBranch, linePlies)
+      : '';
 
   const handleStartReview = () => {
     if (isReviewing) return;
@@ -156,6 +230,7 @@ const Moves = ({ onReviewingChange }) => {
     syncEnabledState(engineEnabled);
 
     playBoardSetupSound();
+    onBeginReview?.();
     dispatch(setReviewAnalysisComplete(false));
     dispatch(startPos());
 
@@ -256,6 +331,25 @@ const Moves = ({ onReviewingChange }) => {
 
   const showEngineWarming = engineEnabled && !engineReadyOk;
 
+  const renderUserLineRow = (key) => {
+    if (!linePlies.length) return null;
+    const active = exploreLine && lineCursor > 0;
+    return (
+      <tr key={key} className="move-history-user-line-row">
+        <td />
+        <td colSpan={2} className="move-history-user-line-cell">
+          <button
+            type="button"
+            className={`move-history-user-line-btn${active ? ' move-history-user-line-btn--current' : ''}`}
+            onClick={() => onEnterUserLine?.()}
+          >
+            {userLineText}
+          </button>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <div className="move-history-wrapper">
       {showEngineWarming && (
@@ -288,53 +382,80 @@ const Moves = ({ onReviewingChange }) => {
       >
         {isReviewing ? 'Reviewing…' : 'Start Review'}
       </button>
-      {currentMoveIndex == fenLength - 1 && <div className='termination-msg'>{termination}</div>}
-    <div className="move-history">
-      <div className="move-history-scroll" ref={scrollRef}>
-        <table className="move-history-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>White</th>
-              <th>Black</th>
-            </tr>
-          </thead>
-          <tbody>
-            {moves && moves.map((move, index) =>
-              index % 2 === 0 ? (
-                <tr key={index / 2} className={`move-row-${index}`}>
-                  <td>{Math.floor(index / 2) + 1}.</td>
-                  <td
-                    className={`clickable${index + 1 === currentMoveIndex ? ' move-history-cell--current' : ''}`}
-                    onClick={() => handleMoveClick(index + 1)}
-                  >
-                    {renderMoveCell({
-                      san: move,
-                      isWhite: true,
-                      moveIdx: index,
-                      reviewComplete: reviewAnalysisComplete,
-                      analysisData,
-                    })}
-                  </td>
-                  <td
-                    className={`clickable${index + 2 === currentMoveIndex ? ' move-history-cell--current' : ''}`}
-                    onClick={() => handleMoveClick(index + 2)}
-                  >
-                    {renderMoveCell({
-                      san: moves[index + 1],
-                      isWhite: false,
-                      moveIdx: index + 1,
-                      reviewComplete: reviewAnalysisComplete,
-                      analysisData,
-                    })}
-                  </td>
-                </tr>
-              ) : null
-            )}
-          </tbody>
-        </table>
+      {currentMoveIndex == fenLength - 1 && <div className="termination-msg">{termination}</div>}
+      <div className="move-history">
+        <div className="move-history-scroll" ref={scrollRef}>
+          <table className="move-history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>White</th>
+                <th>Black</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lineBranchIndex === 0 && linePlies.length > 0 ? renderUserLineRow('user-line-0') : null}
+              {moves &&
+                moves.map((move, index) =>
+                  index % 2 === 0 ? (
+                    <Fragment key={index}>
+                      <tr className={`move-row-${index}`}>
+                        <td>{Math.floor(index / 2) + 1}.</td>
+                        <td
+                          className={`clickable${
+                            isMainLineCellCurrent(
+                              index + 1,
+                              currentMoveIndex,
+                              exploreLine,
+                              lineCursor,
+                              lineBranchIndex,
+                            )
+                              ? ' move-history-cell--current'
+                              : ''
+                          }`}
+                          onClick={() => handleMoveClick(index + 1)}
+                        >
+                          {renderMoveCell({
+                            san: move,
+                            isWhite: true,
+                            moveIdx: index,
+                            reviewComplete: reviewAnalysisComplete,
+                            analysisData,
+                          })}
+                        </td>
+                        <td
+                          className={`clickable${
+                            isMainLineCellCurrent(
+                              index + 2,
+                              currentMoveIndex,
+                              exploreLine,
+                              lineCursor,
+                              lineBranchIndex,
+                            )
+                              ? ' move-history-cell--current'
+                              : ''
+                          }`}
+                          onClick={() => handleMoveClick(index + 2)}
+                        >
+                          {renderMoveCell({
+                            san: moves[index + 1],
+                            isWhite: false,
+                            moveIdx: index + 1,
+                            reviewComplete: reviewAnalysisComplete,
+                            analysisData,
+                          })}
+                        </td>
+                      </tr>
+                      {userLineInsertAfterRowStart === index && linePlies.length > 0
+                        ? renderUserLineRow(`user-line-${lineBranchIndex}`)
+                        : null}
+                    </Fragment>
+                  ) : null,
+                )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

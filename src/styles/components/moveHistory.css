@@ -262,3 +262,44 @@ body.dark-theme
 body.dark-theme .move-history-scroll tbody tr:nth-child(even) {
     background-color: #7a7a84;
 }
+
+.move-history-user-line-row td {
+    text-align: left;
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid var(--background-color);
+    vertical-align: top;
+}
+
+.move-history-scroll tbody tr.move-history-user-line-row {
+    background-color: var(--background-color) !important;
+}
+
+.move-history-user-line-cell {
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+.move-history-user-line-btn {
+    all: unset;
+    display: block;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    white-space: normal;
+    word-break: break-word;
+    color: var(--text-color);
+    border-radius: 4px;
+    padding: 0.2rem 0;
+    box-sizing: border-box;
+}
+
+.move-history-user-line-btn:hover {
+    opacity: 0.92;
+    text-decoration: underline;
+}
+
+.move-history-user-line-btn--current {
+    background-color: var(--analysis-current-move-bg);
+    color: #0f172a;
+    padding: 0.25rem 0.35rem;
+}
