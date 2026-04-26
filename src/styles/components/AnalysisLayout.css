@@ -17,7 +17,7 @@
   width: 100%;
   overflow: hidden;
   --analysis-board-size: calc(
-    100dvh - var(--top-container-height) - (var(--players-height) * 2) - 2.2rem
+    100dvh - var(--top-container-height) - (var(--players-height) * 2) - 1.1rem
   );
 }
 
@@ -65,13 +65,13 @@
     grid-template-rows: var(--players-height) 1fr var(--players-height);
     /* justify-items: left; */
     height: 100%;
-    width: calc(var(--evalbar-width) + var(--analysis-board-size));
+    width: calc(var(--evalbar-width) + var(--board-gap) + var(--analysis-board-size) + 4px);
     box-sizing: border-box;
     border-radius: 16px;
-    padding: 0.5rem 0.55rem 0.6rem;
+    padding: 0.55rem 0 0.55rem 0;
     background: transparent;
-    border: none;
-    box-shadow: none;
+    border: 2px solid #ef4444;
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35);
   }
 
   .evalbar-board-container{
@@ -96,14 +96,17 @@
     text-align: right;
     box-sizing: border-box;
     padding: 0;
+    overflow: hidden;
   }
 
     .top-name {
         grid-row: 1 / 2;
+        border-top-right-radius: 16px;
     }
 
     .bottom-name {
         grid-row: -2 / -1;
+        border-bottom-right-radius: 16px;
     }
 
   /* Name pill aligned to the right end of the board column (same width as the board). */
@@ -115,10 +118,22 @@
     text-align: right;
   }
 
+  .analysis-container .top-name {
+    align-items: flex-start;
+  }
+
+  .analysis-container .bottom-name {
+    align-items: flex-end;
+  }
+
   .analysis-container .player-names-wrapper {
     justify-content: flex-end;
     align-items: center;
     width: 100%;
+    padding-right: 0;
+    margin-right: 0;
+    border: 1px solid #ef4444;
+    background: rgba(239, 68, 68, 0.12);
   }
 
   .analysis-container .player-name {

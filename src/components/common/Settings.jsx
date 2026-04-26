@@ -55,7 +55,6 @@ const Settings = React.memo(() => {
             <option value="classic">Green</option>
             <option value="marble">Marble</option>
             <option value="wood">Wood</option>
-            <option value="dark">Dark</option>
           </select>
         </div>
       <div className="checkbox-item"> 

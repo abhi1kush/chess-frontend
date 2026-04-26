@@ -31,7 +31,7 @@
 
   --dvh: 1vh;
   /* Wide enough for tabular eval (+10.00) above the bar; drives main-area width calcs */
-  --evalbar-width: clamp(46px, 3.25vw, 58px);
+  --evalbar-width: clamp(39px, 2.8vw, 48px);
   --eval-bar-width: var(--evalbar-width);
   --sidebar-width: 250px;
   --players-height: 40px;
@@ -40,7 +40,7 @@
   --board-container-height: calc(var(--max-board-size) + 2 * var(--players-height));
   --chess-board-start-col: 1;
   --chess-board-end-col: -1;
-  --board-gap: 5px;
+  --board-gap: 1px;
   /* Analysis: current ply in move list + “to move” player name (CSS named color lightblue) */
   --analysis-current-move-bg: #add8e6;
   /* Game Review card — strong contrast vs shell (don’t use --background-color1: too close to chrome) */

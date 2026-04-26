@@ -73,6 +73,7 @@
     box-shadow: none;
     flex-shrink: 0;
     margin-left: auto;
+    overflow: visible;
 }
 
 .top-icon-button {
@@ -172,7 +173,7 @@
       width: auto;
       justify-content: flex-end;
       flex-wrap: nowrap;
-      overflow-x: auto;
+      overflow: visible;
       padding-bottom: 0;
       margin-left: auto;
       max-width: 72%;
@@ -193,6 +194,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    z-index: 10060;
     height: var(--top-container-height);
     width: 100%;
     padding: 0 0.45rem;
