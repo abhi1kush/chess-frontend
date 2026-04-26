@@ -8,7 +8,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   gap: 0.9rem;
-  padding: 0.65rem 0.85rem 0.85rem 0.25rem;
+  padding: 0.75rem 0.85rem 0.85rem 0.25rem;
   overflow: hidden;
 }
 
@@ -68,10 +68,10 @@
     width: calc(var(--evalbar-width) + var(--board-gap) + var(--analysis-board-size) + 4px);
     box-sizing: border-box;
     border-radius: 16px;
-    padding: 0.55rem 0 0.55rem 0;
+    padding: 0 0 0.55rem 0;
     background: transparent;
-    border: 2px solid #ef4444;
-    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35);
+    border: none;
+    box-shadow: none;
   }
 
   .evalbar-board-container{
@@ -96,7 +96,7 @@
     text-align: right;
     box-sizing: border-box;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
     .top-name {
@@ -127,13 +127,46 @@
   }
 
   .analysis-container .player-names-wrapper {
-    justify-content: flex-end;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: calc(100% + var(--evalbar-width) + var(--board-gap));
+    margin-left: calc(-1 * (var(--evalbar-width) + var(--board-gap)));
     padding-right: 0;
     margin-right: 0;
-    border: 1px solid #ef4444;
-    background: rgba(239, 68, 68, 0.12);
+  }
+
+  .analysis-container .top-name .player-names-wrapper {
+    align-items: flex-start;
+  }
+
+  .analysis-container .bottom-name .player-names-wrapper {
+    align-items: flex-end;
+  }
+
+  .analysis-container .player-side-avatar {
+    width: 2.1rem;
+    height: 2.1rem;
+    min-width: 2.1rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    user-select: none;
+  }
+
+  .analysis-container .player-side-avatar--white {
+    background: linear-gradient(140deg, #f8fafc, #e2e8f0);
+    color: #0f172a;
+  }
+
+  .analysis-container .player-side-avatar--black {
+    background: linear-gradient(140deg, #334155, #1e293b);
+    color: #e2e8f0;
   }
 
   .analysis-container .player-name {
@@ -150,6 +183,13 @@
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
     backdrop-filter: blur(4px);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .analysis-container .top-name .player-name,
+  .analysis-container .bottom-name .player-name {
+    min-height: 2.1rem;
+    padding-top: 0.34rem;
+    padding-bottom: 0.34rem;
   }
 
   .analysis-container .player-pill {
@@ -406,6 +446,21 @@
   body.dark-theme .analysis-container .player-name {
     border-color: rgba(100, 116, 139, 0.6);
     box-shadow: 0 2px 8px rgba(2, 6, 23, 0.28);
+  }
+
+  body.dark-theme .analysis-container .player-side-avatar {
+    border-color: rgba(100, 116, 139, 0.6);
+    box-shadow: 0 2px 8px rgba(2, 6, 23, 0.34);
+  }
+
+  body.dark-theme .analysis-container .player-side-avatar--white {
+    background: linear-gradient(140deg, #e2e8f0, #cbd5e1);
+    color: #0f172a;
+  }
+
+  body.dark-theme .analysis-container .player-side-avatar--black {
+    background: linear-gradient(140deg, #1e293b, #0f172a);
+    color: #e2e8f0;
   }
 
   body.dark-theme .analysis-container .player-name.player-name--active {

@@ -561,6 +561,12 @@ const AnalysisGame = () => {
           <div className="main-area">
           <div className="top-name">              
             <div className="player-names-wrapper">
+                  <span
+                    className={`player-side-avatar ${isFlipped ? "player-side-avatar--white" : "player-side-avatar--black"}`}
+                    aria-hidden
+                  >
+                    👤
+                  </span>
                   <div
                     className={`player-name player-pill ${isFlipped ? "white-player-name" : "black-player-name"}${topNameActive ? " player-name--active" : ""}`}
                   >
@@ -593,6 +599,12 @@ const AnalysisGame = () => {
           </div>
           <div className="bottom-name">
             <div className="player-names-wrapper">
+                  <span
+                    className={`player-side-avatar ${isFlipped ? "player-side-avatar--black" : "player-side-avatar--white"}`}
+                    aria-hidden
+                  >
+                    👤
+                  </span>
                   <div
                     className={`player-name player-pill ${isFlipped ? "black-player-name" : "white-player-name"}${bottomNameActive ? " player-name--active" : ""}`}
                   >
