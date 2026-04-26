@@ -496,12 +496,19 @@ const AnalysisGame = () => {
     !exploreLine;
 
   return (
-    <div className="analysis-game-page">
+    <div className="analysis-game-page bg-transparent">
       <EngineEnabledListener fen={position} pauseSearch={isReviewing} />
       <AnalysisTopContainer fen={position} />
-      <aside className="analysis-game-engine-shell" aria-label="Engine analysis">
+      <aside className="analysis-game-engine-shell rounded-2xl" aria-label="Engine analysis">
         {!(reviewAnalysisComplete && moves?.length > 0) && (
         <div className="analysis-game-engine-panel" aria-live="polite">
+          <div className="analysis-game-engine-panel-head">
+            <span className="analysis-game-engine-panel-icon" aria-hidden>⚡</span>
+            <div className="analysis-game-engine-panel-title-wrap">
+              <span className="analysis-game-engine-panel-title">Engine Evaluation</span>
+              <span className="analysis-game-engine-panel-subtitle">Stockfish analysis</span>
+            </div>
+          </div>
           <div className="analysis-game-engine-row">
             <span className="analysis-game-engine-label">Eval Score</span>
             <span className="analysis-game-engine-value">{formatEvalDisplay(displayEvalScore)}</span>
@@ -529,6 +536,17 @@ const AnalysisGame = () => {
           )}
         </div>
         )}
+        {!reviewAnalysisComplete && (
+          <div className="analysis-game-insight-panel">
+            <div className="analysis-game-insight-title-wrap">
+              <span className="analysis-game-insight-icon" aria-hidden>🧠</span>
+              <span className="analysis-game-insight-title">Move Insight</span>
+            </div>
+            <p className="analysis-game-insight-text">
+              Navigate through the game and use review to classify key moments.
+            </p>
+          </div>
+        )}
         {reviewAnalysisComplete && moves?.length > 0 && (
           <GameReviewSummary
             analysisData={analysisData}
@@ -539,12 +557,12 @@ const AnalysisGame = () => {
         )}
       </aside>
       <div className='middle-container'>
-        <div className={`analysis-container ${theme}-theme `}>
+        <div className={`analysis-container ${theme}-theme rounded-2xl`}>
           <div className="main-area">
           <div className="top-name">              
             <div className="player-names-wrapper">
                   <div
-                    className={`player-name ${isFlipped ? "white-player-name" : "black-player-name"}${topNameActive ? " player-name--active" : ""}`}
+                    className={`player-name player-pill ${isFlipped ? "white-player-name" : "black-player-name"}${topNameActive ? " player-name--active" : ""}`}
                   >
                     {isFlipped ? whitePlayerName : blackPlayerName}
                   </div>
@@ -576,14 +594,14 @@ const AnalysisGame = () => {
           <div className="bottom-name">
             <div className="player-names-wrapper">
                   <div
-                    className={`player-name ${isFlipped ? "black-player-name" : "white-player-name"}${bottomNameActive ? " player-name--active" : ""}`}
+                    className={`player-name player-pill ${isFlipped ? "black-player-name" : "white-player-name"}${bottomNameActive ? " player-name--active" : ""}`}
                   >
                     {isFlipped ? blackPlayerName : whitePlayerName}
                   </div>
             </div>
           </div>
           </div>
-         <div className="sidebar right-panel">
+         <div className="sidebar right-panel rounded-2xl">
           <Moves
             moves={moves}
             onReviewingChange={setIsReviewing}

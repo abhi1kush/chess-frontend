@@ -39,7 +39,7 @@ function renderMoveCell({ san, isWhite, moveIdx, reviewComplete, analysisData })
 
   if (!reviewComplete || !categoryId) {
     return (
-      <span className={`move-history-san--figurine${blackSideClass}`}>{figurine}</span>
+      <span className={`move-history-move-btn move-history-san--figurine${blackSideClass}`}>{figurine}</span>
     );
   }
 
@@ -48,7 +48,7 @@ function renderMoveCell({ san, isWhite, moveIdx, reviewComplete, analysisData })
     : '';
 
   return (
-    <span className="move-history-move-with-review">
+    <span className="move-history-move-with-review move-history-move-btn">
       <span className="move-history-move-review-icon" aria-hidden>
         <MoveCategoryBoardIcon categoryId={categoryId} size={16} />
       </span>
@@ -351,7 +351,7 @@ const Moves = ({
   };
 
   return (
-    <div className="move-history-wrapper">
+    <div className="move-history-wrapper rounded-2xl">
       {showEngineWarming && (
         <div
           className="moves-engine-warming"
@@ -375,15 +375,14 @@ const Moves = ({
       )}
       <button
         type="button"
-        className="moves-start-review-btn"
+        className="moves-start-review-btn tracking-wide"
         onClick={handleStartReview}
         disabled={isReviewing}
         aria-busy={isReviewing}
       >
         {isReviewing ? 'Reviewing…' : 'Start Review'}
       </button>
-      {currentMoveIndex == fenLength - 1 && <div className="termination-msg">{termination}</div>}
-      <div className="move-history">
+      <div className="move-history rounded-xl">
         <div className="move-history-scroll" ref={scrollRef}>
           <table className="move-history-table">
             <thead>

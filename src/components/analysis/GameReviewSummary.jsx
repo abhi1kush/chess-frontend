@@ -39,9 +39,6 @@ export default function GameReviewSummary({
     <section className="game-review-summary" aria-labelledby="game-review-heading">
       <div className="game-review-summary__header">
         <h2 id="game-review-heading" className="game-review-summary__title">
-          <span className="game-review-summary__title-star" aria-hidden>
-            ★
-          </span>{' '}
           Game Review
         </h2>
       </div>

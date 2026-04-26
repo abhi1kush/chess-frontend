@@ -21,7 +21,13 @@ const DarkThemeToggleButton = () => {
   }, []);
 
   return (
-    <button onClick={toggleTheme} className="theme-toggle-btn">
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className="top-icon-button top-icon-button--with-tooltip"
+      data-tooltip={isDarkThemeApplied ? 'Use light theme' : 'Use dark theme'}
+      aria-label={isDarkThemeApplied ? 'Use light theme' : 'Use dark theme'}
+    >
       { isDarkThemeApplied ?  "☀️" : "🌙" }
     </button>
   );

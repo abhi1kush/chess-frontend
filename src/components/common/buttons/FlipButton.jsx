@@ -6,8 +6,14 @@ const FlipButton = () => {
     const { isFlipped } = useSelector((state) => state.game);
 
     return (
-        <button onClick={() => dispatch(flipBoard())} className="action-button">
-            {isFlipped ? 'Unflip Board' : 'Flip Board'}
+        <button
+          type="button"
+          onClick={() => dispatch(flipBoard())}
+          className={`top-icon-button top-icon-button--with-tooltip${isFlipped ? ' top-icon-button--active' : ''}`}
+          data-tooltip={isFlipped ? 'Unflip board' : 'Flip board'}
+          aria-label={isFlipped ? 'Unflip board' : 'Flip board'}
+        >
+            ⇅
         </button>
     );
 }  

@@ -35,8 +35,15 @@ const Settings = React.memo(() => {
   };
   return (
     <div className="settings-container" ref={settingsRef}>
-      <button id="settings-button" className="action-button" onClick={toggleDropdown}>
-        ⚙️ <span className='settings-label'> Settings </span>
+      <button
+        id="settings-button"
+        type="button"
+        className={`top-icon-button top-icon-button--with-tooltip${isOpen ? ' top-icon-button--active' : ''}`}
+        onClick={toggleDropdown}
+        data-tooltip="Settings"
+        aria-label="Settings"
+      >
+        ⚙️
       </button>
 
       {isOpen && (

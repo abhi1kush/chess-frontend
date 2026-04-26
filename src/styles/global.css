@@ -12,17 +12,17 @@
 :root {
   --background-color3: #6e6e6e;
   --background-color2: #a7a7a7;
-  --background-color1: #cdcdcd;
-  --background-color: #ffffff;
-  --button-hover-color: #dddddd;
-  --text-color: #000000;  
+  --background-color1: #e2e8f0;
+  --background-color: #f8fafc;
+  --button-hover-color: #e2e8f0;
+  --text-color: #0f172a;  
   --font-size: 1rem;
   --global-light-square: #FFF8EA;
   --global-dark-square: #9E7676;
   --winner-king-background: rgb(22, 202, 76);
   --loser-king-background: rgb(190, 55, 55);
-  --nav-bottum: #E0E0E0; 
-  --nav-shadow: rgba(0, 0, 0, 0.05);  
+  --nav-bottum: #cbd5e1; 
+  --nav-shadow: rgba(15, 23, 42, 0.08);  
   --settings-color: #c3d8f1;
   --settings-hover: #a3c7f3; 
   --toggle-button-color: #68a4ed;
@@ -87,17 +87,17 @@
 .dark-theme {
   --background-color3: #bdbdbd;
   --background-color2: #999999;
-  --background-color1: #6a6a6a;
-  --background-color: #2b2b2b;
-  --button-hover-color: #060606;
-  --text-color: #ffffff;  
+  --background-color1: #334155;
+  --background-color: #0f172a;
+  --button-hover-color: #1e293b;
+  --text-color: #e2e8f0;  
   --font-size: 1rem;
   --global-light-square: #DCD7C9;
   --global-dark-square: #A27B5C;
   --winner-king-background: rgb(22, 202, 76);
   --loser-king-background: rgb(190, 55, 55);
-  --nav-bottum: #4f4f4f; 
-  --nav-shadow: rgba(248, 248, 248, 0.05); 
+  --nav-bottum: #334155; 
+  --nav-shadow: rgba(2, 6, 23, 0.35); 
   --settings-color: #0b3c78;
   --settings-hover: #042247;
   --shadow: rgba(255, 255, 255, 0.287);
@@ -123,18 +123,19 @@
   --move-nav-btn-disabled-border: #52525b;
 }
 
-html, body {
+html, body, #root {
   color: var(--text-color);
   background-color: var(--background-color);
   margin: 0;
   padding: 0;
-  height: 100vh;
-  width: 100vw;
+  min-height: 100dvh;
+  height: 100%;
+  width: 100%;
   font-family: "Inter", sans-serif;
   font-size: 1rem;
   overscroll-behavior: none;
   touch-action: pan-x pan-y;
-    /* overflow: hidden; Prevents unwanted global scrolling */
+  overflow-x: hidden;
   }
 
 .invalid-move {
@@ -192,20 +193,27 @@ html, body {
 
   .routes {
     display: flex;
-    flex-direction: column; /* Stack links vertically */
-    width: 13%; /* Adjust as needed */
+    flex-direction: column;
+    width: 13%;
     padding: 10px;
-    height: 100vh; /* Make it full height */
-    position: fixed; /* Fix it to the left */
-    top: 8%;
+    height: calc(100vh - 7rem);
+    position: fixed;
+    top: calc(var(--top-container-height) + 1rem);
+    left: 0.6rem;
     gap: 10px;
     text-align: center;
-    z-index: 10; /* Above fixed engine panels in the same column */
+    z-index: 10;
   }
   
   .no-decoration {
     text-decoration: none; 
   } 
+
+  .analysis-game-page,
+  .chess-game-page,
+  .board-editor-page {
+    background: transparent;
+  }
     
   .player-name {
     border-radius: 5px;
@@ -214,13 +222,13 @@ html, body {
   }
 
   .white-player-name {
-    color: white;
-    background-color: #aaaaaa;
+    color: #0f172a;
+    background: linear-gradient(140deg, #f8fafc, #e2e8f0);
   }
 
   .black-player-name {
-    color: black;
-    background-color: #dddddd;
+    color: #e2e8f0;
+    background: linear-gradient(140deg, #334155, #1e293b);
   }
 
   .player-names-wrapper {

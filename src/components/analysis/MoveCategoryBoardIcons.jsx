@@ -4,6 +4,34 @@ import { CATEGORY_IDS } from '../../utils/moveClassification';
 /** Base viewBox matches source SVGs (18×18). */
 const VB = '0 0 18 18';
 
+function IconWinnerCrown({ size = 18, ...rest }) {
+  return (
+    <svg width={size} height={size} viewBox={VB} aria-hidden {...rest}>
+      <circle cx="9" cy="9" r="9" fill="#81B64C" />
+      <path
+        fill="#fff"
+        d="M4.4 12.9h9.2c.2 0 .4-.2.4-.4V7.3c0-.2-.1-.3-.2-.4-.2-.1-.4-.1-.5 0L11 8.8 9.4 5.6c-.1-.2-.2-.2-.4-.2s-.3.1-.4.2L7 8.8 4.7 6.9c-.2-.1-.3-.1-.5 0-.1.1-.2.2-.2.4v5.2c0 .2.2.4.4.4zm.9 1.2h7.4c.2 0 .4-.2.4-.4s-.2-.4-.4-.4H5.3c-.2 0-.4.2-.4.4s.2.4.4.4z"
+      />
+    </svg>
+  );
+}
+
+function IconLoserFlag({ size = 18, ...rest }) {
+  return (
+    <svg width={size} height={size} viewBox={VB} aria-hidden {...rest}>
+      <circle cx="9" cy="9" r="9" fill="#FA412D" />
+      <path
+        fill="#fff"
+        d="M6.3 13.6a.45.45 0 0 1-.45-.45V5a.45.45 0 0 1 .9 0v8.15a.45.45 0 0 1-.45.45z"
+      />
+      <path
+        fill="#fff"
+        d="M7.2 5.9h4.95c.2 0 .36.16.36.36v.08c0 .1-.04.2-.12.27l-.98.85.98.84c.08.07.12.17.12.27v.08a.36.36 0 0 1-.36.36H7.2a.45.45 0 0 1-.45-.45v-3.2c0-.25.2-.45.45-.45z"
+      />
+    </svg>
+  );
+}
+
 function IconBest({ size, ...rest }) {
   return (
     <svg
@@ -217,4 +245,12 @@ export function MoveCategoryBoardIcon({ categoryId, size }) {
   const Icon = categoryId ? ICON_BY_CATEGORY[categoryId] : null;
   if (!Icon) return null;
   return <Icon size={size} />;
+}
+
+export function WinnerCrownBoardIcon({ size = 18 }) {
+  return <IconWinnerCrown size={size} />;
+}
+
+export function LoserFlagBoardIcon({ size = 18 }) {
+  return <IconLoserFlag size={size} />;
 }

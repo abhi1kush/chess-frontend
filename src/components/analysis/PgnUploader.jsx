@@ -65,8 +65,13 @@ const PgnUploader = () => {
     }
   };
   return (
-    <label className="action-button">
-      Upload PGN
+    <label className="top-icon-button top-icon-button--with-tooltip" data-tooltip="Upload PGN" aria-label="Upload PGN">
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M11.47 3.22a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 1 1-1.06 1.06l-2.47-2.47v7.69a.75.75 0 0 1-1.5 0V5.56L8.78 8.03a.75.75 0 1 1-1.06-1.06l3.75-3.75Zm-6.22 10.53a.75.75 0 0 1 .75.75v2A1.25 1.25 0 0 0 7.25 17.75h9.5A1.25 1.25 0 0 0 18 16.5v-2a.75.75 0 0 1 1.5 0v2a2.75 2.75 0 0 1-2.75 2.75h-9.5A2.75 2.75 0 0 1 4.5 16.5v-2a.75.75 0 0 1 .75-.75Z"
+        />
+      </svg>
       <input type="file" accept=".pgn" onChange={handleFileUpload} hidden />
     </label>
   );

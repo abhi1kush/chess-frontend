@@ -36,30 +36,18 @@ const MoveNavigation = ({
   };
 
   return (
-    <div className="move-navigation">
-      <button onClick={goToStart} disabled={goStartDisabled}>
-        <span role="img" aria-label="go to start">
-          ⏮️
-        </span>{" "}
-        Start
+    <div className="move-navigation rounded-xl">
+      <button className="move-nav-icon-btn" onClick={goToStart} disabled={goStartDisabled} title="Start" aria-label="Start">
+        <span aria-hidden>⏮</span>
       </button>
-      <button onClick={prevMove} disabled={!canNavigatePrev}>
-        <span role="img" aria-label="previous">
-          ⬅️
-        </span>{" "}
-        Prev
+      <button className="move-nav-icon-btn" onClick={prevMove} disabled={!canNavigatePrev} title="Previous" aria-label="Previous">
+        <span aria-hidden>◀</span>
       </button>
-      <button onClick={nextMove} disabled={!canNavigateNext}>
-        <span role="img" aria-label="next">
-          ➡️
-        </span>{" "}
-        Next
+      <button className="move-nav-icon-btn move-nav-icon-btn--primary" onClick={nextMove} disabled={!canNavigateNext} title="Next" aria-label="Next">
+        <span aria-hidden>▶</span>
       </button>
-      <button onClick={goToLatest} disabled={goLatestDisabled}>
-        <span role="img" aria-label="last">
-          ⏭️
-        </span>{" "}
-        Latest
+      <button className="move-nav-icon-btn" onClick={goToLatest} disabled={goLatestDisabled} title="Latest" aria-label="Latest">
+        <span aria-hidden>⏭</span>
       </button>
     </div>
   );

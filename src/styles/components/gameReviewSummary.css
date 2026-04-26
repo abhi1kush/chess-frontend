@@ -17,11 +17,12 @@
   font-size: 14px;
   line-height: 1.35;
   color: var(--text-color);
-  background: var(--game-review-surface);
-  border: 1px solid var(--game-review-border);
-  border-left: 3px solid var(--accent-color, #4a90d9);
-  border-radius: 8px;
-  box-shadow: 0 4px 18px var(--game-review-shadow);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 249, 0.96));
+  border: 1px solid rgba(100, 116, 139, 0.45);
+  border-radius: 12px;
+  box-shadow:
+    0 16px 30px rgba(15, 23, 42, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.75) inset;
 }
 
 .game-review-summary__header {
@@ -33,7 +34,8 @@
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--text-color);
+  color: #0f172a;
+  text-transform: uppercase;
 }
 
 .game-review-summary__title-star {
@@ -47,7 +49,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--game-review-text-muted);
+  color: #334155;
   margin-bottom: 0.15rem;
 }
 
@@ -136,7 +138,7 @@
 
 .game-review-summary__divider {
   border: none;
-  border-top: 1px solid var(--game-review-border-subtle);
+  border-top: 1px solid rgba(100, 116, 139, 0.3);
   margin: 0.15rem 0;
 }
 
@@ -163,11 +165,13 @@
   column-gap: var(--game-review-col-gap);
   align-items: start;
   min-width: 0;
+  border-radius: 8px;
+  background: rgba(248, 250, 252, 0.86);
 }
 
 .game-review-summary__cat-name {
   text-align: left;
-  color: var(--text-color);
+  color: #0f172a;
   font-weight: 600;
   font-size: 14px;
   padding: 0.28rem 0.15rem 0.28rem 0;
@@ -270,6 +274,36 @@
 }
 
 .game-review-summary__scroll::-webkit-scrollbar-thumb {
-  background: var(--game-review-border);
+  background: rgba(100, 116, 139, 0.55);
   border-radius: 4px;
+}
+
+body.dark-theme .game-review-summary {
+  background: linear-gradient(185deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.92));
+  border-color: rgba(100, 116, 139, 0.4);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.42);
+}
+
+body.dark-theme .game-review-summary__divider {
+  border-top-color: rgba(148, 163, 184, 0.2);
+}
+
+body.dark-theme .game-review-summary__stat-row {
+  background: transparent;
+}
+
+body.dark-theme .game-review-summary__title {
+  color: #e2e8f0;
+}
+
+body.dark-theme .game-review-summary__section-label {
+  color: #94a3b8;
+}
+
+body.dark-theme .game-review-summary__icon-unknown {
+  color: #94a3b8;
+}
+
+body.dark-theme .game-review-summary__scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
 }

@@ -6,12 +6,16 @@ import '../../styles/themes.css';
 import PropTypes from 'prop-types';
 import { getKingPosition } from '../../utils/helpers';
 import { getLastMoveSquareStylesForAnalysis } from '../../utils/moveClassification';
-import { MoveCategoryBoardIcon } from './MoveCategoryBoardIcons';
+import {
+  MoveCategoryBoardIcon,
+  WinnerCrownBoardIcon,
+  LoserFlagBoardIcon,
+} from './MoveCategoryBoardIcons';
 
 /**
  * @param {{ toSquare: string; categoryId: string } | null | undefined} badge
  */
-function makeCustomSquare(badge) {
+function makeCustomSquare(badge, endgameKingBadges) {
   return forwardRef(function AnalysisCustomSquare(
     { square, style, children },
     ref,
@@ -20,6 +24,7 @@ function makeCustomSquare(badge) {
     const sq = typeof square === 'string' ? square.toLowerCase() : '';
     const toSq = b?.toSquare ? String(b.toSquare).toLowerCase() : '';
     const show = Boolean(b?.categoryId && toSq && sq === toSq);
+    const kingBadge = endgameKingBadges?.[sq] || null;
     const w = style?.width;
     const iconSize =
       typeof w === 'number' && Number.isFinite(w)
@@ -31,13 +36,25 @@ function makeCustomSquare(badge) {
         ref={ref}
         style={{
           ...style,
-          ...(show ? { position: 'relative' } : {}),
+          ...((show || kingBadge) ? { position: 'relative' } : {}),
         }}
       >
         {children}
         {show ? (
           <span className="analysis-board-move-category-badge" aria-hidden>
             <MoveCategoryBoardIcon categoryId={b.categoryId} size={iconSize} />
+          </span>
+        ) : null}
+        {kingBadge ? (
+          <span
+            className={`analysis-board-endgame-badge analysis-board-endgame-badge--${kingBadge.type}`}
+            aria-hidden
+          >
+            {kingBadge.type === 'winner' ? (
+              <WinnerCrownBoardIcon size={iconSize} />
+            ) : (
+              <LoserFlagBoardIcon size={iconSize} />
+            )}
           </span>
         ) : null}
       </div>
@@ -71,9 +88,14 @@ const AnalysisBoard = ({
     return getLastMoveSquareStylesForAnalysis(lastMove, lastMoveCategoryId);
   };
 
+  const endgameKingBadges = useMemo(
+    () => getEndgameKingBadges(fen, result, isFinalMove),
+    [fen, result, isFinalMove],
+  );
+
   const CustomSquare = useMemo(
-    () => makeCustomSquare(moveCategoryBadge),
-    [moveCategoryBadge],
+    () => makeCustomSquare(moveCategoryBadge, endgameKingBadges),
+    [moveCategoryBadge, endgameKingBadges],
   );
 
   return (
@@ -126,6 +148,33 @@ const winerLoserHighlights = (fen , result) => {
       }
   return styles;
 } 
+
+const getEndgameKingBadges = (fen, result, isFinalMove) => {
+  if (!isFinalMove) return {};
+  const normalizedResult = String(result ?? '').trim();
+  if (normalizedResult !== '1-0' && normalizedResult !== '0-1') return {};
+
+  const chess = new Chess(fen);
+  const board = chess.board();
+  const whiteKingPosition = getKingPosition(board, 'w');
+  const blackKingPosition = getKingPosition(board, 'b');
+  if (!whiteKingPosition || !blackKingPosition) return {};
+
+  const whiteSquare = getSquareName(whiteKingPosition.rank, whiteKingPosition.file).toLowerCase();
+  const blackSquare = getSquareName(blackKingPosition.rank, blackKingPosition.file).toLowerCase();
+
+  if (normalizedResult === '1-0') {
+    return {
+      [whiteSquare]: { type: 'winner' },
+      [blackSquare]: { type: 'loser' },
+    };
+  }
+
+  return {
+    [whiteSquare]: { type: 'loser' },
+    [blackSquare]: { type: 'winner' },
+  };
+};
 
 const getSquareName = (rank, file) => {
   return String.fromCharCode(file + 'a'.charCodeAt(0)) + (8 - rank);
