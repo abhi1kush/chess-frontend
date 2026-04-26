@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/AnalysisGame-CaPK2yix.js","assets/AnalysisGame-DpaSR-uX.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/AnalysisGame-BaA4CSyo.js","assets/AnalysisGame-DEatZNR2.css"])))=>i.map(i=>d[i]);
 let fp, rb, fb, A, db, Sp, Sb, ob, cm, gb, hb, tt, vb, mb, yb, lt, bb, Hp, pb, mm, sb, cb;
 let __tla = (async ()=>{
     (function() {
@@ -13818,7 +13818,7 @@ Please change the parent <Route path="${K}"> to <Route path="${K === "/" ? "*" :
             children: u
         });
     };
-    ab = A.lazy(()=>Av(()=>import("./AnalysisGame-CaPK2yix.js"), __vite__mapDeps([0,1])));
+    ab = A.lazy(()=>Av(()=>import("./AnalysisGame-BaA4CSyo.js"), __vite__mapDeps([0,1])));
     ub = ()=>tt.jsx(Jg, {
             children: tt.jsx(nb, {
                 children: tt.jsx(Hg, {
