@@ -61,6 +61,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 body.dark-theme .eval-container {
   border-color: rgba(148, 163, 184, 0.45);
   background-color: #020617;

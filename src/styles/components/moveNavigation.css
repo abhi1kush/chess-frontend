@@ -37,15 +37,15 @@
 }
 
 .move-nav-icon-btn--primary {
-  background: linear-gradient(135deg, #16a34a, #15803d);
-  border-color: #166534;
-  color: #f8fafc;
-  box-shadow: 0 8px 16px rgba(22, 163, 74, 0.34);
+  background-color: var(--move-nav-btn-bg);
+  border-color: var(--move-nav-btn-border);
+  color: var(--move-nav-btn-fg);
+  box-shadow: var(--move-nav-btn-shadow);
 }
 
 .move-nav-icon-btn--primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  border-color: #15803d;
+  background-color: var(--move-nav-btn-hover-bg);
+  border-color: var(--move-nav-btn-hover-border);
 }
 
 .move-navigation button:hover:not(:disabled) {
