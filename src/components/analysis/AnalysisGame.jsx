@@ -575,12 +575,12 @@ const AnalysisGame = () => {
         <div className="analysis-game-insight-panel">
           <div className="analysis-game-insight-title-wrap">
             <span className="analysis-game-insight-icon" aria-hidden>🧠</span>
-            <span className="analysis-game-insight-title">Move Insight</span>
+              <span className="analysis-game-insight-title">Analysis Updates</span>
           </div>
           <p className="analysis-game-insight-text">
             {reviewAnalysisComplete
               ? "Review complete. Check detailed move-quality stats in the panel below."
-              : "Navigate through the game and use review to classify key moments."}
+              : "Upload your chess game PGN file to review it here."}
           </p>
         </div>
         {reviewAnalysisComplete && moves?.length > 0 && (
