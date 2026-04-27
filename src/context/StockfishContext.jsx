@@ -31,7 +31,19 @@ const StockfishProvider = ({ children }) => {
   const { preloadEngine } = stockfish;
 
   useEffect(() => {
-    preloadEngine();
+    const runPreload = () => {
+      preloadEngine();
+    };
+
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(runPreload, { timeout: 1200 });
+      return () => {
+        window.cancelIdleCallback?.(idleId);
+      };
+    }
+
+    const timeoutId = setTimeout(runPreload, 900);
+    return () => clearTimeout(timeoutId);
   }, [preloadEngine]);
 
   /** Stages: worker + UCI (33%) → uciok (66%) → readyok (100%, banner hidden). */

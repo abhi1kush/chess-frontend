@@ -259,6 +259,56 @@ body.dark-theme
     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.moves-mobile-action-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.moves-mobile-analyse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: stretch;
+    max-width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f8fafc;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    border: 1px solid #166534;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.moves-mobile-action-row .moves-start-review-btn,
+.moves-mobile-action-row .moves-mobile-analyse-btn {
+    flex: 1 1 0;
+    width: 50%;
+    margin: 0;
+}
+
+.moves-mobile-analyse-btn:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 8px 18px rgba(22, 163, 74, 0.35);
+    transform: translateY(-1px);
+}
+
+.moves-mobile-analyse-btn:active {
+    background: linear-gradient(135deg, #16a34a, #166534);
+    transform: translateY(0);
+}
+
+.moves-mobile-analyse-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.85;
+    color: #e2e8f0;
+    background: linear-gradient(135deg, #64748b, #475569);
+    border-color: #334155;
+}
+
 .moves-start-review-btn:hover {
     background: linear-gradient(135deg, #22c55e, #16a34a);
     box-shadow: 0 8px 18px rgba(22, 163, 74, 0.35);

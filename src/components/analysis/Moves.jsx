@@ -123,6 +123,9 @@ const Moves = ({
   onJumpToMainLine,
   onEnterUserLine,
   onBeginReview,
+  mobileNavigationNode = null,
+  onAnalyzePosition,
+  analyzingPosition = false,
 }) => {
   const scrollRef = useRef(null);
   const reviewTimeoutRef = useRef(null);
@@ -373,15 +376,28 @@ const Moves = ({
           </div>
         </div>
       )}
-      <button
-        type="button"
-        className="moves-start-review-btn tracking-wide"
-        onClick={handleStartReview}
-        disabled={isReviewing}
-        aria-busy={isReviewing}
-      >
-        {isReviewing ? 'Reviewing…' : 'Start Review'}
-      </button>
+      <div className="moves-mobile-action-row">
+        <button
+          type="button"
+          className="moves-start-review-btn tracking-wide"
+          onClick={handleStartReview}
+          disabled={isReviewing}
+          aria-busy={isReviewing}
+        >
+        {isReviewing ? 'Reviewing…' : 'Review'}
+        </button>
+        <button
+          type="button"
+          className="moves-mobile-analyse-btn tracking-wide"
+          onClick={onAnalyzePosition}
+          aria-busy={analyzingPosition}
+        >
+          {analyzingPosition ? 'Analysing…' : 'Analyse'}
+        </button>
+      </div>
+      {mobileNavigationNode ? (
+        <div className="analysis-mobile-move-nav">{mobileNavigationNode}</div>
+      ) : null}
       <div className="move-history rounded-xl">
         <div className="move-history-scroll" ref={scrollRef}>
           <table className="move-history-table">

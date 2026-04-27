@@ -7,7 +7,7 @@ import FlipButton from '../common/buttons/FlipButton';
 import FenOverlayButton from './FenOverlayButton';
 import "../../styles/components/topContainer.css"
 
-const AnalysisTopBar = ({ fen, onAnalyzePosition, analyzingPosition }) => {
+const AnalysisTopBar = ({ fen }) => {
   return (
     <nav className="top-bar">
       <div className="top-bar-brand">
@@ -18,14 +18,6 @@ const AnalysisTopBar = ({ fen, onAnalyzePosition, analyzingPosition }) => {
         </div>
       </div>
       <div className="top-bar-actions">
-        <button
-          type="button"
-          className={`action-button${analyzingPosition ? ' action-button--active' : ''}`}
-          onClick={onAnalyzePosition}
-          aria-busy={analyzingPosition}
-        >
-          {analyzingPosition ? 'Analysing...' : 'Analyse'}
-        </button>
         <FlipButton/>
         <FenOverlayButton fen={fen} />
         <PgnUploader/>

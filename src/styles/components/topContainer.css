@@ -146,6 +146,10 @@
   letter-spacing: 0.03em;
 }
 
+.analysis-top-analyse-btn {
+  display: none;
+}
+
 @media (max-width: 900px) {
     .top-bar-brand-subtitle {
       display: none;
@@ -182,6 +186,7 @@
     .top-bar-brand-title {
       font-size: 0.88rem;
     }
+
   }
 
 @media (max-width: 520px) {

@@ -3,14 +3,10 @@ import React from 'react';
 import '../../styles/components/topContainer.css';
 import AnalysisTopBar from './AnalysisTopBar';
 
-const AnalysisTopContainer = ({ fen, onAnalyzePosition, analyzingPosition }) => {
+const AnalysisTopContainer = ({ fen }) => {
   return (
     <div className="top-container">
-      <AnalysisTopBar
-        fen={fen}
-        onAnalyzePosition={onAnalyzePosition}
-        analyzingPosition={analyzingPosition}
-      />
+      <AnalysisTopBar fen={fen} />
     </div>
   );
 };

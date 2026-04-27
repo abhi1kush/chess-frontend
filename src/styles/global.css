@@ -78,7 +78,7 @@
     --board-container-height: calc(var(--max-board-size) + 2 * var(--players-height));
     --square-size: calc(var(--max-board-size) / 8);
     --sidebar-width: 100vw;
-    --evalbar-width: 0px;
+    --evalbar-width: clamp(26px, 7vw, 32px);
     --chess-board-start-col: 1;
     --chess-board-end-col: -1;
   }

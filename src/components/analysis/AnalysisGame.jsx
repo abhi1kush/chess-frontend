@@ -20,6 +20,7 @@ import {
 } from "../../redux/actions/analysisActions";
 import { moveQualityClassFromLabel } from "../../utils/moveClassification";
 import GameReviewSummary from "./GameReviewSummary";
+import { MoveCategoryBoardIcon } from "./MoveCategoryBoardIcons";
 import {
   bestMoveUciToCustomArrows,
   uciToArrowFromSquares,
@@ -31,6 +32,11 @@ const STOCKFISH_OPTIONS_ANALYSIS = [
   { name: 'Hash', value: 16 },
   { name: 'MultiPV', value: 1 },
 ];
+
+const stripEmoji = (value) =>
+  String(value ?? "")
+    .replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "")
+    .trim();
 
 const AnalysisGame = () => {
   const dispatch = useDispatch();
@@ -146,6 +152,12 @@ const AnalysisGame = () => {
     : useReviewCache
       ? String(analysisEntry?.bestMove ?? "").trim()
       : bestMoveUci;
+  const shouldShowBestMove = !useReviewCache || currentMoveIndex >= 1;
+  const bestMoveDisplayValue = shouldShowBestMove ? (displayBestMove || "—") : "—";
+  const moveQualityDisplayValue =
+    useReviewCache && currentMoveIndex >= 1 && !manualAnalysisState.active
+      ? (stripEmoji(analysisEntry?.moveClassification) || "—")
+      : "—";
 
   /**
    * Green arrow: engine best **from the position before the move that reached here** vs the move
@@ -526,11 +538,7 @@ const AnalysisGame = () => {
 
   return (
     <div className="analysis-game-page bg-transparent">
-      <AnalysisTopContainer
-        fen={position}
-        onAnalyzePosition={handleAnalyzeCurrentPosition}
-        analyzingPosition={manualAnalysisState.active}
-      />
+      <AnalysisTopContainer fen={position} />
       <aside className="analysis-game-engine-shell rounded-2xl" aria-label="Engine analysis">
         <div className="analysis-game-engine-panel" aria-live="polite">
           <div className="analysis-game-engine-panel-head">
@@ -540,37 +548,37 @@ const AnalysisGame = () => {
               <span className="analysis-game-engine-panel-subtitle">Stockfish analysis</span>
             </div>
           </div>
-          <div className="analysis-game-engine-row">
-            <span className="analysis-game-engine-label">Eval Score</span>
-            <span className="analysis-game-engine-value">{formatEvalDisplay(displayEvalScore)}</span>
-          </div>
-          <div className="analysis-game-engine-row">
-            <span className="analysis-game-engine-label">Status</span>
-            <span className="analysis-game-engine-value">
-              {manualAnalysisState.active ? "Analysing current position" : "Idle"}
-            </span>
-          </div>
-          {/** After review: hide best move at start position; show from first move onward (index ≥ 1). Live engine still shows at index 0. */}
-          {(!useReviewCache || currentMoveIndex >= 1) && (
-            <div className="analysis-game-engine-row">
-              <span className="analysis-game-engine-label">Best Move</span>
-              <span className="analysis-game-engine-value">{displayBestMove || "—"}</span>
+          <div className="analysis-game-engine-metrics">
+            <div className="analysis-game-engine-metric">
+              <span className="analysis-game-engine-label">Score</span>
+              <span className="analysis-game-engine-value">{formatEvalDisplay(displayEvalScore)}</span>
             </div>
-          )}
-          {useReviewCache && currentMoveIndex >= 1 && !manualAnalysisState.active && (
-            <div className="analysis-game-engine-row">
-              <span className="analysis-game-engine-label">Move quality</span>
+            <div className="analysis-game-engine-metric">
+              <span className="analysis-game-engine-label">Move Quality</span>
               <span
                 className={
-                  moveQualityClass
+                  moveQualityClass && moveQualityDisplayValue !== "—"
                     ? `analysis-game-engine-value analysis-game-move-quality analysis-game-move-quality--${moveQualityClass}`
                     : "analysis-game-engine-value"
                 }
               >
-                {analysisEntry?.moveClassification ?? "—"}
+                {moveQualityClass && moveQualityDisplayValue !== "—" ? (
+                  <span className="move-history-move-with-review">
+                    <span className="move-history-move-review-icon" aria-hidden>
+                      <MoveCategoryBoardIcon categoryId={moveQualityClass} size={16} />
+                    </span>
+                    <span>{moveQualityDisplayValue}</span>
+                  </span>
+                ) : (
+                  moveQualityDisplayValue
+                )}
               </span>
             </div>
-          )}
+            <div className="analysis-game-engine-metric">
+              <span className="analysis-game-engine-label">Best Move</span>
+              <span className="analysis-game-engine-value">{bestMoveDisplayValue}</span>
+            </div>
+          </div>
         </div>
         <div className="analysis-game-insight-panel">
           <div className="analysis-game-insight-title-wrap">
@@ -660,17 +668,33 @@ const AnalysisGame = () => {
             onJumpToMainLine={jumpToMainLine}
             onEnterUserLine={enterUserLine}
             onBeginReview={clearUserLine}
+            onAnalyzePosition={handleAnalyzeCurrentPosition}
+            analyzingPosition={manualAnalysisState.active}
+            mobileNavigationNode={
+              <MoveNavigation
+                onNavigatePrev={navigationPrev}
+                onNavigateNext={navigationNext}
+                canNavigatePrev={canNavigatePrev}
+                canNavigateNext={canNavigateNext}
+                onGoStart={navigationGoStart}
+                onGoLatest={navigationGoLatest}
+                goStartDisabled={goStartDisabled}
+                goLatestDisabled={goLatestDisabled}
+              />
+            }
           />
-          <MoveNavigation
-            onNavigatePrev={navigationPrev}
-            onNavigateNext={navigationNext}
-            canNavigatePrev={canNavigatePrev}
-            canNavigateNext={canNavigateNext}
-            onGoStart={navigationGoStart}
-            onGoLatest={navigationGoLatest}
-            goStartDisabled={goStartDisabled}
-            goLatestDisabled={goLatestDisabled}
-          />
+          <div className="analysis-desktop-move-nav">
+            <MoveNavigation
+              onNavigatePrev={navigationPrev}
+              onNavigateNext={navigationNext}
+              canNavigatePrev={canNavigatePrev}
+              canNavigateNext={canNavigateNext}
+              onGoStart={navigationGoStart}
+              onGoLatest={navigationGoLatest}
+              goStartDisabled={goStartDisabled}
+              goLatestDisabled={goLatestDisabled}
+            />
+          </div>
          </div>
          </div>
       </div>
