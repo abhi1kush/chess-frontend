@@ -12,7 +12,6 @@ import '../../styles/components/AnalysisLayout.css';
 import {onMessage} from "../../utils/onMessage";
 import { formatEvalDisplay } from "../../utils/formatEval";
 import { useStockfishContext } from "../../context/StockfishContext";
-import EngineEnabledListener from "./EngineEnabledListener";
 import {
   setPgnAnalysisAtIndex,
   jumpToMove,
@@ -60,6 +59,10 @@ const AnalysisGame = () => {
   const [exploreLine, setExploreLine] = useState(false);
   const enabledChessEngine = useSelector(state => state.engine.enabled);
   const analysisWriteTimerRef = useRef(null);
+  const [manualAnalysisState, setManualAnalysisState] = useState({
+    active: false,
+    fenKey: "",
+  });
 
   const { initEngine, setOptions, startSearch, stopSearch, setOnMessage, syncEnabledState} = useStockfishContext();
   const handleEngineMessage = useCallback((data) => {
@@ -130,14 +133,19 @@ const AnalysisGame = () => {
   const analysisEntry = analysisData?.[currentMoveIndex];
   const hasCachedEval =
     analysisEntry?.evalScore != null && Number.isFinite(analysisEntry.evalScore);
-  const displayEvalScore = useReviewCache
-    ? hasCachedEval
-      ? analysisEntry.evalScore
-      : null
-    : evalScore;
-  const displayBestMove = useReviewCache
-    ? String(analysisEntry?.bestMove ?? "").trim()
-    : bestMoveUci;
+  const showLiveEngineData = manualAnalysisState.active;
+  const displayEvalScore = showLiveEngineData
+    ? evalScore
+    : useReviewCache
+      ? hasCachedEval
+        ? analysisEntry.evalScore
+        : null
+      : evalScore;
+  const displayBestMove = showLiveEngineData
+    ? bestMoveUci
+    : useReviewCache
+      ? String(analysisEntry?.bestMove ?? "").trim()
+      : bestMoveUci;
 
   /**
    * Green arrow: engine best **from the position before the move that reached here** vs the move
@@ -274,6 +282,39 @@ const AnalysisGame = () => {
     onMainLinePosition,
   ]);
 
+  const cancelManualAnalysis = useCallback((reason = "manual analysis cancelled") => {
+    stopSearch(reason);
+    setManualAnalysisState({ active: false, fenKey: "" });
+  }, [stopSearch]);
+
+  const handleAnalyzeCurrentPosition = useCallback(() => {
+    if (!enabledChessEngine) return;
+    const fenToAnalyze = positionRef.current;
+    const fenKey = normalizeFenKey(fenToAnalyze);
+    setEvalScore(null);
+    setBestLine("");
+    setupEngine();
+    stopSearch("restart manual analysis");
+    startSearch(fenToAnalyze);
+    setManualAnalysisState({ active: true, fenKey });
+  }, [enabledChessEngine, setupEngine, startSearch, stopSearch]);
+
+  useEffect(() => {
+    if (!manualAnalysisState.active) return;
+    const currentKey = normalizeFenKey(position);
+    if (currentKey !== manualAnalysisState.fenKey) {
+      cancelManualAnalysis("position changed during manual analysis");
+      setEvalScore(null);
+      setBestLine("");
+    }
+  }, [position, manualAnalysisState, cancelManualAnalysis]);
+
+  useEffect(() => {
+    if (!enabledChessEngine && manualAnalysisState.active) {
+      cancelManualAnalysis("engine disabled");
+    }
+  }, [enabledChessEngine, manualAnalysisState.active, cancelManualAnalysis]);
+
   const handleMove = useCallback(
     ({ from, to }) => {
       if (isReviewing) return;
@@ -306,10 +347,7 @@ const AnalysisGame = () => {
         setLinePlies([]);
         setLineCursor(0);
         setPosition(newFen);
-        if (!enabledChessEngine) return;
-        setupEngine();
-        stopSearch('handleMove');
-        startSearch(newFen);
+        if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
         return;
       }
 
@@ -319,10 +357,7 @@ const AnalysisGame = () => {
         setLineCursor(1);
         setExploreLine(true);
         setPosition(newFen);
-        if (!enabledChessEngine) return;
-        setupEngine();
-        stopSearch('handleMove');
-        startSearch(newFen);
+        if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
         return;
       }
 
@@ -331,10 +366,7 @@ const AnalysisGame = () => {
       setLineCursor(nextPlies.length);
       setExploreLine(true);
       setPosition(newFen);
-      if (!enabledChessEngine) return;
-      setupEngine();
-      stopSearch('handleMove');
-      startSearch(newFen);
+      if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
     },
     [
       isReviewing,
@@ -344,20 +376,17 @@ const AnalysisGame = () => {
       lineCursor,
       currentMoveIndex,
       fens,
-      enabledChessEngine,
+      manualAnalysisState.active,
       dispatch,
-      setupEngine,
-      stopSearch,
-      startSearch,
+      cancelManualAnalysis,
     ],
   );
 
   const navigateMove = useCallback(() => {
-    stopSearch("navigateMove");
-    if (enabledChessEngine) {
-      startSearch(positionRef.current);
+    if (manualAnalysisState.active) {
+      cancelManualAnalysis("navigateMove");
     }
-  }, [enabledChessEngine, startSearch, stopSearch]);
+  }, [manualAnalysisState.active, cancelManualAnalysis]);
 
   const navigationPrev = useCallback(() => {
     if (exploreLine && linePlies.length && lineBranchIndex != null) {
@@ -497,10 +526,12 @@ const AnalysisGame = () => {
 
   return (
     <div className="analysis-game-page bg-transparent">
-      <EngineEnabledListener fen={position} pauseSearch={isReviewing} />
-      <AnalysisTopContainer fen={position} />
+      <AnalysisTopContainer
+        fen={position}
+        onAnalyzePosition={handleAnalyzeCurrentPosition}
+        analyzingPosition={manualAnalysisState.active}
+      />
       <aside className="analysis-game-engine-shell rounded-2xl" aria-label="Engine analysis">
-        {!(reviewAnalysisComplete && moves?.length > 0) && (
         <div className="analysis-game-engine-panel" aria-live="polite">
           <div className="analysis-game-engine-panel-head">
             <span className="analysis-game-engine-panel-icon" aria-hidden>⚡</span>
@@ -513,6 +544,12 @@ const AnalysisGame = () => {
             <span className="analysis-game-engine-label">Eval Score</span>
             <span className="analysis-game-engine-value">{formatEvalDisplay(displayEvalScore)}</span>
           </div>
+          <div className="analysis-game-engine-row">
+            <span className="analysis-game-engine-label">Status</span>
+            <span className="analysis-game-engine-value">
+              {manualAnalysisState.active ? "Analysing current position" : "Idle"}
+            </span>
+          </div>
           {/** After review: hide best move at start position; show from first move onward (index ≥ 1). Live engine still shows at index 0. */}
           {(!useReviewCache || currentMoveIndex >= 1) && (
             <div className="analysis-game-engine-row">
@@ -520,7 +557,7 @@ const AnalysisGame = () => {
               <span className="analysis-game-engine-value">{displayBestMove || "—"}</span>
             </div>
           )}
-          {useReviewCache && currentMoveIndex >= 1 && (
+          {useReviewCache && currentMoveIndex >= 1 && !manualAnalysisState.active && (
             <div className="analysis-game-engine-row">
               <span className="analysis-game-engine-label">Move quality</span>
               <span
@@ -535,18 +572,17 @@ const AnalysisGame = () => {
             </div>
           )}
         </div>
-        )}
-        {!reviewAnalysisComplete && (
-          <div className="analysis-game-insight-panel">
-            <div className="analysis-game-insight-title-wrap">
-              <span className="analysis-game-insight-icon" aria-hidden>🧠</span>
-              <span className="analysis-game-insight-title">Move Insight</span>
-            </div>
-            <p className="analysis-game-insight-text">
-              Navigate through the game and use review to classify key moments.
-            </p>
+        <div className="analysis-game-insight-panel">
+          <div className="analysis-game-insight-title-wrap">
+            <span className="analysis-game-insight-icon" aria-hidden>🧠</span>
+            <span className="analysis-game-insight-title">Move Insight</span>
           </div>
-        )}
+          <p className="analysis-game-insight-text">
+            {reviewAnalysisComplete
+              ? "Review complete. Check detailed move-quality stats in the panel below."
+              : "Navigate through the game and use review to classify key moments."}
+          </p>
+        </div>
         {reviewAnalysisComplete && moves?.length > 0 && (
           <GameReviewSummary
             analysisData={analysisData}
