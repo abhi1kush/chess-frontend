@@ -32,6 +32,7 @@ const STOCKFISH_OPTIONS_ANALYSIS = [
   { name: 'Hash', value: 16 },
   { name: 'MultiPV', value: 1 },
 ];
+const MANUAL_ANALYZE_STABLE_STOP_MS = 3000;
 
 const stripEmoji = (value) =>
   String(value ?? "")
@@ -69,6 +70,7 @@ const AnalysisGame = () => {
     active: false,
     fenKey: "",
   });
+  const manualStableStopTimerRef = useRef(null);
 
   const { initEngine, setOptions, startSearch, stopSearch, setOnMessage, syncEnabledState} = useStockfishContext();
   const handleEngineMessage = useCallback((data) => {
@@ -294,22 +296,39 @@ const AnalysisGame = () => {
     onMainLinePosition,
   ]);
 
+  const clearManualStableStopTimer = useCallback(() => {
+    if (manualStableStopTimerRef.current) {
+      clearTimeout(manualStableStopTimerRef.current);
+      manualStableStopTimerRef.current = null;
+    }
+  }, []);
+
   const cancelManualAnalysis = useCallback((reason = "manual analysis cancelled") => {
+    clearManualStableStopTimer();
     stopSearch(reason);
     setManualAnalysisState({ active: false, fenKey: "" });
-  }, [stopSearch]);
+  }, [stopSearch, clearManualStableStopTimer]);
+
+  const armManualStableStopTimer = useCallback(() => {
+    clearManualStableStopTimer();
+    manualStableStopTimerRef.current = setTimeout(() => {
+      cancelManualAnalysis("manual analysis stabilized");
+    }, MANUAL_ANALYZE_STABLE_STOP_MS);
+  }, [clearManualStableStopTimer, cancelManualAnalysis]);
 
   const handleAnalyzeCurrentPosition = useCallback(() => {
     if (!enabledChessEngine) return;
     const fenToAnalyze = positionRef.current;
     const fenKey = normalizeFenKey(fenToAnalyze);
+    clearManualStableStopTimer();
     setEvalScore(null);
     setBestLine("");
     setupEngine();
     stopSearch("restart manual analysis");
     startSearch(fenToAnalyze);
     setManualAnalysisState({ active: true, fenKey });
-  }, [enabledChessEngine, setupEngine, startSearch, stopSearch]);
+    armManualStableStopTimer();
+  }, [enabledChessEngine, setupEngine, startSearch, stopSearch, clearManualStableStopTimer, armManualStableStopTimer]);
 
   useEffect(() => {
     if (!manualAnalysisState.active) return;
@@ -326,6 +345,17 @@ const AnalysisGame = () => {
       cancelManualAnalysis("engine disabled");
     }
   }, [enabledChessEngine, manualAnalysisState.active, cancelManualAnalysis]);
+
+  useEffect(() => {
+    if (!manualAnalysisState.active) return;
+    armManualStableStopTimer();
+  }, [manualAnalysisState.active, evalScore, armManualStableStopTimer]);
+
+  useEffect(() => {
+    return () => {
+      clearManualStableStopTimer();
+    };
+  }, [clearManualStableStopTimer]);
 
   const handleMove = useCallback(
     ({ from, to }) => {
