@@ -4,22 +4,14 @@ export const SET_MULTIPV = 'SET_MULTIPV';
 export const SET_MAX_DEPTH = 'SET_MAX_DEPTH';
 export const SET_AUTO_STOP_TIME = 'SET_AUTO_STOP_TIME';
 
+export type ToggleEngineAction = {
+  type: typeof TOGGLE_ENGINE;
+}
+
 // Action Creators
-export const toggleEngine = () => ({
+export const toggleEngine = (): ToggleEngineAction => ({
   type: TOGGLE_ENGINE,
 });
 
-// export const setMultiPV = (value) => ({
-//   type: SET_MULTIPV,
-//   payload: value,
-// });
-
-// export const setMaxDepth = (value: number) => ({
-//   type: SET_MAX_DEPTH,
-//   payload: value,
-// });
-
-// export const setAutoStopTime = (value) => ({
-//   type: SET_AUTO_STOP_TIME,
-//   payload: value,
-// });
+export type EngineAction =
+  | ToggleEngineAction

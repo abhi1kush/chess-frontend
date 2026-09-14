@@ -16,3 +16,7 @@ export const setSound = (sound: boolean) => ({
     type: SET_SOUND, 
     payload: sound
   });
+
+export type SettingsAction = ReturnType<typeof flipBoard> 
+| ReturnType<typeof setTheme> 
+| ReturnType<typeof setSound>;

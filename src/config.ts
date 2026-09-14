@@ -1,7 +1,6 @@
-import { PieceSymbol } from "chess.js";
-import {BoardType, PieceColor, PieceType, SquareIdType} from "./CustomTypes/CustomTypes"
-
-interface CONFIG_T {
+import {BoardType, PieceColor} from "./CustomTypes/CustomTypes"
+import {Square} from "chess.js";
+interface ConfigT {
     TIMER_DURATION: number, 
     THEME: string,
     ENABLE_SOUND: boolean,
@@ -22,7 +21,7 @@ interface CONFIG_T {
     ERASER_ID: string,
 }
 
-const CONFIG: CONFIG_T = {
+const CONFIG: ConfigT = {
     TIMER_DURATION: 60*3, 
     THEME: "classic",
     ENABLE_SOUND: true,
@@ -44,7 +43,7 @@ const CONFIG: CONFIG_T = {
   };
   
   export default CONFIG;
-  export const SquareIds: SquareIdType[][] = [ 
+  export const SquareIds: Square[][] = [ 
                              ['a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'],
                              ['a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7'],
                              ['a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6'],
@@ -55,7 +54,7 @@ const CONFIG: CONFIG_T = {
                              ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'] 
   ];
   
-  export const FlippedSquareIds: SquareIdType[][] = [ 
+  export const FlippedSquareIds: Square[][] = [ 
                              ['h1', 'g1', 'f1', 'e1', 'd1', 'c1', 'b1', 'a1' ], 
                              ['h2', 'g2', 'f2', 'e2', 'd2', 'c2', 'b2', 'a2' ],
                              ['h3', 'g3', 'f3', 'e3', 'd3', 'c3', 'b3', 'a3' ],

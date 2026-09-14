@@ -1,18 +1,35 @@
-// src/redux/reducers/analysisReducer.js
-import { AnalysisActionType } from '../actions/analysisActions';
-import { NEXT, PREV, START_POS, FINAL_POS, LOAD_PGN, JUMP_TO_MOVE, TOGGLE_ENGINE, DISABLE_ENGINE} from '../actions/analysisActions';
+// src/redux/reducers/analysisReducer.ts
+import {
+  AnalysisActionType,
+  NEXT,
+  PREV,
+  START_POS,
+  FINAL_POS,
+  LOAD_PGN,
+  JUMP_TO_MOVE,
+  TOGGLE_ENGINE,
+  DISABLE_ENGINE,
+} from '../actions/analysisActions';
 
-const initialState = {
-  finalFen: "5rk1/1P3Bp1/R6p/8/6P1/2B1rQ2/2K3P1/6q1 b - - 0 36",
-  fenLength: 72, 
+export type AnalysisState = {
+  finalFen: string;
+  fenArrayLength: number;
+  currentMoveIndex: number; // index of the current move in the fenArray
+  engineEnabled: boolean;
+}
+
+const initialState: AnalysisState = {
+  finalFen:
+    '5rk1/1P3Bp1/R6p/8/6P1/2B1rQ2/2K3P1/6q1 b - - 0 36',
+    fenArrayLength: 72,
   currentMoveIndex: 0,
   engineEnabled: false,
 };
 
-const analysisReducer = (state = initialState, action: AnalysisActionType) => {
+const analysisReducer = (state: AnalysisState = initialState, action: AnalysisActionType): AnalysisState => {
   switch (action.type) {
     case NEXT:
-        if (state.currentMoveIndex === (state.fenLength - 1)) {
+        if (state.currentMoveIndex === (state.fenArrayLength - 1)) {
             return state
         }
 
@@ -36,7 +53,7 @@ const analysisReducer = (state = initialState, action: AnalysisActionType) => {
     case FINAL_POS:
         return {
             ...state,
-            currentMoveIndex: state.fenLength - 1
+            currentMoveIndex: state.fenArrayLength - 1
         }
     case JUMP_TO_MOVE: 
         return {
@@ -47,7 +64,7 @@ const analysisReducer = (state = initialState, action: AnalysisActionType) => {
         return {
             ...state,
             finalFen: action.payload.finalPos,
-            fenLength: action.payload.fens.length,
+            fenArrayLength: action.payload.fens.length,
             currentMoveIndex: 0
         }
     case TOGGLE_ENGINE:

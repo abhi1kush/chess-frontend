@@ -1,4 +1,5 @@
-import { PieceColor, PieceType, SquareIdType, CastlingFlagsType, SelectedItemType } from "../../CustomTypes/CustomTypes"
+import { Square } from "chess.js";
+import { PieceColor, PieceType, CastlingFlagsType, SelectedItemType } from "../../CustomTypes/CustomTypes"
 export const RESET_BOARD = 'RESET_BOARD';
 export const CLEAR_BOARD = 'CLEAR_BOARD';
 export const FLIP_BOARD = 'FLIP_BOARD';
@@ -11,24 +12,22 @@ export const SET_PLAYER_TO_MOVE = "SET_PLAYER_TO_MOVE";
 export const SELECT_ITEM = "SET_SELECTED_ITEM";
 export const DESELECT_ITEM = "DESELECT_ITEM";
 
-interface ClearBoardAction {
+type ClearBoardAction = {
   type: typeof CLEAR_BOARD;
-  payload: null,
 }
 
-interface ResetBoardAction {
+type ResetBoardAction = {
   type: typeof RESET_BOARD;
-  payload: null,
 }
 
-interface SetBoardWithFenAction {
+type SetBoardWithFenAction = {
   type: typeof SET_BOARD_WITH_FEN;
   payload: {
     fen: string;
   };
 }
 
-interface PutPieceAction {
+type PutPieceAction = {
   type: typeof PUT_PIECE;
   payload: {
     squareId: string;
@@ -36,46 +35,44 @@ interface PutPieceAction {
   };
 }
 
-interface RemovePieceAction {
+type RemovePieceAction = {
   type: typeof REMOVE_PIECE;
   payload: {
     squareId: string;
   };
 }
 
-interface MoveBoardPieceAction {
+type MoveBoardPieceAction = {
   type: typeof MOVE_BOARD_PIECE;
   payload: {
-    sourceSquareId: SquareIdType;
-    destSquareId: SquareIdType;
+    sourceSquareId: Square;
+    destSquareId: Square;
   };
 }
 
-interface ToggleCastlingFlagAction {
+type ToggleCastlingFlagAction = {
   type: typeof TOGGLE_CASTLING_PIECE;
   payload: {
     flag: CastlingFlagsType
   }
 }
 
-interface FlipAction {
+type FlipAction = {
   type: typeof FLIP_BOARD;
-  payload: null
 }
 
-interface PlayerToMoveAction {
+type PlayerToMoveAction = {
   type: typeof SET_PLAYER_TO_MOVE;
   payload: {color: PieceColor}
 }
 
-interface SelectedItemActionType {
+type SelectedItemActionType = {
   type: typeof SELECT_ITEM,
-  payload: {item: SelectedItemType}
+  payload: {item: SelectedItemType | null}
 }
 
-interface DeselectItemActionType {
+type DeselectItemActionType = {
   type: typeof DESELECT_ITEM
-  payload: null,
 }
 
 export type BoardEditorActions =
@@ -91,53 +88,53 @@ export type BoardEditorActions =
   | SelectedItemActionType|
   DeselectItemActionType;
 
-  export const selectItemAction = (item : SelectedItemType | null) => ({
+  export const selectItemAction = (item : SelectedItemType | null): SelectedItemActionType => ({
     type: SELECT_ITEM,
     payload: {item: item},
   });
   
-  export const deselectItemAction = () => ({
+  export const deselectItemAction = (): DeselectItemActionType => ({
       type: DESELECT_ITEM,
   });
 
-export const setPlayerToMoveAction = (playerColor: PieceColor) => ({
+export const setPlayerToMoveAction = (playerColor: PieceColor): PlayerToMoveAction => ({
   type: SET_PLAYER_TO_MOVE,
   payload: {color: playerColor},
 });
 
-export const resetBoardAction = () => ({
+export const resetBoardAction = (): ResetBoardAction => ({
   type: RESET_BOARD,
 });
 
-export const clearBoardAction = () => ({
+export const clearBoardAction = (): ClearBoardAction => ({
   type: CLEAR_BOARD,
 });
 
-export const flipBoardAction = () => ({
+export const flipBoardAction = (): FlipAction => ({
     type: FLIP_BOARD,
 });
 
-export const setupBoardWithFenAction = (fen: string) => ({
+export const setupBoardWithFenAction = (fen: string): SetBoardWithFenAction => ({
     type: SET_BOARD_WITH_FEN,
     payload: {fen: fen},
 });
 
-export const putPieceAction = (squareId: string, piece: PieceType) => ({
+export const putPieceAction = (squareId: string, piece: PieceType): PutPieceAction => ({
     type: PUT_PIECE,
     payload: {squareId: squareId, piece: piece},
 });
 
-export const removePieceAction = (squareId: string) => ({
+export const removePieceAction = (squareId: string): RemovePieceAction => ({
     type: REMOVE_PIECE,
     payload: {squareId : squareId},
 });
 
-export const movePieceAction = (sourceSquareId: string, destSquareId: string) => ({
+export const movePieceAction = (sourceSquareId: Square, destSquareId: Square): MoveBoardPieceAction => ({
     type: MOVE_BOARD_PIECE,
     payload: {sourceSquareId: sourceSquareId, destSquareId: destSquareId},
 });
 
-export const toggleCastlingFlagAction = (flag: CastlingFlagsType) => ({
+export const toggleCastlingFlagAction = (flag: CastlingFlagsType): ToggleCastlingFlagAction => ({
     type: TOGGLE_CASTLING_PIECE,
     payload: {flag: flag},
 });

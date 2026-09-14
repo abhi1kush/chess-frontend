@@ -1,0 +1,76 @@
+// src/components/Settings.js
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTheme, setSound } from '../../redux/actions/settingsActions';
+// @ts-expect-error CSS imports are resolved by the bundler at runtime.
+import "../../styles/components/settings.css";
+
+const Settings = React.memo(() => {
+  const dispatch = useDispatch();
+  const { theme, enableSound } = useSelector(
+    (state: { settings: { theme: string; enableSound: boolean } }) => state.settings,
+  );
+  const [isOpen, setIsOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement | null>(null);
+
+  // Toggle dropdown visibility
+  const toggleDropdown = () => setIsOpen((prev) => !prev);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch(setTheme(event.target.value));
+  };
+
+  const handleSoundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSound(event.target.checked));
+  };
+  return (
+    <div className="settings-container" ref={settingsRef}>
+      <button
+        id="settings-button"
+        type="button"
+        className={`top-icon-button top-icon-button--with-tooltip${isOpen ? ' top-icon-button--active' : ''}`}
+        onClick={toggleDropdown}
+        data-tooltip="Settings"
+        aria-label="Settings"
+      >
+        ⚙️
+      </button>
+
+      {isOpen && (
+      <div className="settings-dropdown">
+        <div className="dropdown-item">
+          <label htmlFor="themeSelect">Theme</label>
+          <select id="themeSelect" value={theme} onChange={handleThemeChange}>
+            <option value="default">Default</option>
+            <option value="classic">Green</option>
+            <option value="marble">Marble</option>
+            <option value="wood">Wood</option>
+          </select>
+        </div>
+      <div className="checkbox-item"> 
+        <label htmlFor="soundToggle">Sound</label>
+        <input
+          type="checkbox"
+          id="soundToggle"
+          checked={enableSound}
+          onChange={handleSoundChange}
+        />
+      </div>
+    </div>)}
+    </div>
+  );
+});
+
+export default Settings;

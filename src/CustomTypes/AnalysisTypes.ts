@@ -1,4 +1,4 @@
-import { PieceCode, SquareIdType } from "./CustomTypes"
+import type { Square, Move, Piece, PieceSymbol } from 'chess.js';
 
 /** One entry per `fens[i]` in analysis (same length and indices as `fens`). */
 export type PgnAnalysisEntry = {
@@ -8,15 +8,25 @@ export type PgnAnalysisEntry = {
   moveClassification: string | null;
 };
 
+export type FromToSquare = {
+  from: Square;
+  to: Square;
+  promotion: PieceSymbol | null | undefined;
+};
+
 export interface LoadPgnParams {
     finalPos: string, 
     moves: string[], 
     fens: string[], 
-    fromToSquares: {from: string, to: string}, 
+    fromToSquares: FromToSquare[], 
     termination: string, 
     result: string, 
     blackPlayerName: string, 
     whitePlayerName: string
 };
 
-export type MoveType = { from: SquareIdType, to: SquareIdType, promotionPiece: PieceCode};
+export type MoveType = {
+  from: Square;
+  to: Square;
+  promotionPiece?: 'q' | 'r' | 'b' | 'n';
+}
