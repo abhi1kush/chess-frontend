@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatEvalDisplay } from '../../utils/formatEval';
-import '../../styles/components/evalBar.css';
+import '../../styles/components/EvalBar.css';
 
 /**
  * evalScore: White’s perspective in pawns, roughly -10..+10.
