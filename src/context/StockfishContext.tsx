@@ -13,7 +13,7 @@ import useStockfish from '../engine/useStockfish';
 /* ---------------------------------- */ 
 /* Types */ 
 /* ---------------------------------- */ 
-type StockfishMessageHandler = (data: unknown) => void; interface StockfishProviderProps { 
+type StockfishMessageHandler = (data: string) => void; interface StockfishProviderProps { 
   children: ReactNode; 
 }
 
@@ -42,7 +42,7 @@ const StockfishProvider = ({ children, }: StockfishProviderProps) => {
   const onMessageRef = useRef<StockfishMessageHandler | null>(null); 
   const [engineUciOk, setEngineUciOk] = useState<boolean>(false); 
   const [engineReadyOk, setEngineReadyOk] = useState<boolean>(false); 
-  const handleMessage = useCallback( (data: unknown): void => { 
+  const handleMessage = useCallback( (data: string): void => { 
     if (onMessageRef.current) { onMessageRef.current(data); 
 
     } 

@@ -1,5 +1,10 @@
 import type { Square, Move, Piece, PieceSymbol } from 'chess.js';
 
+export type PromotionPiece = 'q' | 'r' | 'b' | 'n';
+export type BoardPiece =
+  | 'wP' | 'wN' | 'wB' | 'wR' | 'wQ' | 'wK'
+  | 'bP' | 'bN' | 'bB' | 'bR' | 'bQ' | 'bK';
+
 /** One entry per `fens[i]` in analysis (same length and indices as `fens`). */
 export type PgnAnalysisEntry = {
   evalScore: number | null;
@@ -11,7 +16,7 @@ export type PgnAnalysisEntry = {
 export type FromToSquare = {
   from: Square;
   to: Square;
-  promotion: PieceSymbol | null | undefined;
+  promotion: PromotionPiece | null | undefined;
 };
 
 export interface LoadPgnParams {

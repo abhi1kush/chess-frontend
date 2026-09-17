@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Chess } from "chess.js";
+import { Chess, Square, Color } from "chess.js";
 import { useSelector, useDispatch } from 'react-redux';
 import AnalysisTopContainer from "./AnalysisTopContainer";
 import MoveNavigation from "./MoveNavigation";
@@ -26,6 +26,11 @@ import {
   uciToArrowFromSquares,
 } from "../../utils/uciArrow";
 import { normalizeFenKey } from "../../engine/stockfishFenCache";
+import type { PromotionPiece } from "../../CustomTypes/AnalysisTypes";
+import type { RootState } from "../../redux/store";
+import type { FromToSquare } from "../../CustomTypes/AnalysisTypes";
+import { getPromotionDetails } from "../../utils/piecePromotion";
+import { Arrow } from "react-chessboard/dist/chessboard/types";
 
 const STOCKFISH_OPTIONS_ANALYSIS = [
   { name: 'Threads', value: 1 },
@@ -34,7 +39,15 @@ const STOCKFISH_OPTIONS_ANALYSIS = [
 ];
 const MANUAL_ANALYZE_STABLE_STOP_MS = 3000;
 
-const stripEmoji = (value) =>
+type Ply = {
+  san: string;
+  fenAfter: string;
+  from: Square;
+  to: Square;
+  color: Color;
+};
+
+const stripEmoji = (value : string | null) =>
   String(value ?? "")
     .replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "")
     .trim();
@@ -49,32 +62,34 @@ const AnalysisGame = () => {
     whitePlayerName,
     analysisData,
     reviewAnalysisComplete,
-  } = useSelector((state) => state.pgn);
-  const { currentMoveIndex} = useSelector((state) => state.analysis);
-  const { result} = useSelector((state) => state.pgn);
+  } = useSelector((state : RootState) => state.pgn);
+  const { currentMoveIndex} = useSelector((state: RootState) => state.analysis);
+  const { result} = useSelector((state: RootState) => state.pgn);
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const positionRef = useRef(position); 
-  const { isFlipped, theme } = useSelector((state) => state.settings);
-  const [evalScore, setEvalScore] = useState(null);
+  const { isFlipped, theme } = useSelector((state: RootState) => state.settings);
+  const [evalScore, setEvalScore] = useState<number>(0);
   const [bestLine, setBestLine] = useState("");
+  const [bestMove, setBestMove] = useState("");
   const [isReviewing, setIsReviewing] = useState(false);
   /** User try-line: fork at main-line index `branchIndex`, half-moves in `plies`, cursor = plies entered (0..plies.length). */
-  const [lineBranchIndex, setLineBranchIndex] = useState(null);
-  const [linePlies, setLinePlies] = useState([]);
+  const [lineBranchIndex, setLineBranchIndex] = useState<number | null>(null);
+  const [linePlies, setLinePlies] = useState<Ply[]>([]);
   const [lineCursor, setLineCursor] = useState(0);
   /** When true, prev/next walk `lineCursor`; when false, only `currentMoveIndex` drives the board (skips user line). */
   const [exploreLine, setExploreLine] = useState(false);
-  const enabledChessEngine = useSelector(state => state.engine.enabled);
-  const analysisWriteTimerRef = useRef(null);
+  const enabledChessEngine = useSelector((state: RootState) => state.engine.enabled);
+  const analysisWriteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [manualAnalysisState, setManualAnalysisState] = useState({
     active: false,
     fenKey: "",
   });
-  const manualStableStopTimerRef = useRef(null);
+  const manualStableStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { initEngine, setOptions, startSearch, stopSearch, setOnMessage, syncEnabledState} = useStockfishContext();
-  const handleEngineMessage = useCallback((data) => {
-    onMessage(data, setEvalScore, setBestLine, positionRef.current);
+  
+  const handleEngineMessage = useCallback((data: string) => {
+    onMessage(data, setEvalScore, setBestLine, positionRef.current, setBestMove);
   }, []);
 
     // Permission sync
@@ -130,7 +145,7 @@ const AnalysisGame = () => {
     if (isReviewing || reviewAnalysisComplete) return;
     const row = analysisData?.[currentMoveIndex];
     if (!(row?.evalScore != null && Number.isFinite(row.evalScore))) {
-      setEvalScore(null);
+      setEvalScore(0);
       setBestLine("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when index or review phase changes
@@ -190,7 +205,7 @@ const AnalysisGame = () => {
     return normalizeFenKey(position) === normalizeFenKey(fens[currentMoveIndex]);
   }, [position, fens, currentMoveIndex, exploreLine]);
 
-  const bestMoveArrows = useMemo(() => {
+  const bestMoveArrows = useMemo((): Arrow[] => {
     if (!useReviewCache || exploreLine || !onMainLinePosition) {
       return bestMoveUciToCustomArrows(position, bestMoveUci);
     }
@@ -222,27 +237,31 @@ const AnalysisGame = () => {
 
   const moveQualityClass = moveQualityClassFromLabel(analysisEntry?.moveClassification);
 
-  const lastMoveForHighlight = useMemo(() => {
+  const lastMoveForHighlight = useMemo(():FromToSquare | undefined => {
     if (exploreLine && lineCursor > 0 && linePlies[lineCursor - 1]) {
       const p = linePlies[lineCursor - 1];
-      if (p.from && p.to) return { from: p.from, to: p.to };
+      if (p.from && p.to) return { 
+        from: p.from, 
+        to: p.to, 
+        promotion: getPromotionDetails(p.san).promotedPiece 
+      };
     }
     if (
-      exploreLine &&
-      lineCursor === 0 &&
-      lineBranchIndex != null &&
-      lineBranchIndex > 0 &&
-      fromToSquares?.[lineBranchIndex - 1]
+      exploreLine 
+      && lineCursor === 0 
+      && lineBranchIndex != null 
+      && lineBranchIndex > 0 
+      && fromToSquares?.[lineBranchIndex - 1]
     ) {
       return fromToSquares[lineBranchIndex - 1];
     }
-    if (!fens?.length) return null;
+    if (!fens?.length) return undefined;
     if (
       currentMoveIndex <= 0 ||
       currentMoveIndex >= fens.length - 1 ||
       !fromToSquares?.length
     ) {
-      return null;
+      return undefined;
     }
     return fromToSquares[currentMoveIndex - 1];
   }, [
@@ -321,7 +340,7 @@ const AnalysisGame = () => {
     const fenToAnalyze = positionRef.current;
     const fenKey = normalizeFenKey(fenToAnalyze);
     clearManualStableStopTimer();
-    setEvalScore(null);
+    setEvalScore(0);
     setBestLine("");
     setupEngine();
     stopSearch("restart manual analysis");
@@ -335,7 +354,7 @@ const AnalysisGame = () => {
     const currentKey = normalizeFenKey(position);
     if (currentKey !== manualAnalysisState.fenKey) {
       cancelManualAnalysis("position changed during manual analysis");
-      setEvalScore(null);
+      setEvalScore(0);
       setBestLine("");
     }
   }, [position, manualAnalysisState, cancelManualAnalysis]);
@@ -358,23 +377,24 @@ const AnalysisGame = () => {
   }, [clearManualStableStopTimer]);
 
   const handleMove = useCallback(
-    ({ from, to }) => {
-      if (isReviewing) return;
+    ({ from, to, promotion }: FromToSquare): boolean => {
+      if (isReviewing) return false;
       const game = new Chess(position);
-      let m;
+      let move;
       try {
-        m = game.move({ from, to, promotion: 'q' });
-        if (!m) return;
+        move = game.move({ from, to, promotion: promotion ? String(promotion) : undefined });
       } catch {
-        return;
+        return false;
       }
+      if (!move) return false;
+
       const newFen = game.fen();
-      const ply = {
-        san: m.san,
+      const ply: Ply = {
+        san: move.san,
         fenAfter: newFen,
-        from: m.from,
-        to: m.to,
-        color: m.color,
+        from: move.from,
+        to: move.to,
+        color: move.color,
       };
 
       const matchesMainNext =
@@ -390,7 +410,7 @@ const AnalysisGame = () => {
         setLineCursor(0);
         setPosition(newFen);
         if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
-        return;
+        return true;
       }
 
       if (!exploreLine) {
@@ -400,7 +420,7 @@ const AnalysisGame = () => {
         setExploreLine(true);
         setPosition(newFen);
         if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
-        return;
+        return true;
       }
 
       const nextPlies = [...linePlies.slice(0, lineCursor), ply];
@@ -409,6 +429,7 @@ const AnalysisGame = () => {
       setExploreLine(true);
       setPosition(newFen);
       if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
+      return true;
     },
     [
       isReviewing,
@@ -524,7 +545,7 @@ const AnalysisGame = () => {
   ]);
 
   const jumpToMainLine = useCallback(
-    (index) => {
+    (index: number) => {
       setExploreLine(false);
       setLineCursor(0);
       dispatch(jumpToMove(index));
@@ -689,7 +710,7 @@ const AnalysisGame = () => {
           </div>
          <div className="sidebar right-panel rounded-2xl">
           <Moves
-            moves={moves}
+            // moves={moves}
             onReviewingChange={setIsReviewing}
             lineBranchIndex={lineBranchIndex}
             linePlies={linePlies}

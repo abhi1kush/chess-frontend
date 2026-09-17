@@ -1,4 +1,6 @@
 import { Chess } from 'chess.js';
+import type { Square } from 'chess.js';
+import { Arrow } from 'react-chessboard/dist/chessboard/types';
 
 /** Chess.com-style suggestion arrow (green). */
 export const BEST_MOVE_ARROW_COLOR = '#22c55e';
@@ -7,13 +9,13 @@ export const BEST_MOVE_ARROW_COLOR = '#22c55e';
  * Build `react-chessboard` customArrows if `uci` is a legal move from `fen`.
  * Tuple: [from, to, optionalColor] per react-chessboard.
  */
-export function bestMoveUciToCustomArrows(fen: string, uci: any, color = BEST_MOVE_ARROW_COLOR) {
+export function bestMoveUciToCustomArrows(fen: string, uci: any, color = BEST_MOVE_ARROW_COLOR): Arrow[] {
   if (!fen || !uci || typeof uci !== 'string') return [];
-  const clean = uci.trim().toLowerCase().replace(/\s+/g, '');
-  if (clean.length < 4) return [];
-  const from = clean.slice(0, 2);
-  const to = clean.slice(2, 4);
-  const prom = clean.length >= 5 && 'qrbn'.includes(clean[4]) ? clean[4] : undefined;
+  const trimmedUci = uci.trim().toLowerCase().replace(/\s+/g, '');
+  if (trimmedUci.length < 4) return [];
+  const from = trimmedUci.slice(0, 2);
+  const to = trimmedUci.slice(2, 4);
+  const prom = trimmedUci.length >= 5 && 'qrbn'.includes(trimmedUci[4]) ? trimmedUci[4] : undefined;
   try {
     const g = new Chess(fen);
     let m = g.move({
@@ -29,7 +31,7 @@ export function bestMoveUciToCustomArrows(fen: string, uci: any, color = BEST_MO
       }
     }
     if (!m) return [];
-    return [[from, to, color]];
+    return [[from as Square, to as Square, color as string]];
   } catch {
     return [];
   }
@@ -39,12 +41,12 @@ export function bestMoveUciToCustomArrows(fen: string, uci: any, color = BEST_MO
  * Arrow from raw UCI squares only (no legality check). Use when the board
  * left the main line but the comparison arrow should stay visible.
  */
-export function uciToArrowFromSquares(uci: any, color = BEST_MOVE_ARROW_COLOR) {
+export function uciToArrowFromSquares(uci: any, color = BEST_MOVE_ARROW_COLOR): Arrow[] {
   if (!uci || typeof uci !== 'string') return [];
-  const clean = uci.trim().toLowerCase().replace(/\s+/g, '');
-  if (clean.length < 4) return [];
-  const from = clean.slice(0, 2);
-  const to = clean.slice(2, 4);
+  const trimmedUci = uci.trim().toLowerCase().replace(/\s+/g, '');
+  if (trimmedUci.length < 4) return [];
+  const from = trimmedUci.slice(0, 2);
+  const to = trimmedUci.slice(2, 4);
   if (!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) return [];
-  return [[from, to, color]];
+  return [[from as Square, to as Square, color as string]];
 }

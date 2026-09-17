@@ -1,8 +1,9 @@
 import { LoadPgnParams, PgnAnalysisEntry } from "../../CustomTypes/AnalysisTypes";
 
-// src/redux/actions/analysisActions.js
 export const SET_PGN_ANALYSIS_AT_INDEX = 'SET_PGN_ANALYSIS_AT_INDEX';
-/** After Start Review finishes, UI reads per-ply data from `analysisData` only (live engine must not overwrite it). */
+/** After Start Review finishes, UI reads per-ply data from `analysisData` only 
+ * (live engine must not overwrite it). */
+
 export const SET_REVIEW_ANALYSIS_COMPLETE = 'SET_REVIEW_ANALYSIS_COMPLETE';
 
 export const NEXT = 'NEXT';

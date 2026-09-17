@@ -5,6 +5,7 @@
 
 import { Chess, Move } from 'chess.js';
 import { FromToSquare } from '../CustomTypes/AnalysisTypes';
+import { CustomSquareStyles } from 'react-chessboard/dist/chessboard/types';
 
 /** Loss buckets (pawns) for the side that moved — positive = worsened their winning chances. */
 export const THRESH_EXCELLENT = 0.05;
@@ -62,7 +63,7 @@ export const DISPLAY : Record<string, categoryUiData> = {
  * Emoji shown on the board for a review category (empty if none).
  * @param {string} categoryId from {@link moveQualityClassFromLabel}
  */
-export function categoryEmojiFromCategoryId(categoryId: string) {
+export function categoryEmojiFromCategoryId(categoryId: string): string {
   if (!categoryId) return '';
   return DISPLAY[categoryId]?.emoji ?? '';
 }
@@ -70,7 +71,7 @@ export function categoryEmojiFromCategoryId(categoryId: string) {
 /**
  * @param {string} uci
  */
-export function normalizeUci(uci : string) {
+export function normalizeUci(uci : string): string {
   if (uci == null || typeof uci !== 'string') return '';
   return uci.trim().toLowerCase().replace(/\s+/g, '');
 }
@@ -78,7 +79,7 @@ export function normalizeUci(uci : string) {
 /**
  * @param {{ from?: string; to?: string; promotion?: string } | null | undefined} fromTo
  */
-export function toUci(fromTo : FromToSquare) {
+export function toUci(fromTo : FromToSquare): string {
   if (!fromTo) return '';
   const f = String(fromTo.from || '').toLowerCase();
   const t = String(fromTo.to || '').toLowerCase();
@@ -92,7 +93,7 @@ export function toUci(fromTo : FromToSquare) {
  * @param {string} san
  * @returns {string}
  */
-export function playedUciFromSan(fenBefore: string, san: string) {
+export function playedUciFromSan(fenBefore: string, san: string): string {
   try {
     const g = new Chess(fenBefore);
     const m = g.move(san);
@@ -131,7 +132,7 @@ function materialForColor(fen: string, color: string): number {
  * @param {string} fenAfter
  * @param {boolean} whiteMoved
  */
-function isSacrificeCompensation(fenBefore: string, fenAfter: string, whiteMoved: boolean) {
+function isSacrificeCompensation(fenBefore: string, fenAfter: string, whiteMoved: boolean): boolean {
   if (!fenBefore || !fenAfter) return false;
   const color = whiteMoved ? 'w' : 'b';
   const before = materialForColor(fenBefore, color);
@@ -156,9 +157,10 @@ export function classifyMove({
   playedUci = '',
   fenBefore = '',
   fenAfter = '',
-}: {evalBefore: number, evalAfter: number, 
+}: {evalBefore: number | null, evalAfter: number | null, 
   bestMoveUci: string, playedUci: string, 
-  fenBefore: string, fenAfter: string}) {
+  fenBefore: string, fenAfter: string}): 
+  { categoryId: string; label: string; emoji: string; name: string } {
   if (
     evalBefore == null ||
     evalAfter == null ||
@@ -262,7 +264,7 @@ export function moveQualityClassFromLabel(label: string | null | undefined) {
  * Slightly stronger on `to` so the destination reads clearly on light and dark squares.
  * @type {Record<string, { from: string; to: string }>}
  */
-const MOVE_QUALITY_HIGHLIGHT_RGBA = {
+const MOVE_QUALITY_HIGHLIGHT_RGBA : Record<string, { from: string; to: string }> = {
   [CATEGORY_IDS.BRILLIANT]: {
     from: 'rgba(38, 194, 163, 0.38)',
     to: 'rgba(38, 194, 163, 0.55)',
@@ -307,7 +309,7 @@ const MOVE_QUALITY_HIGHLIGHT_RGBA = {
  * @param {string} categoryId from {@link moveQualityClassFromLabel}
  * @returns {Record<string, { backgroundColor: string }> | null}
  */
-export function getReviewLastMoveSquareStyles(lastMove: FromToSquare, categoryId: string): 
+export function getReviewLastMoveSquareStyles(lastMove: FromToSquare | null | undefined, categoryId: string): 
 Record<string, {backgroundColor: string}> | null {
   if (!lastMove?.from || !lastMove?.to) return null;
   if (!categoryId) return null;
@@ -319,8 +321,8 @@ Record<string, {backgroundColor: string}> | null {
   };
 }
 
-function defaultLastMoveSquareStyles(lastMove: FromToSquare) {
-  if (!lastMove?.from || !lastMove?.to) return null;
+function defaultLastMoveSquareStyles(lastMove: FromToSquare): CustomSquareStyles | undefined {
+  if (lastMove == null || !lastMove?.from || !lastMove?.to) return undefined;
   return {
     [lastMove.from]: { backgroundColor: 'var(--last-move-from)' },
     [lastMove.to]: { backgroundColor: 'var(--last-move-to)' },
@@ -332,7 +334,10 @@ function defaultLastMoveSquareStyles(lastMove: FromToSquare) {
  * @param {{ from: string; to: string } | null | undefined} lastMove
  * @param {string} categoryId
  */
-export function getLastMoveSquareStylesForAnalysis(lastMove: FromToSquare, categoryId: string) {
+
+export function getLastMoveSquareStylesForAnalysis(lastMove: FromToSquare | undefined, categoryId: string): CustomSquareStyles | undefined {
+  if (lastMove == null || !lastMove?.from || !lastMove?.to) return undefined;
+
   const tinted = getReviewLastMoveSquareStyles(lastMove, categoryId);
   if (tinted) return tinted;
   return defaultLastMoveSquareStyles(lastMove);
