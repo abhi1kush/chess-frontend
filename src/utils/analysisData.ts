@@ -8,3 +8,4 @@ export function createEmptyAnalysisData(length: number) {
     moveClassification: null,
   }));
 }
+//
