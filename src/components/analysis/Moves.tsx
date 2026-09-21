@@ -192,7 +192,7 @@ const Moves = ({
   onAnalyzePosition,
   analyzingPosition = false,
 }: MovesProps) => {
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const reviewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reviewSessionRef = useRef(0);
   const [isReviewing, setIsReviewing] = useState(false);
@@ -224,7 +224,7 @@ const Moves = ({
 
   useEffect(() => {
     if (scrollRef.current && moves?.length) {
-      (scrollRef.current as HTMLElement).scrollTop = (scrollRef.current as HTMLElement).scrollHeight;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [moves]);
 
@@ -234,7 +234,7 @@ const Moves = ({
     if (!scrollEl) return;
 
     if (currentMoveIndex <= 0) {
-      (scrollEl as HTMLElement).scrollTo({ top: 0, behavior: 'smooth' });
+      scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -242,19 +242,19 @@ const Moves = ({
       currentMoveIndex >= 1
         ? 2 * Math.floor((currentMoveIndex - 1) / 2)
         : 0;
-    const row = (scrollEl as HTMLElement).querySelector(`.move-row-${rowAnchor}`);
+    const row = scrollEl.querySelector(`.move-row-${rowAnchor}`);
     if (!row) return;
 
     const scrollRowIntoView = () => {
-      const thead = (scrollEl as HTMLElement).querySelector('thead');
+      const thead = scrollEl.querySelector('thead');
       const stickyHeaderH = thead ? thead.offsetHeight : 0;
       const pad = 2;
       const rowTop =
         row.getBoundingClientRect().top -
-        (scrollEl as HTMLElement).getBoundingClientRect().top +
-        (scrollEl as HTMLElement).scrollTop;
+        scrollEl.getBoundingClientRect().top +
+        scrollEl.scrollTop;
       const targetTop = Math.max(0, rowTop - stickyHeaderH - pad);
-      (scrollEl as HTMLElement).scrollTo({ top: targetTop, behavior: 'smooth' });
+      scrollEl.scrollTo({ top: targetTop, behavior: 'smooth' });
     };
 
     requestAnimationFrame(() => {
