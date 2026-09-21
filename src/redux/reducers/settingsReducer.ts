@@ -5,12 +5,14 @@ import {
   FLIP_BOARD,
   SET_THEME,
   SET_SOUND,
+  SET_PLAY_MOVES_DURING_REVIEW,
 } from '../actions/settingsActions';
 
 export type SettingsState = {
   isFlipped: boolean;
   theme: string;
   enableSound: boolean;
+  playMovesDuringReview: boolean;
 }
 
 interface FlipBoardAction {
@@ -27,15 +29,22 @@ interface SetSoundAction {
   payload: boolean;
 }
 
+interface SetPlayMovesDuringReviewAction {
+  type: typeof SET_PLAY_MOVES_DURING_REVIEW;
+  payload: boolean;
+}
+
 type SettingsAction =
   | FlipBoardAction
   | SetThemeAction
-  | SetSoundAction;
+  | SetSoundAction
+  | SetPlayMovesDuringReviewAction;
 
 const initialState: SettingsState = {
   isFlipped: false,
   theme: 'default',
   enableSound: true,
+  playMovesDuringReview: true,
 };
 
 const settingsReducer = (
@@ -59,6 +68,12 @@ const settingsReducer = (
       return {
         ...state,
         enableSound: action.payload,
+      };
+
+    case SET_PLAY_MOVES_DURING_REVIEW:
+      return {
+        ...state,
+        playMovesDuringReview: action.payload,
       };
 
     default:

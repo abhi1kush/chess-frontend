@@ -51,10 +51,15 @@ interface AnalysisState {
 
 interface EngineState { enabled: boolean; } 
 
+interface SettingsSlice {
+  playMovesDuringReview?: boolean;
+}
+
 interface RootState { 
   pgn: PgnState; 
   analysis: AnalysisState; 
-  engine: EngineState; 
+  engine: EngineState;
+  settings: SettingsSlice;
 }
 
 interface ReviewResult { 
@@ -194,6 +199,9 @@ const Moves = ({
   const { moves, termination, fens, fromToSquares, analysisData, reviewAnalysisComplete } = useSelector((state: RootState) => state.pgn) as PgnState;
   const { currentMoveIndex, fenLength } = useSelector((state: RootState) => state.analysis) as AnalysisState;
   const engineEnabled = useSelector((state: RootState) => state.engine.enabled) as boolean;
+  const playMovesDuringReview = useSelector(
+    (state: RootState) => state.settings.playMovesDuringReview !== false,
+  );
   const dispatch = useDispatch();
   
   const {
@@ -344,7 +352,9 @@ const Moves = ({
 
         for (let i = 0; i < moves.length; i++) {
           if (session !== reviewSessionRef.current) return;
-          dispatch(jumpToMove(i + 1));
+          if (playMovesDuringReview) {
+            dispatch(jumpToMove(i + 1));
+          }
           const plyStartedAt = performance.now();
 
           const r = await analyzeFen(fens[i + 1]);
@@ -384,11 +394,13 @@ const Moves = ({
           prevEval = evalAfter;
           prevBest = r?.bestMoveUci ?? '';
 
-          const remainingMs = REVIEW_STEP_MS - (performance.now() - plyStartedAt);
-          if (remainingMs > 0) {
-            await new Promise((resolve) => {
-              reviewTimeoutRef.current = setTimeout(resolve as () => void, remainingMs);
-            });
+          if (playMovesDuringReview) {
+            const remainingMs = REVIEW_STEP_MS - (performance.now() - plyStartedAt);
+            if (remainingMs > 0) {
+              await new Promise((resolve) => {
+                reviewTimeoutRef.current = setTimeout(resolve as () => void, remainingMs);
+              });
+            }
           }
         }
       } finally {
