@@ -6,6 +6,8 @@ import analysisReducer from './analysisReducer';
 import pgnReducer from './pgnReducer';
 import engineReducer from './engineReducer';
 
+export type RootState = ReturnType<typeof rootReducer>;
+
 const rootReducer = combineReducers({
   settings: settingsReducer,
   analysis: analysisReducer,

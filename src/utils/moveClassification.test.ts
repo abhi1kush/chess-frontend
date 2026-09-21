@@ -97,16 +97,27 @@ describe('moveClassification', () => {
 
   it('getLastMoveSquareStylesForAnalysis uses category tint when category id set', () => {
     const styles = getLastMoveSquareStylesForAnalysis(
-      { from: 'e2', to: 'e4' , promotion: null},
+      { from: 'e2', to: 'e4' },
       CATEGORY_IDS.BEST,
     );
-    assert.ok(styles?.e2?.backgroundColor?.includes('rgba'));
-    assert.ok(styles?.e4?.backgroundColor?.includes('rgba'));
+    assert.equal(typeof styles?.e2?.backgroundColor, 'string');
+    assert.ok(
+      typeof styles?.e2?.backgroundColor === 'string' &&
+        styles.e2.backgroundColor.includes('rgba'),
+    );
+    assert.equal(typeof styles?.e4?.backgroundColor, 'string');
+    assert.ok(
+      typeof styles?.e4?.backgroundColor === 'string' &&
+        styles.e4.backgroundColor.includes('rgba'),
+    );
   });
 
   it('getLastMoveSquareStylesForAnalysis falls back to default when no category', () => {
-    const styles = getLastMoveSquareStylesForAnalysis({ from: 'e2', to: 'e4', promotion: null}, '');
-    assert.ok(styles?.e2?.backgroundColor?.includes('var(--last-move-from)'));
+    const styles = getLastMoveSquareStylesForAnalysis({ from: 'e2', to: 'e4'}, '');
+    assert.ok(
+      typeof styles?.e2?.backgroundColor === 'string' &&
+        styles.e2.backgroundColor.includes('var(--last-move-from)'),
+    );
   });
 
   it('returns unknown label for invalid evals', () => {

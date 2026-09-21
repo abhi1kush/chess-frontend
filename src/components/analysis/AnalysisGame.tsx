@@ -27,7 +27,7 @@ import {
 } from "../../utils/uciArrow";
 import { normalizeFenKey } from "../../engine/stockfishFenCache";
 import type { PromotionPiece } from "../../CustomTypes/AnalysisTypes";
-import type { RootState } from "../../redux/store";
+import type { RootState } from "../../redux/reducers/reducers";
 import type { FromToSquare } from "../../CustomTypes/AnalysisTypes";
 import { getPromotionDetails } from "../../utils/piecePromotion";
 import { Arrow } from "react-chessboard/dist/chessboard/types";

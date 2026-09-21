@@ -1,5 +1,4 @@
 // CSS is loaded for its side effects; the project does not provide CSS module typings.
-// @ts-expect-error: TypeScript cannot resolve the stylesheet import.
 import "../../../styles/components/ToggleButton.css"
 import type { ChangeEvent } from "react"
 

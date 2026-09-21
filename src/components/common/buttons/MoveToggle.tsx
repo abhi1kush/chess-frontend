@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
 // CSS is handled by the bundler; TypeScript has no declaration for side-effect imports.
-// @ts-expect-error -- stylesheet imports are resolved at build time.
 import "../../../styles/components/MoveToggle.css";
 import { setPlayerToMoveAction } from "../../../redux/actions/boardEditorActions";
 import { selectCatllingProps } from "../../../selector/boardEditorSelector";

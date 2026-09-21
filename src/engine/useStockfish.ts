@@ -413,7 +413,7 @@ export default function useStockfish(
                       if (!skipCache && fen) { 
                         const hit = fenCacheGet( quickAnalyzeCacheRef.current, fen ); 
                         if (hit) { 
-                          return Promise.resolve(hit); 
+                          return Promise.resolve(hit as QuickAnalyzeResult); 
                         } 
                       } 
                       

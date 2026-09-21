@@ -16,7 +16,7 @@ export type PgnAnalysisEntry = {
 export type FromToSquare = {
   from: Square;
   to: Square;
-  promotion: PromotionPiece | null | undefined;
+  promotion?: PromotionPiece;
 };
 
 export interface LoadPgnParams {

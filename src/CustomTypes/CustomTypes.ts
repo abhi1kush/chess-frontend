@@ -4,7 +4,7 @@ export type PieceColor = 'w' | 'b';
 export type PieceCode = 'p' | 'n' | 'b' | 'r' | 'q' | 'k';
 
 // Piece interface
-export interface PieceType {
+export type PieceType = {
   type: PieceCode;
   color: PieceColor;
 }

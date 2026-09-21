@@ -6,7 +6,7 @@ import {
   SET_SOUND,
 } from '../actions/settingsActions';
 
-interface SettingsState {
+export type SettingsState = {
   isFlipped: boolean;
   theme: string;
   enableSound: boolean;

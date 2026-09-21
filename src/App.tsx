@@ -3,7 +3,6 @@ import { HashRouter as Router, Route, Routes, Navigate, useLocation } from 'reac
 
 import { ConfigProvider } from './context/configContext';
 // CSS is handled by the bundler; TypeScript does not need to type-check this side-effect import.
-// @ts-expect-error The project does not provide declarations for CSS files.
 import './styles/global.css';
 import StockfishProvider from './context/StockfishContext';
 const AnalysisGame = lazy(() => import('./components/analysis/AnalysisGame'));

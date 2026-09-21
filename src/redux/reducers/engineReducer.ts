@@ -5,7 +5,7 @@ import {
   SET_AUTO_STOP_TIME,
 } from '../actions/engineActions';
 
-interface EngineState {
+export type EngineState = {
   enabled: boolean;
   multiPV: number;
   maxDepth: number;

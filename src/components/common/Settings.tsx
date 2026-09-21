@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme, setSound } from '../../redux/actions/settingsActions';
-// @ts-expect-error CSS imports are resolved by the bundler at runtime.
 import "../../styles/components/settings.css";
 
 const Settings = React.memo(() => {

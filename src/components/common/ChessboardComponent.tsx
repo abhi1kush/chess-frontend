@@ -2,20 +2,17 @@
 import React from 'react';
 import { Chessboard } from 'react-chessboard';
 // CSS is loaded for its side effects; the stylesheet has no TypeScript declarations.
-// @ts-expect-error -- CSS module declarations are not available in this project.
 import '../../styles/themes.css';
 import { getLastMoveSquareStyles } from "../../utils/helpers"
 import { MoveType } from "../../CustomTypes/AnalysisTypes"
 import { Square } from 'chess.js';
+import type { FromToSquare } from '../../CustomTypes/AnalysisTypes';
 
 interface ChessboardComponentProps {
   className?: string;
   handleMove: (move: MoveType) => void;
   fen: string;
-  lastMove: {
-    from: Square;
-    to: Square;
-  } | null;
+  lastMove: FromToSquare;
   isFlipped?: boolean;
 }
 

@@ -17,7 +17,7 @@ export type AnalysisDataRow = {
   moveClassification: string | null;
 }
 
-type PGNState ={
+export type PGNState ={
   finalFen: string;
   moves: string[];
   fens: string[];
@@ -73,7 +73,7 @@ const initialState : PGNState = {
 const pgnReducer = (
   state: PGNState = initialState, 
   action: PGNAction
-) => {
+): PGNState => {
   switch (action.type) {
     case LOAD_PGN:
         return {

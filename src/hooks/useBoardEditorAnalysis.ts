@@ -14,7 +14,7 @@ export function useBoardEditorAnalysis(
   isValidFen: boolean,
   generateFenFromBoard: () => string
 ) {
-  const [evalScore, setEvalScore] = useState<number | null>(null);
+  const [evalScore, setEvalScore] = useState<number>(0);
   const [bestLine, setBestLine] = useState<string>("");
   const [bestMoveUci, setBestMoveUci] = useState<string>("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -62,7 +62,7 @@ export function useBoardEditorAnalysis(
     const fen = generateFenFromBoard();
     fenRef.current = fen;
     setAnalysisError("");
-    setEvalScore(null);
+    setEvalScore(0);
     setBestLine("");
     setBestMoveUci("");
     setIsAnalyzing(true);

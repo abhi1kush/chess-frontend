@@ -117,7 +117,7 @@ const AnalysisBoard = ({
       return true;    
     }
 
-    handleMove({ from: source, to: target, promotion: null });
+    handleMove({ from: source, to: target, promotion: undefined });
     return true;
   };
 

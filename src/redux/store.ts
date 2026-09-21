@@ -9,12 +9,10 @@ import {
 } from 'redux-persist';
 
 import rootReducer from './reducers/reducers';
-
+import type { RootState } from './reducers/reducers';
 /* ---------------------------------- */
 /* Root State                         */
 /* ---------------------------------- */
-
-export type RootState = ReturnType<typeof rootReducer>;
 
 // import { loggerMiddleware } from '../middleware/loggerMiddleware';
 

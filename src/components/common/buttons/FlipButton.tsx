@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { flipBoard } from '../../../redux/actions/settingsActions';
-import { RootState } from '../../../redux/store';
+import type { RootState } from '../../../redux/reducers/reducers';
 
 const FlipButton = () => {
     const dispatch = useDispatch();

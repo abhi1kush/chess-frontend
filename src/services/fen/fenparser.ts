@@ -1,5 +1,5 @@
-import { Chess } from 'chess.js';
-import { BoardType, PieceColor, SquareId } from '../../CustomTypes/CustomTypes'
+import { Chess, Color, PieceSymbol, Square } from 'chess.js';
+import { BoardType, PieceColor } from '../../CustomTypes/CustomTypes'
 import { ClearBoardPosition } from '../../config'
 
 export const FenToBoard = (fen: string): BoardType => {
@@ -11,9 +11,9 @@ export const FenToBoard = (fen: string): BoardType => {
 
     for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
       for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
-        const square = boardArray[rankIndex][fileIndex];
-        const squareId: SquareId = `${"abcdefgh"[fileIndex]}${8 - rankIndex}`;
-        board[squareId] = square ? { type: square.type, color: square.color } : null;
+        const square: { square: Square; type: PieceSymbol; color: Color } | null = boardArray[rankIndex][fileIndex];
+        const squareId: Square = `${"abcdefgh"[fileIndex]}${8 - rankIndex}` as Square;
+        board[squareId] = square ? square : null;
       }
     }
   } catch (error) {

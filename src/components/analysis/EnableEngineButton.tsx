@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleEngine } from '../../redux/actions/engineActions';
-import { RootState } from '../../redux/store';
+import type { RootState } from '../../redux/reducers/reducers';
 
 const EnableEngineButton = () => {
   const dispatch = useDispatch();

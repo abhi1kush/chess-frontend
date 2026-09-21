@@ -2,7 +2,7 @@ import type { PromotionPiece } from "../CustomTypes/AnalysisTypes";
 
 type PromotionResult = {
   isPromotion: boolean;
-  promotedPiece: PromotionPiece | null;
+  promotedPiece: PromotionPiece | undefined ;
 };
 
 /**
@@ -25,6 +25,6 @@ export function getPromotionDetails(sanMove: string): PromotionResult {
 
   return {
     isPromotion: false,
-    promotedPiece: null
+    promotedPiece: undefined
   };
 }

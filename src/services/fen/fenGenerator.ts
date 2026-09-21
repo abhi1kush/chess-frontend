@@ -1,11 +1,12 @@
 import { SquareIds } from "../../config";
-import { BoardType, PieceColor, SquareIdType } from "../../CustomTypes/CustomTypes"
+import { BoardType, PieceColor} from "../../CustomTypes/CustomTypes"
+import { Square } from "chess.js";
 
-export const rankTofen = (board: BoardType, rank: SquareIdType[]) => {
+export const rankTofen = (board: BoardType, rank: Square[]) => {
     let fen = "";
     let emptySquares = 0;
     for (let i = 0; i < 8; i++) {
-      const piece = board[rank[i]];
+      const piece = board[rank[i]]; 
       if (piece == null) {
         emptySquares++;
       } 
@@ -35,11 +36,11 @@ export const rankTofen = (board: BoardType, rank: SquareIdType[]) => {
   }
 
     export const generateFEN = ({board, playerToMove, halfmoveClock = 0, fullmoveNumber = 1, whiteKingSide, 
-        whiteQueenSide, blackKingSide, blackQueenSide}: generateFENParams) => {
-      const enPassant = "-";
+        whiteQueenSide, blackKingSide, blackQueenSide}: generateFENParams): string => {
+      const enPassant: string = "-";
       let fen = "";
-      const castlingRights = (whiteKingSide ? "K" : "") + (whiteQueenSide ? "Q" : "") + (blackKingSide ? "k":"") + (blackQueenSide ? "q":""); 
-      const rankFenBlocks = SquareIds.map(rank => rankTofen(board, rank));
+      const castlingRights: string = (whiteKingSide ? "K" : "") + (whiteQueenSide ? "Q" : "") + (blackKingSide ? "k":"") + (blackQueenSide ? "q":""); 
+      const rankFenBlocks: string[] = SquareIds.map(rank => rankTofen(board, rank));
       fen += rankFenBlocks.join("/"); 
       fen += ` ${playerToMove} ${castlingRights === "" ? "-": castlingRights} ${enPassant} ${halfmoveClock} ${fullmoveNumber}`;
       return fen;

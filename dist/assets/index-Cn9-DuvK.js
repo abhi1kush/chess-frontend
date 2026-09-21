@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/AnalysisGame-Cw-qPM1M.js","assets/AnalysisGame-DPRQzFLe.css"])))=>i.map(i=>d[i]);
-let Rt, $0, F0, T, tg, Yh, fg, I0, rg, lg, ug, Ve, ig, ng, x1, up, cg, ag, w1, eg, W0;
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/AnalysisGame-D4OgIEhq.js","assets/AnalysisGame-DPRQzFLe.css"])))=>i.map(i=>d[i]);
+let Rt, $0, F0, T, tg, Yh, fg, I0, rg, lg, ug, Ve, ig, ng, ag, up, cg, w1, eg, W0;
 let __tla = (async ()=>{
     (function() {
         const r = document.createElement("link").relList;
@@ -22,9 +22,9 @@ let __tla = (async ()=>{
             fetch(s.href, h);
         }
     })();
-    x1 = function(i) {
+    function x1(i) {
         return i && i.__esModule && Object.prototype.hasOwnProperty.call(i, "default") ? i.default : i;
-    };
+    }
     var Nc = {
         exports: {}
     }, Cn = {};
@@ -11549,7 +11549,10 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
             const v = i.match(/ pv (.+)/);
             v && o(v[1]);
         }
-        i.startsWith("bestmove");
+        if (i.startsWith("bestmove") && s) {
+            const v = i.trim().split(/\s+/)[1];
+            s(v && v !== "(none)" ? v : "");
+        }
     };
     H0 = 400;
     function w0(i, r) {
@@ -11839,7 +11842,7 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
             ]
         });
     };
-    X0 = T.lazy(()=>sv(()=>import("./AnalysisGame-Cw-qPM1M.js"), __vite__mapDeps([0,1])));
+    X0 = T.lazy(()=>sv(()=>import("./AnalysisGame-D4OgIEhq.js"), __vite__mapDeps([0,1])));
     V0 = "G-KZRHN2TP97";
     Z0 = ()=>{
         const i = tl();
@@ -11916,4 +11919,4 @@ Please change the parent <Route path="${Q}"> to <Route path="${Q === "/" ? "*" :
         children: Ve.jsx(k0, {})
     }));
 })();
-export { Rt as C, $0 as R, F0 as a, T as b, tg as c, Yh as d, fg as e, I0 as f, rg as g, lg as h, ug as i, Ve as j, ig as k, ng as l, x1 as m, up as n, cg as o, ag as p, w1 as r, eg as s, W0 as u, __tla };
+export { Rt as C, $0 as R, F0 as a, T as b, tg as c, Yh as d, fg as e, I0 as f, rg as g, lg as h, ug as i, Ve as j, ig as k, ng as l, ag as m, up as n, cg as o, w1 as r, eg as s, W0 as u, __tla };
