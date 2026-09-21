@@ -7,6 +7,7 @@ export type {
   EngineInfo,
   EngineKind,
   EngineStatus,
+  ReviewGameOptions,
 } from './types';
 export { createEngine } from './createEngine';
 export { default as EngineProvider, useChessEngineContext } from './react/EngineProvider';

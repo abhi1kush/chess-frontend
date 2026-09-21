@@ -62,11 +62,6 @@ interface RootState {
   settings: SettingsSlice;
 }
 
-interface ReviewResult { 
-  evalScore?: number | null; 
-  bestMoveUci?: string | null; 
-}
-
 interface MovesProps { 
   onReviewingChange?: (reviewing: boolean) => void; 
   lineBranchIndex?: number | null; 
@@ -119,9 +114,8 @@ function renderMoveCell(
     </span>
   );
 }
-/** One search per ply at the old final review depth (8→12→16 was 3x slower for the same result). */
+/** Batch review: one depth-16 search per ply. */
 const REVIEW_DEPTH = 16;
-const REVIEW_QUICK_TIMEOUT_MS = 120000;
 
 function isMainLineCellCurrent(
   clickIndex: number, 
@@ -311,99 +305,95 @@ const Moves = ({
     onReviewingChange?.(true);
 
     const run = async () => {
-      const quickOpts = {
-        depth: REVIEW_DEPTH,
-        timeoutMs: REVIEW_QUICK_TIMEOUT_MS,
-      };
-
-      const analyzeFen = async (fen: string): Promise<ReviewResult | null> => {
-        if (!engineEnabled) return null;
-        try {
-          const result = await engine.analyzePosition(fen, quickOpts);
-          const pawns = result.eval?.pawns;
-          return {
-            evalScore: pawns != null && Number.isFinite(pawns) ? pawns : null,
-            bestMoveUci: result.bestMoveUci ?? '',
-          };
-        } catch {
-          return null;
-        }
-      };
-
+      const reviewStartedAt = performance.now();
+      let reviewFinished = false;
       try {
-        const r0 = await analyzeFen(fens[0]);
-        if (session !== reviewSessionRef.current) return;
-        if (r0) {
-          const evalPawns =
-            r0.evalScore != null && Number.isFinite(r0.evalScore) ? r0.evalScore : null;
-          dispatch(
-            setPgnAnalysisAtIndex({
-              index: 0,
-              evalScore: evalPawns,
-              bestMove: r0.bestMoveUci ?? '',
-              moveClassification: null,
-            }),
-          );
-        }
+        let prevEval: number | null = null;
+        let prevBest = '';
 
-        let prevEval =
-          r0?.evalScore != null && Number.isFinite(r0.evalScore) ? r0.evalScore : null;
-        let prevBest = r0?.bestMoveUci ?? '';
-
-        for (let i = 0; i < moves.length; i++) {
-          if (session !== reviewSessionRef.current) return;
-          if (playMovesDuringReview) {
-            dispatch(jumpToMove(i + 1));
-          }
-          const plyStartedAt = performance.now();
-
-          const r = await analyzeFen(fens[i + 1]);
-          if (session !== reviewSessionRef.current) return;
-
-          let playedUci = playedUciFromSan(fens[i], moves[i]);
-          if (!playedUci && fromToSquares?.[i]) {
-            playedUci = toUci(fromToSquares[i]);
-          }
-
-          const evalAfter =
-            r?.evalScore != null && Number.isFinite(r.evalScore) ? r.evalScore : null;
-          const classified =
-            prevEval != null && evalAfter != null
-              ? classifyMove({
-                  evalBefore: prevEval,
-                  evalAfter,
-                  bestMoveUci: prevBest,
-                  playedUci,
-                  fenBefore: fens[i],
-                  fenAfter: fens[i + 1],
-                })
-              : null;
-
-          /** Best move from the position before this ply (fens[i]) — matches classifyMove / on-screen comparison vs played move. */
-          const bestMoveForComparison = prevBest;
-
-          dispatch(
-            setPgnAnalysisAtIndex({
-              index: i + 1,
-              evalScore: evalAfter,
-              bestMove: bestMoveForComparison,
-              moveClassification: classified ? classified.label : null,
-            }),
-          );
-
-          prevEval = evalAfter;
-          prevBest = r?.bestMoveUci ?? '';
-
-          if (playMovesDuringReview) {
-            const remainingMs = REVIEW_STEP_MS - (performance.now() - plyStartedAt);
-            if (remainingMs > 0) {
-              await new Promise((resolve) => {
-                reviewTimeoutRef.current = setTimeout(resolve as () => void, remainingMs);
-              });
+        await engine.reviewGame(
+          fens,
+          { depth: REVIEW_DEPTH },
+          async (index, info) => {
+            if (session !== reviewSessionRef.current) {
+              throw new Error('Review cancelled');
             }
-          }
-        }
+
+            const pawns =
+              info.eval?.pawns != null && Number.isFinite(info.eval.pawns)
+                ? info.eval.pawns
+                : null;
+
+            if (index === 0) {
+              dispatch(
+                setPgnAnalysisAtIndex({
+                  index: 0,
+                  evalScore: pawns,
+                  bestMove: info.bestMoveUci ?? '',
+                  moveClassification: null,
+                }),
+              );
+              prevEval = pawns;
+              prevBest = info.bestMoveUci ?? '';
+              return;
+            }
+
+            const plyStartedAt = performance.now();
+            if (playMovesDuringReview) {
+              dispatch(jumpToMove(index));
+            }
+
+            const moveIdx = index - 1;
+            let playedUci = playedUciFromSan(fens[moveIdx], moves[moveIdx]);
+            if (!playedUci && fromToSquares?.[moveIdx]) {
+              playedUci = toUci(fromToSquares[moveIdx]);
+            }
+
+            const classified =
+              prevEval != null && pawns != null
+                ? classifyMove({
+                    evalBefore: prevEval,
+                    evalAfter: pawns,
+                    bestMoveUci: prevBest,
+                    playedUci,
+                    fenBefore: fens[moveIdx],
+                    fenAfter: fens[index],
+                  })
+                : null;
+
+            dispatch(
+              setPgnAnalysisAtIndex({
+                index,
+                evalScore: pawns,
+                bestMove: prevBest,
+                moveClassification: classified ? classified.label : null,
+              }),
+            );
+
+            prevEval = pawns;
+            prevBest = info.bestMoveUci ?? '';
+
+            if (playMovesDuringReview) {
+              const remainingMs = REVIEW_STEP_MS - (performance.now() - plyStartedAt);
+              if (remainingMs > 0) {
+                await new Promise((resolve) => {
+                  reviewTimeoutRef.current = setTimeout(resolve as () => void, remainingMs);
+                });
+              }
+            }
+          },
+        );
+        reviewFinished = true;
+      } catch {
+        /* cancelled or engine error — complete flag handled in finally */
       } finally {
+        const elapsedMs = performance.now() - reviewStartedAt;
+        const plyCount = fens.length;
+        console.log(
+          `[review] ${reviewFinished ? 'complete' : 'stopped'} in ${(elapsedMs / 1000).toFixed(2)}s` +
+            ` (${Math.round(elapsedMs)}ms) — ${plyCount} positions, depth ${REVIEW_DEPTH}` +
+            `, play-through ${playMovesDuringReview ? 'on' : 'off'}`,
+        );
         setIsReviewing(false);
         onReviewingChange?.(false);
         if (session === reviewSessionRef.current) {

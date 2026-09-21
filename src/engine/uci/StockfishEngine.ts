@@ -8,6 +8,7 @@ import type {
   EngineInfo,
   EngineStatus,
   EngineTransport,
+  ReviewGameOptions,
 } from '../types';
 import { UciCommandQueue } from './UciCommandQueue';
 import {
@@ -18,19 +19,23 @@ import {
   uciLinesFromWorkerData,
 } from './parseUci';
 
-type QuickAnalyzePending = {
+type SearchKind = 'position' | 'review';
+
+type PendingSearch = {
+  kind: SearchKind;
   resolve: (result: EngineInfo) => void;
   reject: (error: Error) => void;
   fen: string;
   timeoutId: ReturnType<typeof setTimeout>;
-  depths: number[] | null;
+  depths: number[];
   depthIndex: number;
   gen: number;
-  waitingForReady: boolean;
 };
 
-const DEFAULT_QUICK_ANALYZE_DEPTH = 8;
-const DEFAULT_QUICK_ANALYZE_TIMEOUT_MS = 120000;
+const POSITION_PROGRESSIVE_DEPTHS = [8, 12, 16, 20, 24];
+const POSITION_ANALYZE_TIMEOUT_MS = 30000;
+const REVIEW_DEPTH_DEFAULT = 16;
+const REVIEW_PLY_TIMEOUT_MS = 120000;
 
 function scheduleIdle(fn: () => void): void {
   if (typeof requestIdleCallback !== 'undefined') {
@@ -53,16 +58,21 @@ export class StockfishEngine implements ChessEngine {
   private readyOk = false;
   private searching = false;
   private liveFen = '';
-  private lastQuickEval: number | null = null;
+  private lastEvalPawns: number | null = null;
+  private lastPvUci: string[] = [];
   private autoStopMs: number;
   private config: EngineConfig;
 
   private stopTimeout: ReturnType<typeof setTimeout> | null = null;
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
-  private pendingAnalyze: QuickAnalyzePending | null = null;
-  private deferredAnalyzeSend: (() => void) | null = null;
+  private pending: PendingSearch | null = null;
+  private readyWait: {
+    gen: number;
+    resolve: () => void;
+    reject: (error: Error) => void;
+  } | null = null;
   private lastMultiPv: number | null = null;
-  private analyzeGen = 0;
+  private workGen = 0;
 
   constructor(
     private readonly transport: EngineTransport,
@@ -107,11 +117,8 @@ export class StockfishEngine implements ChessEngine {
     this.uciReady = false;
     this.readyOk = false;
     this.ready = false;
-    this.deferredAnalyzeSend = null;
-    this.rejectPending(new Error('Engine terminated'));
+    this.cancelWork(new Error('Engine terminated'));
     this.transport.terminate();
-    this.searching = false;
-    this.clearTimers();
     this.lastMultiPv = null;
     this.queue.clear();
     this.setStatus('idle', 33);
@@ -120,8 +127,7 @@ export class StockfishEngine implements ChessEngine {
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
     if (!enabled) {
-      this.rejectPending(new Error('Engine disabled'));
-      this.stopLiveAnalysis();
+      this.cancelWork(new Error('Engine disabled'));
     }
   }
 
@@ -146,11 +152,10 @@ export class StockfishEngine implements ChessEngine {
     if (!this.enabled) {
       return;
     }
+    this.cancelWork(new Error('Live analysis started'));
     if (!this.transport.isStarted) {
       this.start();
     }
-    this.clearTimers();
-    this.stopLiveAnalysis();
     this.liveFen = fen;
     this.searchTimeout = setTimeout(() => {
       this.searching = true;
@@ -164,6 +169,10 @@ export class StockfishEngine implements ChessEngine {
   }
 
   stopLiveAnalysis(): void {
+    if (this.pending?.kind === 'position') {
+      this.workGen += 1;
+      this.rejectPending(new Error('Stopped'));
+    }
     if (!this.transport.isStarted || !this.searching) {
       return;
     }
@@ -187,26 +196,24 @@ export class StockfishEngine implements ChessEngine {
       }
     }
 
-    const progressiveDepths =
+    const depths = (
       Array.isArray(options.progressiveDepths) && options.progressiveDepths.length > 0
-        ? options.progressiveDepths.map((depth) => Math.min(24, Math.max(1, depth)))
-        : null;
-    const depth =
-      typeof options.depth === 'number' && options.depth > 0
-        ? Math.min(24, options.depth)
-        : DEFAULT_QUICK_ANALYZE_DEPTH;
+        ? options.progressiveDepths
+        : POSITION_PROGRESSIVE_DEPTHS
+    ).map((d) => Math.min(24, Math.max(1, d)));
     const timeoutMs =
       typeof options.timeoutMs === 'number' && options.timeoutMs > 0
         ? options.timeoutMs
-        : DEFAULT_QUICK_ANALYZE_TIMEOUT_MS;
+        : POSITION_ANALYZE_TIMEOUT_MS;
+
+    const gen = this.beginWork();
+    this.liveFen = fen;
 
     return new Promise<EngineInfo>((resolve, reject) => {
       if (!this.enabled) {
         reject(new Error('Engine disabled'));
         return;
       }
-      this.rejectPending(new Error('Superseded'));
-      this.deferredAnalyzeSend = null;
       if (!this.transport.isStarted) {
         this.start();
       }
@@ -215,39 +222,156 @@ export class StockfishEngine implements ChessEngine {
         return;
       }
 
-      this.lastQuickEval = null;
       const timeoutId = setTimeout(() => {
-        if (this.pendingAnalyze && this.pendingAnalyze.timeoutId === timeoutId) {
-          this.pendingAnalyze = null;
-          reject(new Error('Quick analyze timeout'));
+        if (this.pending && this.pending.gen === gen) {
+          const snapshot = this.snapshotPending(this.pending);
+          this.pending = null;
+          this.searching = false;
+          resolve(snapshot);
         }
       }, timeoutMs);
 
-      this.analyzeGen += 1;
-      const gen = this.analyzeGen;
-      const depths = progressiveDepths || [depth];
-      this.pendingAnalyze = {
+      this.pending = {
+        kind: 'position',
         resolve,
         reject,
         fen,
         timeoutId,
-        depths: depths,
+        depths,
         depthIndex: 0,
         gen,
-        waitingForReady: true,
       };
+      this.lastEvalPawns = null;
+      this.lastPvUci = [];
 
-      const requestReadyThenGo = (): void => {
-        this.clearTimers();
-        this.searching = false;
+      void this.handshake(gen)
+        .then(() => {
+          if (this.workGen !== gen || !this.pending || this.pending.gen !== gen) {
+            return;
+          }
+          this.sendGo(this.pending);
+        })
+        .catch(reject);
+    });
+  }
+
+  async reviewGame(
+    fens: string[],
+    options: ReviewGameOptions = {},
+    onPosition?: (index: number, info: EngineInfo) => void | Promise<void>,
+  ): Promise<void> {
+    if (!this.enabled) {
+      throw new Error('Engine disabled');
+    }
+    if (!fens.length) {
+      return;
+    }
+
+    const depth = Math.min(
+      24,
+      Math.max(1, typeof options.depth === 'number' && options.depth > 0 ? options.depth : REVIEW_DEPTH_DEFAULT),
+    );
+    const timeoutMsPerPly =
+      typeof options.timeoutMsPerPly === 'number' && options.timeoutMsPerPly > 0
+        ? options.timeoutMsPerPly
+        : REVIEW_PLY_TIMEOUT_MS;
+
+    const gen = this.beginWork();
+    if (!this.transport.isStarted) {
+      this.start();
+    }
+    if (!this.transport.isStarted) {
+      throw new Error('Worker unavailable');
+    }
+
+    await this.handshake(gen);
+    if (this.workGen !== gen) {
+      throw new Error('Review cancelled');
+    }
+
+    for (let i = 0; i < fens.length; i++) {
+      if (this.workGen !== gen) {
+        throw new Error('Review cancelled');
+      }
+      const info = await this.searchFixedDepth(fens[i], depth, gen, timeoutMsPerPly);
+      if (this.workGen !== gen) {
+        throw new Error('Review cancelled');
+      }
+      await onPosition?.(i, info);
+    }
+  }
+
+  private searchFixedDepth(
+    fen: string,
+    depth: number,
+    gen: number,
+    timeoutMs: number,
+  ): Promise<EngineInfo> {
+    return new Promise<EngineInfo>((resolve, reject) => {
+      if (this.workGen !== gen) {
+        reject(new Error('Review cancelled'));
+        return;
+      }
+
+      const timeoutId = setTimeout(() => {
+        if (this.pending && this.pending.gen === gen) {
+          this.pending = null;
+          this.searching = false;
+          reject(new Error('Review ply timeout'));
+        }
+      }, timeoutMs);
+
+      this.pending = {
+        kind: 'review',
+        resolve,
+        reject,
+        fen,
+        timeoutId,
+        depths: [depth],
+        depthIndex: 0,
+        gen,
+      };
+      this.lastEvalPawns = null;
+      this.lastPvUci = [];
+      this.sendGo(this.pending);
+    });
+  }
+
+  private beginWork(): number {
+    this.workGen += 1;
+    this.rejectPending(new Error('Superseded'));
+    if (this.readyWait) {
+      this.readyWait.reject(new Error('Superseded'));
+      this.readyWait = null;
+    }
+    this.stopLiveAnalysis();
+    this.clearTimers();
+    this.searching = false;
+    return this.workGen;
+  }
+
+  private cancelWork(error: Error): void {
+    this.workGen += 1;
+    this.rejectPending(error);
+    if (this.readyWait) {
+      this.readyWait.reject(error);
+      this.readyWait = null;
+    }
+    this.stopLiveAnalysis();
+    this.clearTimers();
+    this.searching = false;
+  }
+
+  private handshake(gen: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.workGen !== gen) {
+        reject(new Error('Cancelled'));
+        return;
+      }
+      this.readyWait = { gen, resolve, reject };
+      if (this.uciReady && this.readyOk) {
         this.queue.enqueue('stop', 'stop');
         this.queue.enqueue('normal', 'isready');
-      };
-
-      if (this.uciReady && this.readyOk) {
-        requestReadyThenGo();
-      } else {
-        this.deferredAnalyzeSend = requestReadyThenGo;
       }
     });
   }
@@ -259,8 +383,7 @@ export class StockfishEngine implements ChessEngine {
         this.handleLine(data);
       }
     };
-    /** Review/analyze must resolve `bestmove` immediately; idle delay adds up across a PGN. */
-    if (this.pendingAnalyze) {
+    if (this.pending || this.readyWait) {
       dispatch();
       return;
     }
@@ -278,20 +401,15 @@ export class StockfishEngine implements ChessEngine {
       this.readyOk = true;
       this.ready = true;
       this.setStatus(this.searching ? 'searching' : 'ready', 100);
-      const deferred = this.deferredAnalyzeSend;
-      if (deferred) {
-        this.deferredAnalyzeSend = null;
-        deferred();
+      if (this.readyWait && this.readyWait.gen === this.workGen) {
+        const wait = this.readyWait;
+        this.readyWait = null;
+        wait.resolve();
         return;
-      }
-      const pendingReady = this.pendingAnalyze;
-      if (pendingReady?.waitingForReady && pendingReady.gen === this.analyzeGen) {
-        pendingReady.waitingForReady = false;
-        this.sendAnalyzeGo(pendingReady);
       }
     }
 
-    const fenForInfo = this.pendingAnalyze?.fen ?? this.liveFen;
+    const fenForInfo = this.pending?.fen ?? this.liveFen;
     if (data.startsWith('info')) {
       const score = parseScoreFromInfoLine(data);
       const pvUci = parsePvFromInfoLine(data);
@@ -300,83 +418,98 @@ export class StockfishEngine implements ChessEngine {
       if (score) {
         const pawns = fenForInfo ? normalizeEval(score.pawns, fenForInfo) : score.pawns;
         info.eval = { pawns, mate: score.mate };
-        if (this.pendingAnalyze) {
-          this.lastQuickEval = pawns;
-        }
+        this.lastEvalPawns = pawns;
       }
       if (pvUci) {
         info.pvUci = pvUci;
         info.bestMoveUci = pvUci[0];
+        this.lastPvUci = pvUci;
       }
       if (depth != null) {
         info.depth = depth;
       }
-      if (!this.pendingAnalyze && (info.eval || info.pvUci || info.depth != null)) {
+      if (this.pending?.kind === 'position' && (info.eval || info.pvUci || info.depth != null)) {
         this.emit({ type: 'info', info });
       }
     }
 
-    const pending = this.pendingAnalyze;
+    const pending = this.pending;
     if (pending && data.startsWith('bestmove')) {
-      if (pending.gen !== this.analyzeGen || pending.waitingForReady) {
+      if (this.readyWait || pending.gen !== this.workGen) {
         return;
       }
-      const uci = parseBestMoveUci(data) ?? '';
-      const ev = this.lastQuickEval;
-      const evalScore = ev != null && Number.isFinite(ev) ? ev : 0;
-
-      if (pending.depths && pending.depthIndex < pending.depths.length - 1) {
+      const uci = parseBestMoveUci(data) ?? this.lastPvUci[0] ?? '';
+      if (pending.kind === 'position' && pending.depthIndex < pending.depths.length - 1) {
         pending.depthIndex += 1;
-        this.lastQuickEval = null;
         this.queue.enqueue('normal', `go depth ${pending.depths[pending.depthIndex]}`);
         return;
       }
 
       clearTimeout(pending.timeoutId);
-      this.pendingAnalyze = null;
+      this.pending = null;
       this.searching = false;
-      const result: EngineInfo = {
-        fen: pending.fen,
-        eval: { pawns: evalScore, mate: null },
-        bestMoveUci: uci,
-      };
-      fenCacheSet(this.analyzeCache, pending.fen, result);
+      const result = this.finishInfo(pending.fen, uci, pending.depths[pending.depthIndex]);
+      if (pending.kind === 'position') {
+        fenCacheSet(this.analyzeCache, pending.fen, result);
+        this.emit({ type: 'bestMove', fen: pending.fen, bestMoveUci: result.bestMoveUci ?? '' });
+      }
       pending.resolve(result);
+      this.setStatus('ready', 100);
       return;
     }
 
     const bestMoveUci = parseBestMoveUci(data);
-    if (bestMoveUci != null && !this.pendingAnalyze) {
+    if (bestMoveUci != null && !this.pending) {
       this.emit({ type: 'bestMove', fen: fenForInfo, bestMoveUci });
     }
   }
 
-  private handleWorkerError(error: Error): void {
-    console.error('Error with engine worker:', error);
-    this.rejectPending(error);
-    this.setStatus('error', this.warmupPercent);
-    this.emit({ type: 'error', error });
-  }
-
-  private sendAnalyzeGo(pending: QuickAnalyzePending): void {
+  private sendGo(pending: PendingSearch): void {
     if (this.lastMultiPv !== 1) {
       this.queue.enqueue('normal', 'setoption name MultiPV value 1');
       this.lastMultiPv = 1;
     }
-    const depth = pending.depths?.[pending.depthIndex] ?? DEFAULT_QUICK_ANALYZE_DEPTH;
+    const depth = pending.depths[pending.depthIndex];
     this.searching = true;
+    this.setStatus('searching', this.warmupPercent);
     this.queue.enqueue('normal', `position fen ${pending.fen}`);
     this.queue.enqueue('normal', `go depth ${depth}`);
   }
 
+  private snapshotPending(pending: PendingSearch): EngineInfo {
+    return this.finishInfo(
+      pending.fen,
+      this.lastPvUci[0] ?? '',
+      pending.depths[pending.depthIndex],
+    );
+  }
+
+  private finishInfo(fen: string, bestMoveUci: string, depth?: number): EngineInfo {
+    const pawns = this.lastEvalPawns != null && Number.isFinite(this.lastEvalPawns) ? this.lastEvalPawns : 0;
+    return {
+      fen,
+      eval: { pawns, mate: null },
+      bestMoveUci,
+      pvUci: this.lastPvUci.length ? this.lastPvUci : bestMoveUci ? [bestMoveUci] : [],
+      depth,
+    };
+  }
+
+  private handleWorkerError(error: Error): void {
+    console.error('Error with engine worker:', error);
+    this.cancelWork(error);
+    this.setStatus('error', this.warmupPercent);
+    this.emit({ type: 'error', error });
+  }
+
   private rejectPending(error: Error): void {
-    const pending = this.pendingAnalyze;
+    const pending = this.pending;
     if (!pending) {
       return;
     }
     clearTimeout(pending.timeoutId);
     pending.reject(error);
-    this.pendingAnalyze = null;
+    this.pending = null;
   }
 
   private clearTimers(): void {

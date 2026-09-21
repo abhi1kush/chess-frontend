@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useChessEngineContext } from "../engine/react/EngineProvider";
 
-const ANALYSIS_MS = 8200;
-
 export function useBoardEditorAnalysis(
   isValidFen: boolean,
   generateFenFromBoard: () => string
@@ -15,7 +13,6 @@ export function useBoardEditorAnalysis(
 
   const fenRef = useRef("");
   const analyzingRef = useRef(false);
-  const analysisDoneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { engine } = useChessEngineContext();
 
@@ -50,10 +47,6 @@ export function useBoardEditorAnalysis(
   }, [generateFenFromBoard]);
 
   const handleStopAnalysis = useCallback(() => {
-    if (analysisDoneTimerRef.current) {
-      clearTimeout(analysisDoneTimerRef.current);
-      analysisDoneTimerRef.current = null;
-    }
     analyzingRef.current = false;
     setIsAnalyzing(false);
     engine.stopLiveAnalysis();
@@ -73,28 +66,20 @@ export function useBoardEditorAnalysis(
     analyzingRef.current = true;
     setIsAnalyzing(true);
 
-    if (analysisDoneTimerRef.current) {
-      clearTimeout(analysisDoneTimerRef.current);
-      analysisDoneTimerRef.current = null;
-    }
-
-    engine.stopLiveAnalysis();
     engine.setEnabled(true);
     engine.start();
     engine.configure({ threads: 1, hashMb: 16, multiPv: 1 });
-    engine.startLiveAnalysis(fen);
-
-    analysisDoneTimerRef.current = setTimeout(() => {
-      analyzingRef.current = false;
-      setIsAnalyzing(false);
-      engine.stopLiveAnalysis();
-      analysisDoneTimerRef.current = null;
-    }, ANALYSIS_MS);
+    void engine
+      .analyzePosition(fen, { skipCache: true })
+      .catch(() => undefined)
+      .finally(() => {
+        analyzingRef.current = false;
+        setIsAnalyzing(false);
+      });
   }, [isValidFen, generateFenFromBoard, engine]);
 
   useEffect(() => {
     return () => {
-      if (analysisDoneTimerRef.current) clearTimeout(analysisDoneTimerRef.current);
       analyzingRef.current = false;
       engine.stopLiveAnalysis();
       engine.setEnabled(false);

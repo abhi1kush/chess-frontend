@@ -36,7 +36,6 @@ const ANALYSIS_ENGINE_CONFIG = {
   hashMb: 16,
   multiPv: 1,
 };
-const MANUAL_ANALYZE_STABLE_STOP_MS = 3000;
 
 type Ply = {
   san: string;
@@ -83,7 +82,6 @@ const AnalysisGame = () => {
     active: false,
     fenKey: "",
   });
-  const manualStableStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { engine } = useChessEngineContext();
   const manualAnalysisActiveRef = useRef(false);
@@ -332,41 +330,32 @@ const AnalysisGame = () => {
     onMainLinePosition,
   ]);
 
-  const clearManualStableStopTimer = useCallback(() => {
-    if (manualStableStopTimerRef.current) {
-      clearTimeout(manualStableStopTimerRef.current);
-      manualStableStopTimerRef.current = null;
-    }
-  }, []);
-
   const cancelManualAnalysis = useCallback((_reason?: string) => {
-    clearManualStableStopTimer();
     engine.stopLiveAnalysis();
     manualAnalysisActiveRef.current = false;
     setManualAnalysisState({ active: false, fenKey: "" });
-  }, [engine, clearManualStableStopTimer]);
-
-  const armManualStableStopTimer = useCallback(() => {
-    clearManualStableStopTimer();
-    manualStableStopTimerRef.current = setTimeout(() => {
-      cancelManualAnalysis("manual analysis stabilized");
-    }, MANUAL_ANALYZE_STABLE_STOP_MS);
-  }, [clearManualStableStopTimer, cancelManualAnalysis]);
+  }, [engine]);
 
   const handleAnalyzeCurrentPosition = useCallback(() => {
     if (!enabledChessEngine) return;
     const fenToAnalyze = positionRef.current;
     const fenKey = normalizeFenKey(fenToAnalyze);
-    clearManualStableStopTimer();
     setEvalScore(0);
     setBestLine("");
     setupEngine();
-    engine.stopLiveAnalysis();
     manualAnalysisActiveRef.current = true;
-    engine.startLiveAnalysis(fenToAnalyze);
     setManualAnalysisState({ active: true, fenKey });
-    armManualStableStopTimer();
-  }, [enabledChessEngine, setupEngine, engine, clearManualStableStopTimer, armManualStableStopTimer]);
+    void engine
+      .analyzePosition(fenToAnalyze, { skipCache: true })
+      .catch(() => undefined)
+      .finally(() => {
+        if (normalizeFenKey(positionRef.current) !== fenKey) {
+          return;
+        }
+        manualAnalysisActiveRef.current = false;
+        setManualAnalysisState({ active: false, fenKey: "" });
+      });
+  }, [enabledChessEngine, setupEngine, engine]);
 
   useEffect(() => {
     if (!manualAnalysisState.active) return;
@@ -383,17 +372,6 @@ const AnalysisGame = () => {
       cancelManualAnalysis("engine disabled");
     }
   }, [enabledChessEngine, manualAnalysisState.active, cancelManualAnalysis]);
-
-  useEffect(() => {
-    if (!manualAnalysisState.active) return;
-    armManualStableStopTimer();
-  }, [manualAnalysisState.active, evalScore, armManualStableStopTimer]);
-
-  useEffect(() => {
-    return () => {
-      clearManualStableStopTimer();
-    };
-  }, [clearManualStableStopTimer]);
 
   const handleMove = useCallback(
     ({ from, to, promotion }: FromToSquare): boolean => {

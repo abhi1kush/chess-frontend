@@ -13,10 +13,16 @@ export type EngineInfo = {
 };
 
 export type AnalyzeOptions = {
-  depth?: number;
+  /** Defaults to 8 → 12 → 16 → 20 → 24 for the Analyse button. */
   progressiveDepths?: number[];
   timeoutMs?: number;
   skipCache?: boolean;
+};
+
+export type ReviewGameOptions = {
+  /** Fixed depth for every ply. Defaults to 16. */
+  depth?: number;
+  timeoutMsPerPly?: number;
 };
 
 export type EngineConfig = {
@@ -48,7 +54,14 @@ export interface ChessEngine {
   configure(config: EngineConfig): void;
   startLiveAnalysis(fen: string): void;
   stopLiveAnalysis(): void;
+  /** Current position: progressive depths, interrupts any previous analyzePosition or reviewGame. */
   analyzePosition(fen: string, options?: AnalyzeOptions): Promise<EngineInfo>;
+  /** Whole PGN: one handshake, then a single depth-16 search per FEN. */
+  reviewGame(
+    fens: string[],
+    options?: ReviewGameOptions,
+    onPosition?: (index: number, info: EngineInfo) => void | Promise<void>,
+  ): Promise<void>;
   subscribe(listener: (event: EngineEvent) => void): () => void;
   getStatus(): EngineStatus;
 }
