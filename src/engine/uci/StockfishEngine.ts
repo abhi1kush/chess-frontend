@@ -25,6 +25,8 @@ type QuickAnalyzePending = {
   timeoutId: ReturnType<typeof setTimeout>;
   depths: number[] | null;
   depthIndex: number;
+  gen: number;
+  waitingForReady: boolean;
 };
 
 const DEFAULT_QUICK_ANALYZE_DEPTH = 8;
@@ -60,6 +62,7 @@ export class StockfishEngine implements ChessEngine {
   private pendingAnalyze: QuickAnalyzePending | null = null;
   private deferredAnalyzeSend: (() => void) | null = null;
   private lastMultiPv: number | null = null;
+  private analyzeGen = 0;
 
   constructor(
     private readonly transport: EngineTransport,
@@ -220,34 +223,31 @@ export class StockfishEngine implements ChessEngine {
         }
       }, timeoutMs);
 
+      this.analyzeGen += 1;
+      const gen = this.analyzeGen;
       const depths = progressiveDepths || [depth];
       this.pendingAnalyze = {
         resolve,
         reject,
         fen,
         timeoutId,
-        depths: progressiveDepths,
+        depths: depths,
         depthIndex: 0,
+        gen,
+        waitingForReady: true,
       };
 
-      const sendQuickAnalyzeCommands = (): void => {
+      const requestReadyThenGo = (): void => {
         this.clearTimers();
-        if (this.searching) {
-          this.queue.enqueue('stop', 'stop');
-          this.searching = false;
-        }
-        if (this.lastMultiPv !== 1) {
-          this.queue.enqueue('normal', 'setoption name MultiPV value 1');
-          this.lastMultiPv = 1;
-        }
-        this.queue.enqueue('normal', `position fen ${fen}`);
-        this.queue.enqueue('normal', `go depth ${depths[0]}`);
+        this.searching = false;
+        this.queue.enqueue('stop', 'stop');
+        this.queue.enqueue('normal', 'isready');
       };
 
       if (this.uciReady && this.readyOk) {
-        sendQuickAnalyzeCommands();
+        requestReadyThenGo();
       } else {
-        this.deferredAnalyzeSend = sendQuickAnalyzeCommands;
+        this.deferredAnalyzeSend = requestReadyThenGo;
       }
     });
   }
@@ -282,6 +282,12 @@ export class StockfishEngine implements ChessEngine {
       if (deferred) {
         this.deferredAnalyzeSend = null;
         deferred();
+        return;
+      }
+      const pendingReady = this.pendingAnalyze;
+      if (pendingReady?.waitingForReady && pendingReady.gen === this.analyzeGen) {
+        pendingReady.waitingForReady = false;
+        this.sendAnalyzeGo(pendingReady);
       }
     }
 
@@ -312,20 +318,23 @@ export class StockfishEngine implements ChessEngine {
 
     const pending = this.pendingAnalyze;
     if (pending && data.startsWith('bestmove')) {
+      if (pending.gen !== this.analyzeGen || pending.waitingForReady) {
+        return;
+      }
       const uci = parseBestMoveUci(data) ?? '';
       const ev = this.lastQuickEval;
       const evalScore = ev != null && Number.isFinite(ev) ? ev : 0;
 
       if (pending.depths && pending.depthIndex < pending.depths.length - 1) {
         pending.depthIndex += 1;
-        const nextDepth = pending.depths[pending.depthIndex];
         this.lastQuickEval = null;
-        this.queue.enqueue('normal', `go depth ${nextDepth}`);
+        this.queue.enqueue('normal', `go depth ${pending.depths[pending.depthIndex]}`);
         return;
       }
 
       clearTimeout(pending.timeoutId);
       this.pendingAnalyze = null;
+      this.searching = false;
       const result: EngineInfo = {
         fen: pending.fen,
         eval: { pawns: evalScore, mate: null },
@@ -347,6 +356,17 @@ export class StockfishEngine implements ChessEngine {
     this.rejectPending(error);
     this.setStatus('error', this.warmupPercent);
     this.emit({ type: 'error', error });
+  }
+
+  private sendAnalyzeGo(pending: QuickAnalyzePending): void {
+    if (this.lastMultiPv !== 1) {
+      this.queue.enqueue('normal', 'setoption name MultiPV value 1');
+      this.lastMultiPv = 1;
+    }
+    const depth = pending.depths?.[pending.depthIndex] ?? DEFAULT_QUICK_ANALYZE_DEPTH;
+    this.searching = true;
+    this.queue.enqueue('normal', `position fen ${pending.fen}`);
+    this.queue.enqueue('normal', `go depth ${depth}`);
   }
 
   private rejectPending(error: Error): void {

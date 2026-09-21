@@ -300,7 +300,7 @@ const Moves = ({
     engine.setEnabled(engineEnabled);
     engine.stopLiveAnalysis();
     engine.start();
-    engine.configure({ threads: 1, hashMb: 64, multiPv: 1 });
+    engine.configure({ threads: 1, multiPv: 1 });
 
     playBoardSetupSound();
     onBeginReview?.();
