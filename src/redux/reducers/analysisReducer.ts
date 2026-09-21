@@ -1,6 +1,6 @@
 // src/redux/reducers/analysisReducer.ts
+import type { Reducer } from 'redux';
 import {
-  AnalysisActionType,
   NEXT,
   PREV,
   START_POS,
@@ -9,6 +9,7 @@ import {
   JUMP_TO_MOVE,
   TOGGLE_ENGINE,
   DISABLE_ENGINE,
+  type AnalysisActionType,
 } from '../actions/analysisActions';
 
 export type AnalysisState = {
@@ -82,4 +83,4 @@ const analysisReducer = (state: AnalysisState = initialState, action: AnalysisAc
   }
 };
 
-export default analysisReducer;
+export default analysisReducer as Reducer<AnalysisState>;

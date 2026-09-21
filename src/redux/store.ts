@@ -1,6 +1,7 @@
 // src/redux/store.ts
 
 import { configureStore } from '@reduxjs/toolkit';
+import type { Reducer } from 'redux';
 
 import {
   persistStore,
@@ -81,7 +82,7 @@ const persistConfig: PersistConfig<RootState> = {
 
 const persistedReducer = persistReducer(
   persistConfig,
-  rootReducer,
+  rootReducer as Reducer<RootState>,
 );
 
 // const persistConfig = {

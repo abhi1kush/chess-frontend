@@ -1,3 +1,4 @@
+import type { Reducer } from 'redux';
 import {
   TOGGLE_ENGINE,
   SET_MULTIPV,
@@ -78,5 +79,5 @@ const engineReducer = (
   }
 };
 
-export default engineReducer;
+export default engineReducer as Reducer<EngineState>;
 

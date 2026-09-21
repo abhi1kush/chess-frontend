@@ -1,5 +1,6 @@
 // src/redux/reducers/settingsReducer.ts
 
+import type { Reducer } from 'redux';
 import {
   FLIP_BOARD,
   SET_THEME,
@@ -65,4 +66,4 @@ const settingsReducer = (
   }
 };
 
-export default settingsReducer;
+export default settingsReducer as Reducer<SettingsState>;

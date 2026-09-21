@@ -1,10 +1,11 @@
 // src/redux/reducers/pgnReducer.js
 
+import type { Reducer } from 'redux';
 import {
   LOAD_PGN,
   SET_PGN_ANALYSIS_AT_INDEX,
   SET_REVIEW_ANALYSIS_COMPLETE,
-  PGNAction,
+  type PGNAction,
 } from '../actions/analysisActions';
 
 import { FromToSquare } from '../../CustomTypes/AnalysisTypes';
@@ -71,8 +72,8 @@ const initialState : PGNState = {
 };
 
 const pgnReducer = (
-  state: PGNState = initialState, 
-  action: PGNAction
+  state: PGNState = initialState,
+  action: PGNAction,
 ): PGNState => {
   switch (action.type) {
     case LOAD_PGN:
@@ -115,4 +116,4 @@ const pgnReducer = (
   }
 };
 
-export default pgnReducer;
+export default pgnReducer as Reducer<PGNState>;

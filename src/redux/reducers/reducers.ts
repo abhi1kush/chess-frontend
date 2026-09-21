@@ -1,14 +1,19 @@
 // src/redux/reducers.ts
-import { combineReducers } from 'redux';
+import { combineReducers, type Reducer } from 'redux';
 
-import settingsReducer from './settingsReducer';
-import analysisReducer from './analysisReducer';
-import pgnReducer from './pgnReducer';
-import engineReducer from './engineReducer';
+import settingsReducer, { type SettingsState } from './settingsReducer';
+import analysisReducer, { type AnalysisState } from './analysisReducer';
+import pgnReducer, { type PGNState } from './pgnReducer';
+import engineReducer, { type EngineState } from './engineReducer';
 
-export type RootState = ReturnType<typeof rootReducer>;
+export type RootState = {
+  settings: SettingsState;
+  analysis: AnalysisState;
+  pgn: PGNState;
+  engine: EngineState;
+};
 
-const rootReducer = combineReducers({
+const rootReducer: Reducer<RootState> = combineReducers({
   settings: settingsReducer,
   analysis: analysisReducer,
   pgn: pgnReducer,
