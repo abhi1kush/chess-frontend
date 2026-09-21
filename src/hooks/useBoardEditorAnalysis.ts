@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useStockfishContext } from "../context/StockfishContext";
-import { onMessage } from "../utils/onMessage";
-
-const STOCKFISH_OPTIONS = [
-  { name: "Threads", value: 1 },
-  { name: "Hash", value: 16 },
-  { name: "MultiPV", value: 1 },
-];
+import { useChessEngineContext } from "../engine/react/EngineProvider";
 
 const ANALYSIS_MS = 8200;
 
@@ -21,21 +14,32 @@ export function useBoardEditorAnalysis(
   const [analysisError, setAnalysisError] = useState<string>("");
 
   const fenRef = useRef("");
+  const analyzingRef = useRef(false);
   const analysisDoneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const {
-    initEngine,
-    setOptions,
-    startSearch,
-    stopSearch,
-    setOnMessage,
-    syncEnabledState,
-  } = useStockfishContext();
+  const { engine } = useChessEngineContext();
 
-  const handleEngineMessage = useCallback((data: unknown) => {
-    if (typeof data !== "string") return;
-    onMessage(data, setEvalScore, setBestLine, fenRef.current, setBestMoveUci);
-  }, []);
+  useEffect(() => {
+    return engine.subscribe((event) => {
+      if (!analyzingRef.current) {
+        return;
+      }
+      if (event.type === 'info') {
+        if (event.info.eval) {
+          setEvalScore(event.info.eval.pawns);
+        }
+        if (event.info.pvUci) {
+          setBestLine(event.info.pvUci.join(' '));
+        }
+        if (event.info.bestMoveUci) {
+          setBestMoveUci(event.info.bestMoveUci);
+        }
+      }
+      if (event.type === 'bestMove') {
+        setBestMoveUci(event.bestMoveUci);
+      }
+    });
+  }, [engine]);
 
   useEffect(() => {
     try {
@@ -50,9 +54,10 @@ export function useBoardEditorAnalysis(
       clearTimeout(analysisDoneTimerRef.current);
       analysisDoneTimerRef.current = null;
     }
+    analyzingRef.current = false;
     setIsAnalyzing(false);
-    stopSearch("board editor analyse stop");
-  }, [stopSearch]);
+    engine.stopLiveAnalysis();
+  }, [engine]);
 
   const handleAnalyse = useCallback(() => {
     if (!isValidFen) {
@@ -65,6 +70,7 @@ export function useBoardEditorAnalysis(
     setEvalScore(0);
     setBestLine("");
     setBestMoveUci("");
+    analyzingRef.current = true;
     setIsAnalyzing(true);
 
     if (analysisDoneTimerRef.current) {
@@ -72,37 +78,28 @@ export function useBoardEditorAnalysis(
       analysisDoneTimerRef.current = null;
     }
 
-    stopSearch("board editor analyse restart");
-    syncEnabledState(true);
-    initEngine();
-    setOptions(STOCKFISH_OPTIONS);
-    setOnMessage(handleEngineMessage);
-    startSearch(fen);
+    engine.stopLiveAnalysis();
+    engine.setEnabled(true);
+    engine.start();
+    engine.configure({ threads: 1, hashMb: 16, multiPv: 1 });
+    engine.startLiveAnalysis(fen);
 
     analysisDoneTimerRef.current = setTimeout(() => {
+      analyzingRef.current = false;
       setIsAnalyzing(false);
-      stopSearch("board editor analyse complete");
+      engine.stopLiveAnalysis();
       analysisDoneTimerRef.current = null;
     }, ANALYSIS_MS);
-  }, [
-    isValidFen,
-    generateFenFromBoard,
-    stopSearch,
-    syncEnabledState,
-    initEngine,
-    setOptions,
-    setOnMessage,
-    handleEngineMessage,
-    startSearch,
-  ]);
+  }, [isValidFen, generateFenFromBoard, engine]);
 
   useEffect(() => {
     return () => {
       if (analysisDoneTimerRef.current) clearTimeout(analysisDoneTimerRef.current);
-      stopSearch("board editor unmount");
-      syncEnabledState(false);
+      analyzingRef.current = false;
+      engine.stopLiveAnalysis();
+      engine.setEnabled(false);
     };
-  }, [stopSearch, syncEnabledState]);
+  }, [engine]);
 
   return {
     evalScore,

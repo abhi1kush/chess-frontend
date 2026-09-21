@@ -9,9 +9,8 @@ import '../../styles/global.css';
 import AnalysisBoard from "./AnalysisBoard";
 import EvalBar from "./EvalBar";
 import '../../styles/components/AnalysisLayout.css';
-import {onMessage} from "../../utils/onMessage";
 import { formatEvalDisplay } from "../../utils/formatEval";
-import { useStockfishContext } from "../../context/StockfishContext";
+import { useChessEngineContext } from "../../engine/react/EngineProvider";
 import {
   setPgnAnalysisAtIndex,
   jumpToMove,
@@ -32,11 +31,11 @@ import type { FromToSquare } from "../../CustomTypes/AnalysisTypes";
 import { getPromotionDetails } from "../../utils/piecePromotion";
 import { Arrow } from "react-chessboard/dist/chessboard/types";
 
-const STOCKFISH_OPTIONS_ANALYSIS = [
-  { name: 'Threads', value: 1 },
-  { name: 'Hash', value: 16 },
-  { name: 'MultiPV', value: 1 },
-];
+const ANALYSIS_ENGINE_CONFIG = {
+  threads: 1,
+  hashMb: 16,
+  multiPv: 1,
+};
 const MANUAL_ANALYZE_STABLE_STOP_MS = 3000;
 
 type Ply = {
@@ -86,16 +85,35 @@ const AnalysisGame = () => {
   });
   const manualStableStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { initEngine, setOptions, startSearch, stopSearch, setOnMessage, syncEnabledState} = useStockfishContext();
-  
-  const handleEngineMessage = useCallback((data: string) => {
-    onMessage(data, setEvalScore, setBestLine, positionRef.current, setBestMove);
-  }, []);
+  const { engine } = useChessEngineContext();
+  const manualAnalysisActiveRef = useRef(false);
+
+  useEffect(() => {
+    return engine.subscribe((event) => {
+      if (!manualAnalysisActiveRef.current) {
+        return;
+      }
+      if (event.type === 'info') {
+        if (event.info.eval) {
+          setEvalScore(event.info.eval.pawns);
+        }
+        if (event.info.pvUci) {
+          setBestLine(event.info.pvUci.join(' '));
+        }
+        if (event.info.bestMoveUci) {
+          setBestMove(event.info.bestMoveUci);
+        }
+      }
+      if (event.type === 'bestMove') {
+        setBestMove(event.bestMoveUci);
+      }
+    });
+  }, [engine]);
 
     // Permission sync
     useEffect(() => {
-      syncEnabledState(enabledChessEngine);
-    }, [enabledChessEngine, syncEnabledState]);
+      engine.setEnabled(enabledChessEngine);
+    }, [enabledChessEngine, engine]);
 
     // ✅ New: Keep positionRef up-to-date
     useEffect(() => {
@@ -103,10 +121,9 @@ const AnalysisGame = () => {
     }, [position]);
 
   const setupEngine = useCallback(() => {
-    initEngine();
-    setOptions(STOCKFISH_OPTIONS_ANALYSIS);
-    setOnMessage(handleEngineMessage);
-  }, [initEngine, setOptions, setOnMessage, handleEngineMessage]);
+    engine.start();
+    engine.configure(ANALYSIS_ENGINE_CONFIG);
+  }, [engine]);
 
   /** Reset user line when loading a new game. */
   useEffect(() => {
@@ -322,11 +339,12 @@ const AnalysisGame = () => {
     }
   }, []);
 
-  const cancelManualAnalysis = useCallback((reason = "manual analysis cancelled") => {
+  const cancelManualAnalysis = useCallback((_reason?: string) => {
     clearManualStableStopTimer();
-    stopSearch(reason);
+    engine.stopLiveAnalysis();
+    manualAnalysisActiveRef.current = false;
     setManualAnalysisState({ active: false, fenKey: "" });
-  }, [stopSearch, clearManualStableStopTimer]);
+  }, [engine, clearManualStableStopTimer]);
 
   const armManualStableStopTimer = useCallback(() => {
     clearManualStableStopTimer();
@@ -343,11 +361,12 @@ const AnalysisGame = () => {
     setEvalScore(0);
     setBestLine("");
     setupEngine();
-    stopSearch("restart manual analysis");
-    startSearch(fenToAnalyze);
+    engine.stopLiveAnalysis();
+    manualAnalysisActiveRef.current = true;
+    engine.startLiveAnalysis(fenToAnalyze);
     setManualAnalysisState({ active: true, fenKey });
     armManualStableStopTimer();
-  }, [enabledChessEngine, setupEngine, startSearch, stopSearch, clearManualStableStopTimer, armManualStableStopTimer]);
+  }, [enabledChessEngine, setupEngine, engine, clearManualStableStopTimer, armManualStableStopTimer]);
 
   useEffect(() => {
     if (!manualAnalysisState.active) return;

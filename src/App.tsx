@@ -4,7 +4,7 @@ import { HashRouter as Router, Route, Routes, Navigate, useLocation } from 'reac
 import { ConfigProvider } from './context/configContext';
 // CSS is handled by the bundler; TypeScript does not need to type-check this side-effect import.
 import './styles/global.css';
-import StockfishProvider from './context/StockfishContext';
+import EngineProvider from './engine/react/EngineProvider';
 const AnalysisGame = lazy(() => import('./components/analysis/AnalysisGame'));
 
 const GA_MEASUREMENT_ID = 'G-KZRHN2TP97';
@@ -42,7 +42,7 @@ const PageViewTracker = (): null => {
 const App = () => {
   return (
     <ConfigProvider>
-      <StockfishProvider>
+      <EngineProvider>
         <Router>
           <PageViewTracker />
           <Suspense fallback={<div className="loading-screen">Loading...</div>}>
@@ -53,7 +53,7 @@ const App = () => {
             </Routes>
           </Suspense>
         </Router>
-      </StockfishProvider>
+      </EngineProvider>
     </ConfigProvider>
   );
 };

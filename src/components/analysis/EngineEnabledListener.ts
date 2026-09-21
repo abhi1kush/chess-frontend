@@ -1,26 +1,27 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useStockfishContext } from '../../context/StockfishContext';
+import { useChessEngineContext } from '../../engine/react/EngineProvider';
 
 const EngineEnabledListener = ({ fen, pauseSearch = false }: { fen: string; pauseSearch?: boolean }) => {
-const engineEnabled = useSelector((state: { engine: { enabled: boolean } }) => state.engine.enabled);
-const { initEngine, startSearch, stopSearch } = useStockfishContext();
+  const engineEnabled = useSelector((state: { engine: { enabled: boolean } }) => state.engine.enabled);
+  const { engine } = useChessEngineContext();
+
   useEffect(() => {
     if (!engineEnabled) {
-      stopSearch('disabled by UI toggle');
+      engine.stopLiveAnalysis();
       return;
     }
     if (pauseSearch) {
-      stopSearch('paused for Start Review');
+      engine.stopLiveAnalysis();
       return;
     }
-    initEngine();
-    startSearch(fen);
+    engine.start();
+    engine.startLiveAnalysis(fen);
 
     return () => {
-      stopSearch('listener cleanup');
+      engine.stopLiveAnalysis();
     };
-  }, [engineEnabled, fen, pauseSearch, initEngine, startSearch, stopSearch]);
+  }, [engineEnabled, fen, pauseSearch, engine]);
 
   return null;
 };

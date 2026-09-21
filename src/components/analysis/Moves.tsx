@@ -12,7 +12,7 @@ import {
   setReviewAnalysisComplete,
 } from '../../redux/actions/analysisActions';
 import { playBoardSetupSound } from '../../utils/soundUtils';
-import { useStockfishContext } from '../../context/StockfishContext';
+import { useChessEngineContext } from '../../engine/react/EngineProvider';
 import {
   classifyMove,
   playedUciFromSan,
@@ -60,11 +60,6 @@ interface RootState {
 interface ReviewResult { 
   evalScore?: number | null; 
   bestMoveUci?: string | null; 
-} 
-
-interface QuickAnalyzeOptions { 
-  progressiveDepths: number[]; 
-  timeoutMs: number; 
 }
 
 interface MovesProps { 
@@ -119,8 +114,8 @@ function renderMoveCell(
     </span>
   );
 }
-/** Fast first result, then refine (depth 8 → 12 → 16). */
-const REVIEW_PROGRESSIVE_DEPTHS = [8, 12, 16];
+/** One search per ply at the old final review depth (8→12→16 was 3x slower for the same result). */
+const REVIEW_DEPTH = 16;
 const REVIEW_QUICK_TIMEOUT_MS = 120000;
 
 function isMainLineCellCurrent(
@@ -202,11 +197,10 @@ const Moves = ({
   const dispatch = useDispatch();
   
   const {
-    quickAnalyzeFen,
-    syncEnabledState,
+    engine,
     engineReadyOk,
     engineWarmupPercent,
-  } = useStockfishContext();
+  } = useChessEngineContext();
 
   const clearReviewSchedule = useCallback(() => {
     if (reviewTimeoutRef.current !== null) {
@@ -295,7 +289,10 @@ const Moves = ({
     reviewSessionRef.current += 1;
     const session = reviewSessionRef.current;
 
-    syncEnabledState(engineEnabled);
+    engine.setEnabled(engineEnabled);
+    engine.stopLiveAnalysis();
+    engine.start();
+    engine.configure({ threads: 1, hashMb: 64, multiPv: 1 });
 
     playBoardSetupSound();
     onBeginReview?.();
@@ -307,14 +304,19 @@ const Moves = ({
 
     const run = async () => {
       const quickOpts = {
-        progressiveDepths: REVIEW_PROGRESSIVE_DEPTHS,
+        depth: REVIEW_DEPTH,
         timeoutMs: REVIEW_QUICK_TIMEOUT_MS,
       };
 
       const analyzeFen = async (fen: string): Promise<ReviewResult | null> => {
-        if (!engineEnabled || typeof quickAnalyzeFen !== 'function') return null;
+        if (!engineEnabled) return null;
         try {
-          return await quickAnalyzeFen(fen, quickOpts);
+          const result = await engine.analyzePosition(fen, quickOpts);
+          const pawns = result.eval?.pawns;
+          return {
+            evalScore: pawns != null && Number.isFinite(pawns) ? pawns : null,
+            bestMoveUci: result.bestMoveUci ?? '',
+          };
         } catch {
           return null;
         }
@@ -342,11 +344,8 @@ const Moves = ({
 
         for (let i = 0; i < moves.length; i++) {
           if (session !== reviewSessionRef.current) return;
-          await new Promise((resolve) => {
-            reviewTimeoutRef.current = setTimeout(resolve as () => void, REVIEW_STEP_MS);
-          });
-          if (session !== reviewSessionRef.current) return;
           dispatch(jumpToMove(i + 1));
+          const plyStartedAt = performance.now();
 
           const r = await analyzeFen(fens[i + 1]);
           if (session !== reviewSessionRef.current) return;
@@ -384,6 +383,13 @@ const Moves = ({
 
           prevEval = evalAfter;
           prevBest = r?.bestMoveUci ?? '';
+
+          const remainingMs = REVIEW_STEP_MS - (performance.now() - plyStartedAt);
+          if (remainingMs > 0) {
+            await new Promise((resolve) => {
+              reviewTimeoutRef.current = setTimeout(resolve as () => void, remainingMs);
+            });
+          }
         }
       } finally {
         setIsReviewing(false);
