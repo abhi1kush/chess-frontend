@@ -92,6 +92,28 @@ interface AnalysisBoardProps {
   arePiecesDraggable?: boolean; 
 }
 
+const PROMOTION_PIECES = new Set<PromotionPiece>(['q', 'r', 'b', 'n']);
+
+/**
+ * react-chessboard calls onPieceDrop with the chosen piece (`wQ`, `bR`, …)
+ * after the promotion dialog. The source square still holds the pawn.
+ */
+function promotionFromDrop(
+  fen: string,
+  source: Square,
+  piece: string,
+): PromotionPiece | undefined {
+  const letter = piece[1]?.toLowerCase();
+  if (!letter || !PROMOTION_PIECES.has(letter as PromotionPiece)) return undefined;
+  try {
+    const occupant = new Chess(fen).get(source);
+    if (occupant?.type === 'p') return letter as PromotionPiece;
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
 const AnalysisBoard = ({
   className,
   handleMove,
@@ -108,17 +130,8 @@ const AnalysisBoard = ({
   arePiecesDraggable = true,
 }: AnalysisBoardProps) => {
   const handlePieceDrop = (source: Square, target: Square, piece: BoardPiece): boolean => {
-    
-    if (piece === 'wP' && target[1] === '8' || piece === 'bP' && target[1] === '1') {
-      // TODO: Handle promotion piece selection (e.g., show a modal to select the piece)
-      const promotionPiece: PromotionPiece = 'q'; // Default to queen for simplicity
-
-      handleMove({ from: source, to: target, promotion: promotionPiece });
-      return true;    
-    }
-
-    handleMove({ from: source, to: target, promotion: undefined });
-    return true;
+    const promotion = promotionFromDrop(fen, source, piece);
+    return handleMove({ from: source, to: target, promotion });
   };
 
   const getSquareStyles = (): CustomSquareStyles | undefined => {
