@@ -61,6 +61,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.eval-container--unavailable {
+  background: repeating-linear-gradient(
+    180deg,
+    #1e293b 0 10px,
+    #334155 10px 12px
+  );
+}
+
+.eval-bar__unavailable {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f8fafc;
+  line-height: 1;
+}
+
 
 body.dark-theme .eval-container {
   border-color: rgba(148, 163, 184, 0.45);
@@ -70,4 +89,12 @@ body.dark-theme .eval-container {
 
 body.dark-theme .white-bar {
   background: linear-gradient(180deg, var(--move-nav-btn-bg), var(--move-nav-btn-bg));
+}
+
+body.dark-theme .eval-container--unavailable {
+  background: repeating-linear-gradient(
+    180deg,
+    #0f172a 0 10px,
+    #1e293b 10px 12px
+  );
 }

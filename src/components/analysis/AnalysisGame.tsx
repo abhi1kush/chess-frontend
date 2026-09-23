@@ -66,7 +66,7 @@ const AnalysisGame = () => {
   const [position, setPosition] = useState(CONFIG.START_FEN);
   const positionRef = useRef(position); 
   const { isFlipped, theme } = useSelector((state: RootState) => state.settings);
-  const [evalScore, setEvalScore] = useState<number>(0);
+  const [evalScore, setEvalScore] = useState<number | null>(null);
   const [bestLine, setBestLine] = useState("");
   const [bestMove, setBestMove] = useState("");
   const [isReviewing, setIsReviewing] = useState(false);
@@ -160,7 +160,7 @@ const AnalysisGame = () => {
     if (isReviewing || reviewAnalysisComplete) return;
     const row = analysisData?.[currentMoveIndex];
     if (!(row?.evalScore != null && Number.isFinite(row.evalScore))) {
-      setEvalScore(0);
+      setEvalScore(null);
       setBestLine("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when index or review phase changes
@@ -179,13 +179,14 @@ const AnalysisGame = () => {
     currentPositionEval != null && Number.isFinite(currentPositionEval);
   const analyseMatchesBoard =
     manualAnalysisState.fenKey !== '' && manualAnalysisState.fenKey === boardFenKey;
-  const displayEvalScore = analyseMatchesBoard
-    ? evalScore
-    : useReviewCache
-      ? hasCurrentPositionEval
+  const liveEval =
+    analyseMatchesBoard && evalScore != null && Number.isFinite(evalScore) ? evalScore : null;
+  const displayEvalScore =
+    liveEval != null
+      ? liveEval
+      : useReviewCache && hasCurrentPositionEval
         ? currentPositionEval
-        : null
-      : evalScore;
+        : null;
   const displayBestMove = analyseMatchesBoard
     ? bestMoveUci
     : useReviewCache && reviewedIndex >= 0
@@ -315,11 +316,12 @@ const AnalysisGame = () => {
     if (!enabledChessEngine || !fens?.length) return;
     if (!onMainLinePosition) return;
     if (analysisWriteTimerRef.current) clearTimeout(analysisWriteTimerRef.current);
+    if (evalScore == null || !Number.isFinite(evalScore)) return;
     analysisWriteTimerRef.current = setTimeout(() => {
       dispatch(
         setPgnAnalysisAtIndex({
           index: currentMoveIndex,
-          evalScore: Number.isFinite(evalScore) ? evalScore : null,
+          evalScore,
           bestMove: bestMoveUci,
         }),
       );
@@ -349,7 +351,7 @@ const AnalysisGame = () => {
     if (!enabledChessEngine) return;
     const fenToAnalyze = positionRef.current;
     const fenKey = normalizeFenKey(fenToAnalyze);
-    setEvalScore(0);
+    setEvalScore(null);
     setBestLine("");
     setupEngine();
     manualAnalysisActiveRef.current = true;
@@ -386,7 +388,7 @@ const AnalysisGame = () => {
     } else {
       setManualAnalysisState({ active: false, fenKey: "" });
     }
-    setEvalScore(0);
+    setEvalScore(null);
     setBestLine("");
   }, [position, manualAnalysisState.fenKey, manualAnalysisState.active, cancelManualAnalysis]);
 
