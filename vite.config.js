@@ -5,11 +5,19 @@ import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://vite.dev/config/
 
+const isTauri = Boolean(process.env.TAURI_ENV_PLATFORM);
+
 export default defineConfig({
   plugins: [react(), wasm(), topLevelAwait()],
+  clearScreen: false,
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
   build: {
     target: 'esnext',
   },
   assetsInclude: ['**/*.wasm'],
-  base: "/chess-frontend/"
+  // GitHub Pages needs the repo subpath. The desktop app is served from the app root.
+  base: isTauri ? '/' : '/chess-frontend/',
 });

@@ -169,21 +169,30 @@ const AnalysisGame = () => {
   const bestMoveUci = bestLine.trim().split(/\s+/).filter(Boolean)[0] ?? "";
 
   const analysisEntry = analysisData?.[currentMoveIndex];
-  const hasCachedEval =
-    analysisEntry?.evalScore != null && Number.isFinite(analysisEntry.evalScore);
-  const showLiveEngineData = manualAnalysisState.active;
-  const displayEvalScore = showLiveEngineData
+  const boardFenKey = normalizeFenKey(position);
+  /** Review rows follow `fens`, not `currentMoveIndex` (that index stays on the branch ply). */
+  const reviewedIndex = fens?.findIndex((fen) => normalizeFenKey(fen) === boardFenKey) ?? -1;
+  const currentPositionReview =
+    reviewedIndex >= 0 ? analysisData?.[reviewedIndex] : undefined;
+  const currentPositionEval = currentPositionReview?.evalScore;
+  const hasCurrentPositionEval =
+    currentPositionEval != null && Number.isFinite(currentPositionEval);
+  const analyseMatchesBoard =
+    manualAnalysisState.fenKey !== '' && manualAnalysisState.fenKey === boardFenKey;
+  const displayEvalScore = analyseMatchesBoard
     ? evalScore
     : useReviewCache
-      ? hasCachedEval
-        ? analysisEntry.evalScore
+      ? hasCurrentPositionEval
+        ? currentPositionEval
         : null
       : evalScore;
-  const displayBestMove = showLiveEngineData
+  const displayBestMove = analyseMatchesBoard
     ? bestMoveUci
-    : useReviewCache
-      ? String(analysisEntry?.bestMove ?? "").trim()
-      : bestMoveUci;
+    : useReviewCache && reviewedIndex >= 0
+      ? String(analysisData?.[reviewedIndex]?.bestMove ?? "").trim()
+      : useReviewCache
+        ? ""
+        : bestMoveUci;
   const shouldShowBestMove = !useReviewCache || currentMoveIndex >= 1;
   const bestMoveDisplayValue = shouldShowBestMove ? (displayBestMove || "—") : "—";
   const moveQualityDisplayValue =
@@ -347,25 +356,39 @@ const AnalysisGame = () => {
     setManualAnalysisState({ active: true, fenKey });
     void engine
       .analyzePosition(fenToAnalyze, { skipCache: true })
+      .then((info) => {
+        if (normalizeFenKey(positionRef.current) !== fenKey) return;
+        if (info.eval && Number.isFinite(info.eval.pawns)) {
+          setEvalScore(info.eval.pawns);
+        }
+        if (info.pvUci?.length) {
+          setBestLine(info.pvUci.join(' '));
+        }
+        if (info.bestMoveUci) {
+          setBestMove(info.bestMoveUci);
+        }
+      })
       .catch(() => undefined)
       .finally(() => {
         if (normalizeFenKey(positionRef.current) !== fenKey) {
           return;
         }
         manualAnalysisActiveRef.current = false;
-        setManualAnalysisState({ active: false, fenKey: "" });
+        setManualAnalysisState({ active: false, fenKey });
       });
   }, [enabledChessEngine, setupEngine, engine]);
 
   useEffect(() => {
-    if (!manualAnalysisState.active) return;
-    const currentKey = normalizeFenKey(position);
-    if (currentKey !== manualAnalysisState.fenKey) {
+    if (!manualAnalysisState.fenKey) return;
+    if (normalizeFenKey(position) === manualAnalysisState.fenKey) return;
+    if (manualAnalysisState.active) {
       cancelManualAnalysis("position changed during manual analysis");
-      setEvalScore(0);
-      setBestLine("");
+    } else {
+      setManualAnalysisState({ active: false, fenKey: "" });
     }
-  }, [position, manualAnalysisState, cancelManualAnalysis]);
+    setEvalScore(0);
+    setBestLine("");
+  }, [position, manualAnalysisState.fenKey, manualAnalysisState.active, cancelManualAnalysis]);
 
   useEffect(() => {
     if (!enabledChessEngine && manualAnalysisState.active) {

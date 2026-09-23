@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build",
     "lint": "eslint .",
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@tauri-apps/cli": "^2.11.5",
     "@types/node": "^26.5.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.3",

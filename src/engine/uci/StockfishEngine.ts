@@ -415,7 +415,8 @@ export class StockfishEngine implements ChessEngine {
       const pvUci = parsePvFromInfoLine(data);
       const depth = parseDepthFromInfoLine(data);
       const info: EngineInfo = { fen: fenForInfo };
-      if (score) {
+      const exactScore = score && !/\b(lowerbound|upperbound)\b/i.test(data);
+      if (exactScore && score && !this.readyWait) {
         const pawns = fenForInfo ? normalizeEval(score.pawns, fenForInfo) : score.pawns;
         info.eval = { pawns, mate: score.mate };
         this.lastEvalPawns = pawns;
@@ -428,7 +429,11 @@ export class StockfishEngine implements ChessEngine {
       if (depth != null) {
         info.depth = depth;
       }
-      if (this.pending?.kind === 'position' && (info.eval || info.pvUci || info.depth != null)) {
+      if (
+        !this.readyWait &&
+        this.pending?.kind === 'position' &&
+        (info.eval || info.pvUci || info.depth != null)
+      ) {
         this.emit({ type: 'info', info });
       }
     }
