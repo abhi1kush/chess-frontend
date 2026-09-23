@@ -65,6 +65,13 @@ export function parsePvFromInfoLine(line: string): string[] | null {
   return pvMatch[1].trim().split(/\s+/).filter(Boolean);
 }
 
+export function parseMultiPvFromInfoLine(line: string): number | null {
+  const match = line.match(/\bmultipv\s+(\d+)/i);
+  if (!match) return null;
+  const value = parseInt(match[1], 10);
+  return Number.isNaN(value) ? null : value;
+}
+
 export function parseDepthFromInfoLine(line: string): number | null {
   const match = line.match(/\bdepth\s+(\d+)/i);
   if (!match) {

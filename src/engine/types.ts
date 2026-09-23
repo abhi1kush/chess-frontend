@@ -6,6 +6,8 @@ export type EngineEval = {
 export type EngineInfo = {
   fen: string;
   eval?: EngineEval;
+  /** White-POV eval of MultiPV line 2, when the review search used two lines. */
+  secondEval?: EngineEval;
   depth?: number;
   pvUci?: string[];
   bestMoveUci?: string;

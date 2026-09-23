@@ -85,6 +85,23 @@ function IconBrilliant({ size, ...rest }: IconProps) {
   );
 }
 
+function IconBook({ size, ...rest }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox={VB} id="book" aria-hidden {...rest}>
+      <path
+        className="icon-background"
+        fill="#94a3b8"
+        d="M9,0a9,9,0,1,0,9,9A9,9,0,0,0,9,0Z"
+      />
+      <path
+        className="icon-component"
+        fill="#fff"
+        d="M5.2,4.4h3.1c.9,0,1.4.3,1.7.8.3-.5.8-.8,1.7-.8h3.1v8.4h-3.4c-.7,0-1.2.2-1.4.6-.2-.4-.7-.6-1.4-.6H5.2V4.4zm1.5,1.3v5.6h1.6c.5,0,.9.1,1.2.3V5.8c-.3-.1-.7-.1-1.1-.1H6.7zm5.8,0c-.4,0-.8,0-1.1.1v5.8c.3-.2.7-.3,1.2-.3h1.6V5.7h-1.7z"
+      />
+    </svg>
+  );
+}
+
 function IconGreat({ size, ...rest }: IconProps) {
   return (
     <svg width={size} height={size} viewBox={VB} id="great" aria-hidden {...rest}>
@@ -233,6 +250,7 @@ const ICON_BY_CATEGORY = {
   [CATEGORY_IDS.BEST]: IconBest,
   [CATEGORY_IDS.BRILLIANT]: IconBrilliant,
   [CATEGORY_IDS.GREAT]: IconGreat,
+  [CATEGORY_IDS.BOOK]: IconBook,
   [CATEGORY_IDS.EXCELLENT]: IconExcellent,
   [CATEGORY_IDS.GOOD]: IconGood,
   [CATEGORY_IDS.INACCURACY]: IconInaccuracy,

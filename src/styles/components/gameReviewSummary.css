@@ -237,6 +237,10 @@
   color: #749bbf;
 }
 
+.game-review-summary .analysis-game-move-quality--book {
+  color: #94a3b8;
+}
+
 .game-review-summary .analysis-game-move-quality--best {
   color: #81b64c;
 }

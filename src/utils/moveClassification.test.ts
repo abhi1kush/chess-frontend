@@ -8,7 +8,6 @@ import {
   categoryEmojiFromCategoryId,
   getLastMoveSquareStylesForAnalysis,
   CATEGORY_IDS,
-  THRESH_EXCELLENT,
 } from './moveClassification.js';
 
 describe('moveClassification', () => {
@@ -19,6 +18,88 @@ describe('moveClassification', () => {
   it('playedUciFromSan returns UCI for standard e4', () => {
     const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     assert.equal(playedUciFromSan(fen, 'e4'), 'e2e4');
+  });
+
+  it('Brilliant when the best move is a sound piece sacrifice', () => {
+    const fenBefore = '6k1/5p2/8/8/2B5/8/8/4K3 w - - 0 1';
+    const fenAfter = '6k1/5B2/8/8/8/8/8/4K3 b - - 0 1';
+    const r = classifyMove({
+      evalBefore: 0.4,
+      evalAfter: 0.6,
+      bestMoveUci: 'c4f7',
+      playedUci: 'c4f7',
+      fenBefore,
+      fenAfter,
+    });
+    assert.equal(r.categoryId, CATEGORY_IDS.BRILLIANT);
+  });
+
+  it('marks opening prefixes as Book when asked', () => {
+    const r = classifyMove({
+      evalBefore: 0.2,
+      evalAfter: 0.25,
+      bestMoveUci: 'e2e4',
+      playedUci: 'e2e4',
+      fenBefore: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      fenAfter: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+      book: true,
+    });
+    assert.equal(r.categoryId, CATEGORY_IDS.BOOK);
+  });
+
+  it('Great when the best move is the only check that works', () => {
+    const fenBefore = '4rbk1/2q2ppp/p5b1/1p1B1n1n/2p1P3/2P4P/PP4B1/R1BQ2K1 b - - 0 31';
+    const r = classifyMove({
+      evalBefore: -4,
+      evalAfter: -6,
+      bestMoveUci: 'h5g3',
+      playedUci: 'h5g3',
+      fenBefore,
+      fenAfter: '4rbk1/2q2ppp/p5b1/1p1B1n2/2p1P3/2P3nP/PP4B1/R1BQ2K1 w - - 1 32',
+    });
+    assert.ok(
+      [CATEGORY_IDS.GREAT, CATEGORY_IDS.BRILLIANT, CATEGORY_IDS.BEST].includes(r.categoryId),
+    );
+  });
+
+  it('Brilliant on a second winning exchange sacrifice, not only the engine #1', () => {
+    const fenBefore = '3rrbk1/2q2ppp/p5b1/1p1NnN1n/2pP4/2P4P/PP3RB1/R1BQ3K b - - 1 29';
+    const fenAfter = '4rbk1/2q2ppp/p5b1/1p1rnN1n/2pP4/2P4P/PP3RB1/R1BQ3K w - - 0 30';
+    const r = classifyMove({
+      evalBefore: -1.1,
+      evalAfter: -0.4,
+      bestMoveUci: 'g6f5',
+      playedUci: 'd8d5',
+      fenBefore,
+      fenAfter,
+    });
+    assert.equal(r.categoryId, CATEGORY_IDS.BRILLIANT);
+  });
+
+  it('does not call a collapsing exchange sacrifice Brilliant', () => {
+    const r = classifyMove({
+      evalBefore: -0.4,
+      evalAfter: 2.2,
+      bestMoveUci: 'g6f5',
+      playedUci: 'd8d5',
+      fenBefore: '3rrbk1/2q2ppp/p5b1/1p1NnN1n/2pP4/2P4P/PP3RB1/R1BQ3K b - - 1 29',
+      fenAfter: '4rbk1/2q2ppp/p5b1/1p1rnN1n/2pP4/2P4P/PP3RB1/R1BQ3K w - - 0 30',
+    });
+    assert.notEqual(r.categoryId, CATEGORY_IDS.BRILLIANT);
+  });
+
+  it('Best, not Brilliant, when the same sacrifice is played from an already winning position', () => {
+    const r = classifyMove({
+      evalBefore: 5,
+      evalAfter: 5,
+      bestMoveUci: 'c4f7',
+      playedUci: 'c4f7',
+      fenBefore: '6k1/5p2/8/8/2B5/8/8/4K3 w - - 0 1',
+      fenAfter: '6k1/5B2/8/8/8/8/8/4K3 b - - 0 1',
+    });
+    assert.ok(
+      [CATEGORY_IDS.BEST, CATEGORY_IDS.GREAT].includes(r.categoryId),
+    );
   });
 
   it('Best when played matches engine best', () => {
@@ -33,10 +114,10 @@ describe('moveClassification', () => {
     assert.equal(r.categoryId, CATEGORY_IDS.BEST);
   });
 
-  it('White move: small eval drop → Excellent', () => {
+  it('White move: small expected-points drop → Excellent', () => {
     const r = classifyMove({
-      evalBefore: 0.5,
-      evalAfter: 0.5 - THRESH_EXCELLENT / 2,
+      evalBefore: 0.2,
+      evalAfter: 0.05,
       bestMoveUci: 'a2a4',
       playedUci: 'h2h4',
       fenBefore: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -57,16 +138,17 @@ describe('moveClassification', () => {
         'rnbqkbnr/pppppp1p/8/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1',
     });
     assert.ok(
-      [CATEGORY_IDS.MISTAKE, CATEGORY_IDS.BLUNDER, CATEGORY_IDS.INACCURACY].includes(
+      [CATEGORY_IDS.MISTAKE, CATEGORY_IDS.BLUNDER, CATEGORY_IDS.INACCURACY, CATEGORY_IDS.MISSED_WIN].includes(
         r.categoryId,
       ),
     );
   });
 
-  it('Missed Win when winning for White but loss and not best', () => {
+  it('Miss when the opponent handed a chance and the move gives it back', () => {
     const r = classifyMove({
-      evalBefore: 3.5,
-      evalAfter: 2.0,
+      evalBefore: 0.9,
+      evalAfter: 0.2,
+      scoreBeforeOpponent: 0,
       bestMoveUci: 'd1h5',
       playedUci: 'a2a3',
       fenBefore: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -122,7 +204,7 @@ describe('moveClassification', () => {
 
   it('returns unknown label for invalid evals', () => {
     const r = classifyMove({
-      evalBefore: 0,
+      evalBefore: Number.NaN,
       evalAfter: 0,
       bestMoveUci: 'e2e4',
       playedUci: 'e2e4',

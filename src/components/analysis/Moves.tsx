@@ -13,11 +13,13 @@ import {
 } from '../../redux/actions/analysisActions';
 import { playBoardSetupSound } from '../../utils/soundUtils';
 import { useChessEngineContext } from '../../engine/react/EngineProvider';
+import { scoreForTerminalPosition } from '../../domain/analysis';
 import {
   classifyMove,
   playedUciFromSan,
   toUci,
   moveQualityClassFromLabel,
+  isOpeningBookMove,
 } from '../../utils/moveClassification';
 import { sanToFigurineDisplay } from '../../utils/sanFigurine';
 import { MoveCategoryBoardIcon } from './MoveCategoryBoardIcons';
@@ -309,7 +311,12 @@ const Moves = ({
       let reviewFinished = false;
       try {
         let prevEval: number | null = null;
+        let prevMate: number | null = null;
         let prevBest = '';
+        let prevAltEval: number | null = null;
+        let prevAltMate: number | null = null;
+        let olderEval: number | null = null;
+        let olderMate: number | null = null;
 
         await engine.reviewGame(
           fens,
@@ -319,10 +326,15 @@ const Moves = ({
               throw new Error('Review cancelled');
             }
 
-            const pawns =
-              info.eval?.pawns != null && Number.isFinite(info.eval.pawns)
+            const terminal = scoreForTerminalPosition(fens[index]);
+            const pawns = terminal
+              ? terminal.value > 0
+                ? 10
+                : -10
+              : info.eval?.pawns != null && Number.isFinite(info.eval.pawns)
                 ? info.eval.pawns
                 : null;
+            const mate = terminal ? terminal.value : (info.eval?.mate ?? null);
 
             if (index === 0) {
               dispatch(
@@ -334,7 +346,13 @@ const Moves = ({
                 }),
               );
               prevEval = pawns;
+              prevMate = mate;
               prevBest = info.bestMoveUci ?? '';
+              prevAltEval =
+                info.secondEval?.pawns != null && Number.isFinite(info.secondEval.pawns)
+                  ? info.secondEval.pawns
+                  : null;
+              prevAltMate = info.secondEval?.mate ?? null;
               return;
             }
 
@@ -349,6 +367,11 @@ const Moves = ({
               playedUci = toUci(fromToSquares[moveIdx]);
             }
 
+            const uciPrefix = [];
+            for (let p = 0; p <= moveIdx; p++) {
+              const u = playedUciFromSan(fens[p], moves[p]) || (fromToSquares?.[p] ? toUci(fromToSquares[p]) : '');
+              if (u) uciPrefix.push(u);
+            }
             const classified =
               prevEval != null && pawns != null
                 ? classifyMove({
@@ -358,6 +381,13 @@ const Moves = ({
                     playedUci,
                     fenBefore: fens[moveIdx],
                     fenAfter: fens[index],
+                    altEval: prevAltEval,
+                    scoreBeforeOpponent: olderEval,
+                    mateBefore: prevMate,
+                    mateAfter: mate,
+                    mateBeforeOpponent: olderMate,
+                    mateSecond: prevAltMate,
+                    book: isOpeningBookMove(uciPrefix),
                   })
                 : null;
 
@@ -370,8 +400,16 @@ const Moves = ({
               }),
             );
 
+            olderEval = prevEval;
+            olderMate = prevMate;
             prevEval = pawns;
+            prevMate = mate;
             prevBest = info.bestMoveUci ?? '';
+            prevAltEval =
+              info.secondEval?.pawns != null && Number.isFinite(info.secondEval.pawns)
+                ? info.secondEval.pawns
+                : null;
+            prevAltMate = info.secondEval?.mate ?? null;
 
             if (playMovesDuringReview) {
               const remainingMs = REVIEW_STEP_MS - (performance.now() - plyStartedAt);

@@ -1,34 +1,28 @@
 /**
- * Chess.com–style move quality from engine eval (White’s perspective, pawns)
- * and best vs played UCI. Not a full WDL model — tunable thresholds below.
+ * UI adapter for move quality.
+ * Stockfish supplies eval, best move, and PV. MoveClassifier turns those
+ * into Best / Excellent / Good / Inaccuracy / Mistake / Blunder, then
+ * Miss, Great, and Brilliant. Book is opening theory and stays here.
  */
 
-import { Chess, Move } from 'chess.js';
+import { Chess } from 'chess.js';
 import { FromToSquare } from '../CustomTypes/AnalysisTypes';
 import { CustomSquareStyles } from 'react-chessboard/dist/chessboard/types';
+import { isOpeningBookMove } from './openingBook';
+import type { ClassificationContext, MoveClassification } from '../domain/analysis';
+import {
+  MoveClassifier,
+  calculateExpectedPointsLoss,
+  engineEvalToScore,
+  expectedPointsForPlayer,
+} from '../domain/analysis';
 
-/** Loss buckets (pawns) for the side that moved — positive = worsened their winning chances. */
-export const THRESH_EXCELLENT = 0.05;
-export const THRESH_GOOD = 0.15;
-export const THRESH_INACCURACY = 0.35;
-export const THRESH_MISTAKE = 0.9;
-
-/** Strong winning eval (White POV) before the move — used for Missed Win. */
-export const MISSED_WIN_WHITE = 3;
-export const MISSED_WIN_BLACK = -3;
-export const MISSED_WIN_MIN_LOSS = 0.02;
-
-/** “Great”: clear eval gain vs static expectation when not playing engine best (rare). */
-export const GREAT_IMPROVEMENT = 0.25;
-
-/** Brilliant: material lost for mover but eval holds or improves (sacrifice that works). */
-export const BRILLIANT_MAX_LOSS = 0.2;
-
-const PIECE_VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+export { isOpeningBookMove };
 
 export const CATEGORY_IDS = {
   BRILLIANT: 'brilliant',
   GREAT: 'great',
+  BOOK: 'book',
   BEST: 'best',
   EXCELLENT: 'excellent',
   GOOD: 'good',
@@ -49,6 +43,7 @@ type categoryUiData = {
 export const DISPLAY : Record<string, categoryUiData> = {
   [CATEGORY_IDS.BRILLIANT]: { id: CATEGORY_IDS.BRILLIANT, emoji: '🔥', name: 'Brilliant' },
   [CATEGORY_IDS.GREAT]: { id: CATEGORY_IDS.GREAT, emoji: '⭐', name: 'Great' },
+  [CATEGORY_IDS.BOOK]: { id: CATEGORY_IDS.BOOK, emoji: '📖', name: 'Book' },
   [CATEGORY_IDS.BEST]: { id: CATEGORY_IDS.BEST, emoji: '✅', name: 'Best' },
   [CATEGORY_IDS.EXCELLENT]: { id: CATEGORY_IDS.EXCELLENT, emoji: '👍', name: 'Excellent' },
   [CATEGORY_IDS.GOOD]: { id: CATEGORY_IDS.GOOD, emoji: '🙂', name: 'Good' },
@@ -104,51 +99,23 @@ export function playedUciFromSan(fenBefore: string, san: string): string {
   }
 }
 
-function materialForColor(fen: string, color: string): number {
-  try {
-    const g2 = new Chess();
-    try {
-      g2.load(fen);
-    } catch (error) {
-      return 0;
-    }
+const CLASSIFICATION_TO_CATEGORY: Record<MoveClassification, string> = {
+  BRILLIANT: CATEGORY_IDS.BRILLIANT,
+  GREAT: CATEGORY_IDS.GREAT,
+  BEST: CATEGORY_IDS.BEST,
+  EXCELLENT: CATEGORY_IDS.EXCELLENT,
+  GOOD: CATEGORY_IDS.GOOD,
+  INACCURACY: CATEGORY_IDS.INACCURACY,
+  MISTAKE: CATEGORY_IDS.MISTAKE,
+  BLUNDER: CATEGORY_IDS.BLUNDER,
+  MISS: CATEGORY_IDS.MISSED_WIN,
+};
 
-    let sum = 0;
-    const board = g2.board();
-    for (const row of board) {
-      for (const sq of row) {
-        if (!sq || sq.color !== color) continue;
-        sum += PIECE_VALUES[sq.type] ?? 0;
-      }
-    }
-    return sum;
-  } catch {
-    return 0;
-  }
-}
+const classifier = new MoveClassifier();
 
 /**
- * @param {string} fenBefore
- * @param {string} fenAfter
- * @param {boolean} whiteMoved
- */
-function isSacrificeCompensation(fenBefore: string, fenAfter: string, whiteMoved: boolean): boolean {
-  if (!fenBefore || !fenAfter) return false;
-  const color = whiteMoved ? 'w' : 'b';
-  const before = materialForColor(fenBefore, color);
-  const after = materialForColor(fenAfter, color);
-  return before > after + 0.5;
-}
-
-/**
- * @param {object} input
- * @param {number | null} input.evalBefore — White POV, position before the move
- * @param {number | null} input.evalAfter — White POV, position after the move
- * @param {string} [input.bestMoveUci]
- * @param {string} [input.playedUci]
- * @param {string} [input.fenBefore]
- * @param {string} [input.fenAfter]
- * @returns {{ categoryId: string; label: string; emoji: string; name: string }}
+ * UI adapter. Engine numbers stay White-POV pawns; MoveClassifier owns the rules.
+ * Book is applied here because it is opening theory, not an engine label.
  */
 export function classifyMove({
   evalBefore,
@@ -157,10 +124,32 @@ export function classifyMove({
   playedUci = '',
   fenBefore = '',
   fenAfter = '',
-}: {evalBefore: number | null, evalAfter: number | null, 
-  bestMoveUci: string, playedUci: string, 
-  fenBefore: string, fenAfter: string}): 
-  { categoryId: string; label: string; emoji: string; name: string } {
+  altEval = null,
+  scoreBeforeOpponent = null,
+  mateBefore = null,
+  mateAfter = null,
+  mateBeforeOpponent = null,
+  mateSecond = null,
+  book = false,
+}: {
+  evalBefore: number | null;
+  evalAfter: number | null;
+  bestMoveUci: string;
+  playedUci: string;
+  fenBefore: string;
+  fenAfter: string;
+  altEval?: number | null;
+  scoreBeforeOpponent?: number | null;
+  mateBefore?: number | null;
+  mateAfter?: number | null;
+  mateBeforeOpponent?: number | null;
+  mateSecond?: number | null;
+  book?: boolean;
+}): { categoryId: string; label: string; emoji: string; name: string } {
+  if (book) {
+    const u = DISPLAY[CATEGORY_IDS.BOOK];
+    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
+  }
   if (
     evalBefore == null ||
     evalAfter == null ||
@@ -171,68 +160,31 @@ export function classifyMove({
     return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
   }
 
-  const parts = fenBefore.trim().split(/\s+/);
-  const whiteMoved = parts[1] === 'w';
-
-  const bestU = normalizeUci(bestMoveUci);
-  const playedU = normalizeUci(playedUci);
-  const isBest = Boolean(playedU && bestU && playedU === bestU);
-
-  /** Positive = mover worsened their standing (lost expected points in eval terms). */
-  const loss = whiteMoved
-    ? Math.max(0, evalBefore - evalAfter)
-    : Math.max(0, evalAfter - evalBefore);
-
-  /** Positive = mover improved eval for their side (without engine “best” match). */
-  const improvement = whiteMoved
-    ? Math.max(0, evalAfter - evalBefore)
-    : Math.max(0, evalBefore - evalAfter);
-
-  if (isBest) {
-    const u = DISPLAY[CATEGORY_IDS.BEST];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
+  const playerColor = fenBefore.trim().split(/\s+/)[1] === 'b' ? 'b' : 'w';
+  const beforeScore = engineEvalToScore(evalBefore, mateBefore);
+  const afterScore = engineEvalToScore(evalAfter, mateAfter);
+  const context: ClassificationContext = {
+    beforeScore,
+    afterScore,
+    bestMove: bestMoveUci,
+    playedMove: playedUci,
+    playerColor,
+    expectedPointsBefore: expectedPointsForPlayer(beforeScore, playerColor),
+    expectedPointsAfter: expectedPointsForPlayer(afterScore, playerColor),
+    expectedPointsLoss: calculateExpectedPointsLoss(beforeScore, afterScore, playerColor),
+    fenBefore,
+    fenAfter,
+    pv: bestMoveUci ? [bestMoveUci] : [],
+  };
+  if (scoreBeforeOpponent != null && Number.isFinite(scoreBeforeOpponent)) {
+    context.scoreBeforeOpponentMove = engineEvalToScore(scoreBeforeOpponent, mateBeforeOpponent);
+  }
+  if (altEval != null && Number.isFinite(altEval)) {
+    context.secondBestScore = engineEvalToScore(altEval, mateSecond);
   }
 
-  if (fenBefore && fenAfter && isSacrificeCompensation(fenBefore, fenAfter, whiteMoved)) {
-    const compOk = whiteMoved
-      ? evalAfter >= evalBefore - BRILLIANT_MAX_LOSS
-      : evalAfter <= evalBefore + BRILLIANT_MAX_LOSS;
-    if (compOk) {
-      const u = DISPLAY[CATEGORY_IDS.BRILLIANT];
-      return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-    }
-  }
-
-  const wasWinningForMover = whiteMoved
-    ? evalBefore >= MISSED_WIN_WHITE
-    : evalBefore <= MISSED_WIN_BLACK;
-  if (wasWinningForMover && loss >= MISSED_WIN_MIN_LOSS) {
-    const u = DISPLAY[CATEGORY_IDS.MISSED_WIN];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-  }
-
-  if (improvement >= GREAT_IMPROVEMENT) {
-    const u = DISPLAY[CATEGORY_IDS.GREAT];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-  }
-
-  if (loss <= THRESH_EXCELLENT) {
-    const u = DISPLAY[CATEGORY_IDS.EXCELLENT];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-  }
-  if (loss <= THRESH_GOOD) {
-    const u = DISPLAY[CATEGORY_IDS.GOOD];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-  }
-  if (loss <= THRESH_INACCURACY) {
-    const u = DISPLAY[CATEGORY_IDS.INACCURACY];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-  }
-  if (loss <= THRESH_MISTAKE) {
-    const u = DISPLAY[CATEGORY_IDS.MISTAKE];
-    return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
-  }
-  const u = DISPLAY[CATEGORY_IDS.BLUNDER];
+  const id = CLASSIFICATION_TO_CATEGORY[classifier.classify(context)];
+  const u = DISPLAY[id];
   return { categoryId: u.id, label: formatLabel(u), emoji: u.emoji, name: u.name };
 }
 
@@ -272,6 +224,10 @@ const MOVE_QUALITY_HIGHLIGHT_RGBA : Record<string, { from: string; to: string }>
   [CATEGORY_IDS.GREAT]: {
     from: 'rgba(116, 155, 191, 0.38)',
     to: 'rgba(116, 155, 191, 0.55)',
+  },
+  [CATEGORY_IDS.BOOK]: {
+    from: 'rgba(148, 163, 184, 0.32)',
+    to: 'rgba(148, 163, 184, 0.48)',
   },
   [CATEGORY_IDS.BEST]: {
     from: 'rgba(129, 182, 76, 0.38)',

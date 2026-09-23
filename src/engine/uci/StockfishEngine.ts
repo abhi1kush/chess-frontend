@@ -14,6 +14,7 @@ import { UciCommandQueue } from './UciCommandQueue';
 import {
   parseBestMoveUci,
   parseDepthFromInfoLine,
+  parseMultiPvFromInfoLine,
   parsePvFromInfoLine,
   parseScoreFromInfoLine,
   uciLinesFromWorkerData,
@@ -59,6 +60,9 @@ export class StockfishEngine implements ChessEngine {
   private searching = false;
   private liveFen = '';
   private lastEvalPawns: number | null = null;
+  private lastMate: number | null = null;
+  private lastSecondEvalPawns: number | null = null;
+  private lastSecondMate: number | null = null;
   private lastPvUci: string[] = [];
   private autoStopMs: number;
   private config: EngineConfig;
@@ -242,6 +246,9 @@ export class StockfishEngine implements ChessEngine {
         gen,
       };
       this.lastEvalPawns = null;
+      this.lastMate = null;
+      this.lastSecondEvalPawns = null;
+      this.lastSecondMate = null;
       this.lastPvUci = [];
 
       void this.handshake(gen)
@@ -332,6 +339,9 @@ export class StockfishEngine implements ChessEngine {
         gen,
       };
       this.lastEvalPawns = null;
+      this.lastMate = null;
+      this.lastSecondEvalPawns = null;
+      this.lastSecondMate = null;
       this.lastPvUci = [];
       this.sendGo(this.pending);
     });
@@ -416,10 +426,24 @@ export class StockfishEngine implements ChessEngine {
       const depth = parseDepthFromInfoLine(data);
       const info: EngineInfo = { fen: fenForInfo };
       const exactScore = score && !/\b(lowerbound|upperbound)\b/i.test(data);
+      const multipv = parseMultiPvFromInfoLine(data) ?? 1;
       if (exactScore && score && !this.readyWait) {
         const pawns = fenForInfo ? normalizeEval(score.pawns, fenForInfo) : score.pawns;
-        info.eval = { pawns, mate: score.mate };
-        this.lastEvalPawns = pawns;
+        const mate =
+          score.mate == null
+            ? null
+            : fenForInfo
+              ? normalizeEval(score.mate, fenForInfo)
+              : score.mate;
+        if (multipv <= 1) {
+          info.eval = { pawns, mate };
+          this.lastEvalPawns = pawns;
+          this.lastMate = mate;
+        } else if (multipv === 2) {
+          info.secondEval = { pawns, mate };
+          this.lastSecondEvalPawns = pawns;
+          this.lastSecondMate = mate;
+        }
       }
       if (pvUci) {
         info.pvUci = pvUci;
@@ -470,9 +494,10 @@ export class StockfishEngine implements ChessEngine {
   }
 
   private sendGo(pending: PendingSearch): void {
-    if (this.lastMultiPv !== 1) {
-      this.queue.enqueue('normal', 'setoption name MultiPV value 1');
-      this.lastMultiPv = 1;
+    const multiPv = pending.kind === 'review' ? 2 : 1;
+    if (this.lastMultiPv !== multiPv) {
+      this.queue.enqueue('normal', `setoption name MultiPV value ${multiPv}`);
+      this.lastMultiPv = multiPv;
     }
     const depth = pending.depths[pending.depthIndex];
     this.searching = true;
@@ -491,9 +516,14 @@ export class StockfishEngine implements ChessEngine {
 
   private finishInfo(fen: string, bestMoveUci: string, depth?: number): EngineInfo {
     const pawns = this.lastEvalPawns != null && Number.isFinite(this.lastEvalPawns) ? this.lastEvalPawns : 0;
+    const second =
+      this.lastSecondEvalPawns != null && Number.isFinite(this.lastSecondEvalPawns)
+        ? { pawns: this.lastSecondEvalPawns, mate: this.lastSecondMate }
+        : undefined;
     return {
       fen,
-      eval: { pawns, mate: null },
+      eval: { pawns, mate: this.lastMate },
+      secondEval: second,
       bestMoveUci,
       pvUci: this.lastPvUci.length ? this.lastPvUci : bestMoveUci ? [bestMoveUci] : [],
       depth,

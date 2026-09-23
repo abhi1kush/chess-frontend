@@ -10,6 +10,7 @@ import { moveQualityClassFromLabel } from './moveClassification';
 export const CATEGORY_ACCURACY_WEIGHT : Record<string, number> = {
   brilliant: 100,
   great: 98,
+  book: 100,
   best: 100,
   excellent: 92,
   good: 82,
@@ -24,6 +25,7 @@ export const CATEGORY_ACCURACY_WEIGHT : Record<string, number> = {
 export const GAME_REVIEW_ROWS = [
   { id: 'brilliant', name: 'Brilliant' },
   { id: 'great', name: 'Great' },
+  { id: 'book', name: 'Book' },
   { id: 'best', name: 'Best' },
   { id: 'excellent', name: 'Excellent' },
   { id: 'good', name: 'Good' },
