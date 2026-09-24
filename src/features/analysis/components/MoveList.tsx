@@ -175,7 +175,7 @@ function formatUserLineWithNumbers(fenAtBranch: string, plies: LinePly[]): strin
   return segments.join(', ');
 }
 
-const Moves = ({
+const MoveList = ({
   onReviewingChange,
   lineBranchIndex = null,
   linePlies = [],
@@ -586,4 +586,4 @@ const Moves = ({
   );
 };
 
-export default Moves;
+export default MoveList;

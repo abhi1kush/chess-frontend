@@ -369,6 +369,33 @@ body.dark-theme .top-bar-brand-subtitle {
   resize: vertical;
 }
 
+.fen-overlay-text[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.fen-overlay-error {
+  margin: 0.6rem 0 0;
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+.fen-overlay-hint {
+  margin: 0.6rem 0 0;
+  color: var(--text-color);
+  opacity: 0.72;
+  font-size: 0.82rem;
+}
+
+.action-button--primary {
+  background: var(--toggle-button-color);
+  color: #fff;
+  border-color: transparent;
+}
+
+.action-button--primary:hover {
+  background: var(--toggle-button-color-hover);
+}
+
 .fen-overlay-actions {
   margin-top: 1rem;
   display: flex;

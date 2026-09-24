@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Chess, Square, Color } from "chess.js";
 import { useSelector, useDispatch } from 'react-redux';
-import AnalysisTopContainer from "./AnalysisTopContainer";
+import TopContainer from "./TopContainer";
 import MoveNavigation from "../../chessboard/components/BoardControls";
 import CONFIG from "../../../config";
 import Moves from "./MoveList";
 import '../../../styles/global.css';
 import AnalysisBoard from "../../chessboard/components/ChessBoard";
-import EvalBar from "./EvaluationBar";
+import EvalBar from "./EvalBar";
 import '../../../styles/components/AnalysisLayout.css';
 import { formatEvalDisplay } from "../../../shared/utils/formatEval";
 import { useChessEngineContext } from "../../engine/hooks/useEngine";
@@ -16,6 +16,7 @@ import {
   jumpToMove,
   startPos,
   finalPosition,
+  loadPgn,
 } from "../redux/analysisActions";
 import { moveQualityClassFromLabel } from "../services/classifyMove";
 import GameReviewSummary from "./GameReviewSummary";
@@ -30,6 +31,7 @@ import type { RootState } from "../../../app/rootReducer";
 import type { FromToSquare } from "../../../shared/types/AnalysisTypes";
 import { getPromotionDetails } from "../../chessboard/services/piecePromotion";
 import { Arrow } from "react-chessboard/dist/chessboard/types";
+import MoveList from "./MoveList";
 
 const ANALYSIS_ENGINE_CONFIG = {
   threads: 1,
@@ -435,6 +437,37 @@ const AnalysisGame = () => {
         return true;
       }
 
+      const atFenGameEnd =
+        !exploreLine &&
+        currentMoveIndex === (fens?.length ?? 0) - 1 &&
+        ((moves?.length ?? 0) === 0 || result === '*');
+      if (atFenGameEnd) {
+        const nextFens = [...(fens ?? []), newFen];
+        dispatch(
+          loadPgn({
+            finalPos: newFen,
+            moves: [...(moves ?? []), move.san],
+            fens: nextFens,
+            fromToSquares: [
+              ...(fromToSquares ?? []),
+              { from: move.from, to: move.to, promotion },
+            ],
+            termination: '',
+            result: '*',
+            blackPlayerName,
+            whitePlayerName,
+          }),
+        );
+        dispatch(jumpToMove(nextFens.length - 1));
+        setExploreLine(false);
+        setLineBranchIndex(null);
+        setLinePlies([]);
+        setLineCursor(0);
+        setPosition(newFen);
+        if (manualAnalysisState.active) cancelManualAnalysis('handleMove');
+        return true;
+      }
+
       if (!exploreLine) {
         setLineBranchIndex(currentMoveIndex);
         setLinePlies([ply]);
@@ -461,6 +494,11 @@ const AnalysisGame = () => {
       lineCursor,
       currentMoveIndex,
       fens,
+      moves,
+      fromToSquares,
+      blackPlayerName,
+      whitePlayerName,
+      result,
       manualAnalysisState.active,
       dispatch,
       cancelManualAnalysis,
@@ -611,7 +649,7 @@ const AnalysisGame = () => {
 
   return (
     <div className="analysis-game-page bg-transparent">
-      <AnalysisTopContainer fen={position} />
+      <TopContainer fen={position} />
       <aside className="analysis-game-engine-shell rounded-2xl" aria-label="Engine analysis">
         <div className="analysis-game-engine-panel" aria-live="polite">
           <div className="analysis-game-engine-panel-head">
@@ -731,7 +769,7 @@ const AnalysisGame = () => {
           </div>
           </div>
          <div className="sidebar right-panel rounded-2xl">
-          <Moves
+          <MoveList
             // moves={moves}
             onReviewingChange={setIsReviewing}
             lineBranchIndex={lineBranchIndex}
