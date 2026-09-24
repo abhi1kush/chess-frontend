@@ -1,5 +1,5 @@
 import CONFIG from "../config";
-import { SelectedItemType } from "../CustomTypes/CustomTypes";
+import { SelectedItemType } from "../shared/types/CustomTypes";
 
 // piece type: {type: "chessPiece" name: "k", color: "b"}
 export const eraser: SelectedItemType = {

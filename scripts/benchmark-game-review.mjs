@@ -146,12 +146,12 @@ for (const m of moves) {
 }
 
 const { classifyMove, isOpeningBookMove, CATEGORY_IDS } = await import(
-  path.join(root, 'src/utils/moveClassification.ts')
+  path.join(root, 'src/features/analysis/services/classifyMove.ts')
 ).catch(async () => {
   const { build } = await import('esbuild');
   const out = '/tmp/mc-bench.cjs';
   await build({
-    entryPoints: [path.join(root, 'src/utils/moveClassification.ts')],
+    entryPoints: [path.join(root, 'src/features/analysis/services/classifyMove.ts')],
     bundle: true,
     platform: 'node',
     format: 'cjs',

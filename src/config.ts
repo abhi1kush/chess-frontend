@@ -1,4 +1,4 @@
-import {BoardType, PieceColor} from "./CustomTypes/CustomTypes"
+import {BoardType, PieceColor} from "./shared/types/CustomTypes"
 import {Square} from "chess.js";
 interface ConfigT {
     TIMER_DURATION: number, 

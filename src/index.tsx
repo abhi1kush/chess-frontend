@@ -1,11 +1,10 @@
 import ReactDOM from 'react-dom/client';
-// @ts-expect-error CSS is loaded by the bundler and has no TypeScript declarations.
 import './index.css';
-import App from './App';
+import App from './app/App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import {store, persistor} from './redux/store';
+import {store, persistor} from './app/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(

@@ -1,0 +1,34 @@
+// utils/soundUtils.js
+import { store } from '../../app/store';
+import moveSound from "../../assets/sounds/move-self.mp3";
+import captureSound from "../../assets/sounds/capture.mp3";
+import boardStartSound from "../../assets/sounds/board-start.mp3"
+
+
+const isEnableSound = (): boolean => {
+  const state = store.getState();
+  const settings = (state.settings as unknown as { enableSound?: boolean });
+  return Boolean(settings?.enableSound);
+}
+
+export const playMoveSound = (type: string) => {
+  if (!isEnableSound()) return;
+  let sound;
+  switch (type) {
+    case "move":
+      sound = new Audio(moveSound);
+      break;
+    case "capture":
+      sound = new Audio(captureSound);
+      break;
+    default:
+      return;
+  }
+  sound.play();
+};
+
+export const playBoardSetupSound = () => {
+  if (!isEnableSound()) return;
+  const sound = new Audio(boardStartSound);
+  sound.play();
+}
