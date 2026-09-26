@@ -10,5 +10,5 @@ export {
   toPlayerPerspective,
 } from './ExpectedPoints';
 export type { PlayerColor } from './ExpectedPoints';
-export { detectBrilliantMove, detectGreatMove, detectMiss } from './SpecialMoveDetector';
+export { detectBrilliantMove, detectGreatMove, detectMiss, detectAllowsMate } from './SpecialMoveDetector';
 export { MoveClassifier } from './MoveClassifier';

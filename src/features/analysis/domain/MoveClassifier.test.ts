@@ -194,4 +194,50 @@ describe('MoveClassifier', () => {
     );
     assert.equal(collapsing, 'BLUNDER');
   });
+
+  it('marks 35...Re3 as a blunder when it allows a mate from an already worse position', () => {
+    const fenBefore = '4rrk1/1P3pp1/R6p/3B4/6P1/2B2Q2/2K3P1/6q1 b - - 0 35';
+    const fenAfter = '5rk1/1P3pp1/R6p/3B4/6P1/2B1rQ2/2K3P1/6q1 w - - 1 36';
+    assert.equal(
+      classifier.classify(
+        context({
+          beforeScore: cp(600),
+          afterScore: mate(6),
+          playerColor: 'b',
+          bestMove: 'g1e3',
+          playedMove: 'e8e3',
+          fenBefore,
+          fenAfter,
+        }),
+      ),
+      'BLUNDER',
+    );
+    assert.equal(
+      classifier.classify(
+        context({
+          beforeScore: mate(17),
+          afterScore: mate(6),
+          playerColor: 'b',
+          bestMove: 'g1e3',
+          playedMove: 'e8e3',
+          fenBefore,
+          fenAfter,
+        }),
+      ),
+      'BLUNDER',
+    );
+  });
+
+  it('does not upgrade a slightly shorter mate in an already mated line', () => {
+    assert.equal(
+      classifier.classify(
+        context({
+          beforeScore: mate(8),
+          afterScore: mate(7),
+          playerColor: 'b',
+        }),
+      ),
+      'BEST',
+    );
+  });
 });

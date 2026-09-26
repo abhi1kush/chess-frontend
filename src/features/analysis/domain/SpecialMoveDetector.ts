@@ -22,6 +22,17 @@ const MISS_OPPORTUNITY_EP = 0.1;
 const MISS_CHANCE_MIN_EP = 0.55;
 /** After a Miss the player is no longer better: the chance has returned to equality or worse. */
 const MISS_AFTER_MAX_EP = 0.5;
+/**
+ * Allowing mate at least this many moves sooner than best defense is a blunder,
+ * even when both lines are already lost (expected points saturates at 0).
+ */
+const MATE_SHORTENING_BLUNDER = 8;
+/** After-eval at or below this is treated as a dead lost game. */
+const DEAD_AFTER_EP = 0.03;
+/** Before-eval must still have been above this to count a collapse as a new blunder. */
+const NOT_ALREADY_DEAD_EP = 0.05;
+/** Extra centipawn dump into a dead position, when the engine reports cp instead of mate. */
+const COLLAPSE_CP = 250;
 
 function pieceValue(type: PieceSymbol | undefined): number {
   if (!type) return 0;
@@ -153,4 +164,44 @@ export function detectMiss(context: ClassificationContext): boolean {
   );
   const opportunity = context.expectedPointsBefore - beforeOpportunity;
   return opportunity >= MISS_OPPORTUNITY_EP;
+}
+
+/** Mate distance against `player`, or null if that side is not being mated. */
+function mateAgainstPlayer(
+  score: ClassificationContext['beforeScore'],
+  player: ClassificationContext['playerColor'],
+): number | null {
+  if (score.type !== 'mate') return null;
+  const forPlayer = player === 'w' ? score.value : -score.value;
+  if (forPlayer >= 0) return null;
+  return Math.abs(forPlayer);
+}
+
+function playerCentipawns(
+  score: ClassificationContext['beforeScore'],
+  player: ClassificationContext['playerColor'],
+): number | null {
+  if (score.type !== 'cp') return null;
+  return player === 'w' ? score.value : -score.value;
+}
+
+/**
+ * Expected-points saturates near 0 once you are already lost, so a move that
+ * allows a mate (or a much faster mate) can look like an Inaccuracy.
+ * 35...Re3 in Capablanca–Marshall is the usual case: already worse, then
+ * Bxf7# in a few.
+ */
+export function detectAllowsMate(context: ClassificationContext): boolean {
+  const afterMate = mateAgainstPlayer(context.afterScore, context.playerColor);
+  const beforeMate = mateAgainstPlayer(context.beforeScore, context.playerColor);
+  if (afterMate != null) {
+    if (beforeMate == null) return true;
+    return beforeMate - afterMate >= MATE_SHORTENING_BLUNDER;
+  }
+  if (context.expectedPointsAfter > DEAD_AFTER_EP) return false;
+  if (context.expectedPointsBefore <= NOT_ALREADY_DEAD_EP) return false;
+  const beforeCp = playerCentipawns(context.beforeScore, context.playerColor);
+  const afterCp = playerCentipawns(context.afterScore, context.playerColor);
+  if (beforeCp == null || afterCp == null) return false;
+  return beforeCp - afterCp >= COLLAPSE_CP;
 }

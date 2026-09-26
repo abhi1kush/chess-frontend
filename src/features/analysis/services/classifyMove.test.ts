@@ -213,4 +213,17 @@ describe('moveClassification', () => {
     });
     assert.equal(r.categoryId, CATEGORY_IDS.UNKNOWN);
   });
+
+  it('classifies 35...Re3 as a blunder when it allows mate', () => {
+    const r = classifyMove({
+      evalBefore: 6,
+      evalAfter: 10,
+      bestMoveUci: 'g1e3',
+      playedUci: 'e8e3',
+      fenBefore: '4rrk1/1P3pp1/R6p/3B4/6P1/2B2Q2/2K3P1/6q1 b - - 0 35',
+      fenAfter: '5rk1/1P3pp1/R6p/3B4/6P1/2B1rQ2/2K3P1/6q1 w - - 1 36',
+      mateAfter: 6,
+    });
+    assert.equal(r.categoryId, CATEGORY_IDS.BLUNDER);
+  });
 });

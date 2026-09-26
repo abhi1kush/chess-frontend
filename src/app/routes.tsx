@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-const AnalysisGame = lazy(() => import('../features/analysis/components/AnalysisGame'));
+const AnalysisGame = lazy(() => import('../features/analysis/components/AnalysisPage'));
 
 export default function AppRoutes() {
   return (
