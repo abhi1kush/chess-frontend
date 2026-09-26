@@ -65,12 +65,13 @@ App
 │                   │       ├── DarkThemeToggle
 │                   │       └── Settings
 │                   │
-│                   ├── EngineSidebar
+│                   ├── EngineSidebar   ← left column (fixed)
+|                   |   |__ Score / Move Quality / Best Move
 │                   │   └── GameReviewSummary   (after Review completes)
 │                   │
 │                   └── BoardStage              (.analysis-container)
 │                       ├── EvalBar + ChessBoard
-│                       └── sidebar
+│                       └── sidebar   ← right column (fixed) 
 │                           ├── MoveList
 │                           │   ├── EngineWarmupBar
 │                           │   ├── Review / Analyse
