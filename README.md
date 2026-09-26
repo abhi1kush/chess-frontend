@@ -71,7 +71,7 @@ App
 │                   │
 │                   └── BoardStage              (.analysis-container)
 │                       ├── EvalBar + ChessBoard
-│                       └── sidebar   ← right column (fixed) 
+│                       └── sidebar    ← right column (fixed) 
 │                           ├── MoveList
 │                           │   ├── EngineWarmupBar
 │                           │   ├── Review / Analyse
