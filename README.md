@@ -104,6 +104,121 @@ src/
 └── shared/
 ```
 
+## 🔄 Redux flow
+
+Stockfish lives in `EngineProvider` (React context), **not** Redux. Redux only stores game data, the current ply, engine on/off, and settings.
+
+```
+ UI event (click, drop, upload)
+        │
+        ▼
+ dispatch(action)     ← analysisActions / settingsActions / engineActions
+        │
+        ▼
+ store (persisted)
+        │
+        ├── pgn        moves, fens, analysisData, reviewAnalysisComplete
+        ├── analysis   currentMoveIndex, fenArrayLength
+        ├── engine     enabled
+        └── settings   isFlipped, theme, sound, playMovesDuringReview
+        │
+        ▼
+ useSelector(...)     → AnalysisPage / MoveList / EngineSidebar / EvalBar
+```
+
+One action can update **more than one** slice. `LOAD_PGN` and `TOGGLE_ENGINE` are the two that fan out.
+
+```mermaid
+flowchart LR
+  UI[Component] -->|dispatch| A[Action]
+  A --> Store
+  Store --> PGN[pgn]
+  Store --> AN[analysis]
+  Store --> EN[engine]
+  Store --> SE[settings]
+  PGN --> Sel[useSelector]
+  AN --> Sel
+  EN --> Sel
+  SE --> Sel
+  Sel --> UI
+```
+
+### State each slice owns
+
+| Slice | What it stores | Who writes it |
+|---|---|---|
+| `pgn` | SAN list, FEN list, player names, `analysisData[]`, review done flag | PGN upload, FEN load, Review |
+| `analysis` | `currentMoveIndex` (which ply the board is on) | Next/Prev, click a move, Review play-through |
+| `engine` | `enabled` | Settings → Engine |
+| `settings` | flip, theme, sound, play-through during review | Top bar / Settings |
+
+`pgn.analysisData[i]` is the eval, best move, and classification **after** FEN `i`. The board’s current FEN is `pgn.fens[analysis.currentMoveIndex]`.
+
+### Event chains
+
+**1. Upload PGN or load a FEN**
+
+```
+PgnUploader / FenOverlayButton
+  → loadPgn({ moves, fens, names, ... })
+      → pgn: replace game, empty analysisData, reviewAnalysisComplete = false
+      → analysis: currentMoveIndex = 0, fenArrayLength = fens.length
+  → AnalysisPage re-reads both slices → board + move list reset
+```
+
+**2. Click a move (or Next / Prev)**
+
+```
+MoveListTable click  →  onJumpToMainLine(index)
+BoardControls Next   →  jumpToMove / startPos / finalPosition
+                         → analysis.currentMoveIndex
+                         → useAnalysisLine sets position = fens[index]
+                         → useAnalysisBoardView picks eval / arrows / highlight
+                         → ChessBoard + EvalBar + EngineSidebar update
+```
+
+No PGN rewrite. Only the ply pointer moves.
+
+**3. Start Review**
+
+```
+MoveList Review
+  → useGameReview
+      → setReviewAnalysisComplete(false)
+      → startPos()                         // analysis: index 0
+      → Stockfish reviewGame(fens)         // context, not Redux
+      → per ply: classifyMove(...)
+      → setPgnAnalysisAtIndex({ index, eval, bestMove, classification })
+      → jumpToMove(index)                  // if play-through is on
+      → setReviewAnalysisComplete(true)
+  → EngineSidebar shows GameReviewSummary
+  → EvalBar / Score / Move Quality read analysisData
+```
+
+**4. Analyse (current position only)**
+
+```
+MoveList Analyse
+  → usePositionAnalysis.handleAnalyzeCurrentPosition
+      → Stockfish analyzePosition(current FEN)   // local hook state
+      → (optional) setPgnAnalysisAtIndex         // only if on main line and review is not complete
+  → same displayEvalScore goes to EngineSidebar Score and EvalBar
+```
+
+Analyse does **not** classify moves. Review does.
+
+**5. Flip / theme / engine toggle**
+
+```
+FlipButton     → FLIP_BOARD      → settings.isFlipped → ChessBoard + EvalBar
+DarkThemeToggle / Settings
+               → SET_THEME       → settings.theme
+Settings engine switch
+               → TOGGLE_ENGINE   → engine.enabled (and analysis.engineEnabled; same action type)
+```
+
+Persisted to `localStorage` (`persist:root`): `settings`, `analysis`, `pgn`. `engine` is not in the persist whitelist.
+
 ## 🧪 Getting Started
 
 ### 1. Clone the Repo
