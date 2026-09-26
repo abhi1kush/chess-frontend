@@ -39,18 +39,68 @@ Product Backlog:
 
 ---
 
-## 📂 Project Structure
+## 📂 App tree
+
+`src/main.tsx` mounts Redux `Provider` + `store`, then `App`. Everything below is the runtime tree from `App`.
+
+```
+App
+├── ConfigProvider
+│   └── EngineProvider          (Stockfish WASM)
+│       └── HashRouter
+│           ├── PageViewTracker
+│           └── AppRoutes
+│               └── AnalysisPage            (/analysis)
+│                   │
+│                   │  hooks (not UI):
+│                   │    useAnalysisLine
+│                   │    usePositionAnalysis
+│                   │    useAnalysisBoardView
+│                   │
+│                   ├── TopContainer
+│                   │   └── TopBar
+│                   │       ├── FlipButton
+│                   │       ├── FenOverlayButton
+│                   │       ├── PgnUploader
+│                   │       ├── DarkThemeToggle
+│                   │       └── Settings
+│                   │
+│                   ├── EngineSidebar
+│                   │   └── GameReviewSummary   (after Review completes)
+│                   │
+│                   └── BoardStage              (.analysis-container)
+│                       ├── EvalBar + ChessBoard
+│                       └── sidebar
+│                           ├── MoveList
+│                           │   ├── EngineWarmupBar
+│                           │   ├── Review / Analyse
+│                           │   ├── BoardControls          (mobile)
+│                           │   └── MoveListTable
+│                           │       └── MoveSanCell
+│                           └── BoardControls              (desktop)
+```
+
+`MoveList` is the right-hand panel (buttons + review). `MoveListTable` is the `# / White / Black` grid inside it.
+
+Redux slices used by this tree: `pgn`, `analysis`, `engine`, `settings` (`src/app/rootReducer.ts`).
+
+### Source folders
+
 ```
 src/
-|--- components/ # Reusable UI components (Board, PiecePalette, etc.)
-|--- redux
-|       |---store/ # Redux logic (reducers, actions, types)
-|       |---reducers/boardEditorReducer.ts
-|       |---actions/boardEditorActions.ts
-|--- services/ # Utility functions (e.g., FEN parser)
-│       |---fen/fenparser.ts
-|--- config.ts # Constants like starting positions, colors
-|--- App.tsx # Main entry component
+├── main.tsx
+├── app/
+│   ├── App.tsx
+│   ├── routes.tsx
+│   ├── store.ts
+│   └── rootReducer.ts
+├── features/
+│   ├── analysis/     # page, move list, classifier, review
+│   ├── chessboard/   # board, arrows, FEN helpers
+│   ├── engine/       # Stockfish
+│   ├── pgn/          # parser + uploader
+│   └── settings/
+└── shared/
 ```
 
 ## 🧪 Getting Started
