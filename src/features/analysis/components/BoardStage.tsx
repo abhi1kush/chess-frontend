@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import AnalysisBoard from '../../chessboard/components/ChessBoard';
+import AnalysisBoard from '../../chessboard/components/AnalysisChessBoard';
 import EvalBar from './EvalBar';
 import type { FromToSquare } from '../../../shared/types/AnalysisTypes';
 import type { Arrow } from 'react-chessboard/dist/chessboard/types';
