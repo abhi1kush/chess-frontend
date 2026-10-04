@@ -9,5 +9,5 @@ export type {
   EngineStatus,
   ReviewGameOptions,
 } from './types';
-export { createEngine } from './EngineManager';
+export { createEngine, isTauriRuntime, resolvePreferredEngineKind } from './EngineManager';
 export { default as EngineProvider, useChessEngineContext } from '../hooks/useEngine';

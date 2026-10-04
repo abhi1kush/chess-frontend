@@ -7,8 +7,10 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import { createEngine } from '../services/EngineManager';
+import { useSelector } from 'react-redux';
+import { createEngine, resolvePreferredEngineKind } from '../services/EngineManager';
 import type { ChessEngine, EngineKind, EngineStatus } from '../services/types';
+import type { RootState } from '../../../app/rootReducer';
 
 type EngineContextValue = {
   engine: ChessEngine;
@@ -35,19 +37,33 @@ type EngineProviderProps = {
   kind?: EngineKind;
 };
 
-const EngineProvider = ({ children, kind = 'stockfish-lite' }: EngineProviderProps) => {
+const EngineProvider = ({ children, kind: kindOverride }: EngineProviderProps) => {
+  const preferredKind = useSelector((state: RootState) => state.settings.engineKind);
+  const resolvedKind = kindOverride ?? resolvePreferredEngineKind(preferredKind);
+
   const engineRef = useRef<ChessEngine | null>(null);
   if (!engineRef.current) {
-    engineRef.current = createEngine(kind, { autoStopMs: 8000 });
+    engineRef.current = createEngine(resolvedKind, { autoStopMs: 8000 });
   }
-  const engine = engineRef.current;
 
+  const [engine, setEngine] = useState<ChessEngine>(engineRef.current);
   const [engineStatus, setEngineStatus] = useState<EngineStatus>(engine.getStatus());
   const [engineReadyOk, setEngineReadyOk] = useState(false);
   const [engineWarmupPercent, setEngineWarmupPercent] = useState(33);
 
   useEffect(() => {
-    const unsubscribe = engine.subscribe((event) => {
+    let instance = engineRef.current;
+    if (!instance || instance.getKind() !== resolvedKind) {
+      instance?.dispose();
+      instance = createEngine(resolvedKind, { autoStopMs: 8000 });
+      engineRef.current = instance;
+      setEngine(instance);
+      setEngineStatus(instance.getStatus());
+      setEngineReadyOk(false);
+      setEngineWarmupPercent(33);
+    }
+
+    const unsubscribe = instance.subscribe((event) => {
       if (event.type !== 'status') {
         return;
       }
@@ -57,7 +73,11 @@ const EngineProvider = ({ children, kind = 'stockfish-lite' }: EngineProviderPro
     });
 
     const runPreload = (): void => {
-      engine.start();
+      const rec = instance.getRecommendedConfig();
+      console.log(
+        `[engine] using ${instance.getKind()} (${rec.threads ?? 1} threads, ${rec.hashMb ?? 16}MB hash)`,
+      );
+      instance.start();
     };
 
     let cancelPreload: (() => void) | undefined;
@@ -74,9 +94,15 @@ const EngineProvider = ({ children, kind = 'stockfish-lite' }: EngineProviderPro
     return () => {
       cancelPreload?.();
       unsubscribe();
-      engine.dispose();
     };
-  }, [engine]);
+  }, [resolvedKind]);
+
+  useEffect(() => {
+    return () => {
+      engineRef.current?.dispose();
+      engineRef.current = null;
+    };
+  }, []);
 
   const contextValue = useMemo<EngineContextValue>(
     () => ({

@@ -1,18 +1,20 @@
-// src/redux/reducers/settingsReducer.ts
-
 import type { Reducer } from 'redux';
 import {
   FLIP_BOARD,
   SET_THEME,
   SET_SOUND,
   SET_PLAY_MOVES_DURING_REVIEW,
+  SET_ENGINE_KIND,
 } from './settingsActions';
+
+export type DesktopEngineKind = 'stockfish-lite' | 'stockfish-native';
 
 export type SettingsState = {
   isFlipped: boolean;
   theme: string;
   enableSound: boolean;
   playMovesDuringReview: boolean;
+  engineKind: DesktopEngineKind;
 }
 
 interface FlipBoardAction {
@@ -34,17 +36,24 @@ interface SetPlayMovesDuringReviewAction {
   payload: boolean;
 }
 
+interface SetEngineKindAction {
+  type: typeof SET_ENGINE_KIND;
+  payload: DesktopEngineKind;
+}
+
 type SettingsAction =
   | FlipBoardAction
   | SetThemeAction
   | SetSoundAction
-  | SetPlayMovesDuringReviewAction;
+  | SetPlayMovesDuringReviewAction
+  | SetEngineKindAction;
 
 const initialState: SettingsState = {
   isFlipped: false,
   theme: 'default',
   enableSound: true,
   playMovesDuringReview: true,
+  engineKind: 'stockfish-native',
 };
 
 const settingsReducer = (
@@ -74,6 +83,12 @@ const settingsReducer = (
       return {
         ...state,
         playMovesDuringReview: action.payload,
+      };
+
+    case SET_ENGINE_KIND:
+      return {
+        ...state,
+        engineKind: action.payload === 'stockfish-lite' ? 'stockfish-lite' : 'stockfish-native',
       };
 
     default:

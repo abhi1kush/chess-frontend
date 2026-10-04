@@ -18,6 +18,7 @@ type MoveListProps = {
   onJumpToMainLine: (index: number) => void;
   onEnterUserLine?: () => void;
   onBeginReview?: () => void;
+  onRefiningChange?: (refining: boolean) => void;
   mobileNavigationNode?: ReactNode | null;
   onAnalyzePosition?: React.MouseEventHandler<HTMLButtonElement>;
   analyzingPosition?: boolean;
@@ -32,6 +33,7 @@ const MoveList = ({
   onJumpToMainLine,
   onEnterUserLine,
   onBeginReview,
+  onRefiningChange,
   mobileNavigationNode = null,
   onAnalyzePosition,
   analyzingPosition = false,
@@ -46,6 +48,7 @@ const MoveList = ({
   const { isReviewing, handleStartReview } = useGameReview({
     onReviewingChange,
     onBeginReview,
+    onRefiningChange,
   });
 
   useMoveListScroll(scrollRef, moves, currentMoveIndex);

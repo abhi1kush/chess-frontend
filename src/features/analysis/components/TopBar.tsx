@@ -1,6 +1,7 @@
 // src/components/AnalysisTopBar.js
 import React from 'react';
-import PgnUploader from '../../pgn/components/PgnUploader'; 
+import PgnUploader from '../../pgn/components/PgnUploader';
+import FamousGameSelect from '../../pgn/components/FamousGameSelect'; 
 import Settings from '../../settings/components/Settings';
 import DarkThemeToggle from '../../settings/components/DarkThemeToggle';
 import FlipButton from '../../chessboard/components/FlipButton';
@@ -20,6 +21,7 @@ const TopBar = ({ fen }: {fen : string}) => {
       <div className="top-bar-actions">
         <FlipButton/>
         <FenOverlayButton fen={fen}/>
+        <FamousGameSelect />
         <PgnUploader/>
         <DarkThemeToggle/>
         <Settings/>

@@ -27,6 +27,7 @@ const AnalysisPage = () => {
   const { isFlipped, theme } = useSelector((state: RootState) => state.settings);
   const enabledChessEngine = useSelector((state: RootState) => state.engine.enabled);
   const [isReviewing, setIsReviewing] = useState(false);
+  const [isRefiningReview, setIsRefiningReview] = useState(false);
 
   const cancelManualAnalysisRef = useRef<(reason?: string) => void>(() => {});
   const isManualAnalysisActiveRef = useRef(false);
@@ -103,6 +104,7 @@ const AnalysisPage = () => {
         moveQualityDisplayValue={view.moveQualityDisplayValue}
         bestMoveDisplayValue={view.bestMoveDisplayValue}
         reviewAnalysisComplete={reviewAnalysisComplete}
+        isRefiningReview={isRefiningReview}
         movesLength={moves?.length ?? 0}
         analysisData={analysisData}
         whitePlayerName={whitePlayerName}
@@ -137,6 +139,7 @@ const AnalysisPage = () => {
               onJumpToMainLine={line.jumpToMainLine}
               onEnterUserLine={line.enterUserLine}
               onBeginReview={line.clearUserLine}
+              onRefiningChange={setIsRefiningReview}
               onAnalyzePosition={analysis.handleAnalyzeCurrentPosition}
               analyzingPosition={analysis.manualAnalysisState.active}
               mobileNavigationNode={navigation}

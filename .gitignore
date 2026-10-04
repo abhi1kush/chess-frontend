@@ -25,3 +25,4 @@ yarn-error.log*
 # Tauri build output
 /src-tauri/target
 /src-tauri/gen
+/src-tauri/binaries/stockfish-*

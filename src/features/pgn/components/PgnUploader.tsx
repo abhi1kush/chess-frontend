@@ -1,8 +1,7 @@
 import React, { ChangeEvent } from 'react';
 // import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { loadPgn } from '../../analysis/redux/analysisActions';
-import { parsePgn } from '../services/PgnParser';
+import { loadPgnFromText } from '../services/loadPgnText';
 
 // Pure function to read file content
 const readFileContent = (file: File): Promise<string> => {
@@ -90,7 +89,7 @@ const PgnUploader = () => {
     readFileContent(file)
       .then((pgnData) => {
         try {
-          dispatch(loadPgn(parsePgn(pgnData)));
+          loadPgnFromText(dispatch, pgnData);
         } catch (error) {
           console.error('Error parsing PGN:', error);
         }

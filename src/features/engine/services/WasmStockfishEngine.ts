@@ -8,6 +8,7 @@ import type {
   EngineInfo,
   EngineStatus,
   EngineTransport,
+  EngineKind,
   ReviewGameOptions,
 } from './types';
 import { UciCommandQueue } from './uci/UciCommandQueue';
@@ -81,6 +82,7 @@ export class StockfishEngine implements ChessEngine {
   constructor(
     private readonly transport: EngineTransport,
     defaults: EngineConfig = {},
+    private readonly kind: EngineKind = 'stockfish-lite',
   ) {
     this.config = { ...defaults };
     this.autoStopMs = defaults.autoStopMs ?? 8000;
@@ -150,6 +152,19 @@ export class StockfishEngine implements ChessEngine {
       this.queue.enqueue('normal', `setoption name MultiPV value ${config.multiPv}`);
       this.lastMultiPv = config.multiPv;
     }
+  }
+
+  getRecommendedConfig(): EngineConfig {
+    return {
+      threads: this.config.threads ?? 1,
+      hashMb: this.config.hashMb ?? 16,
+      multiPv: this.config.multiPv ?? 1,
+      autoStopMs: this.autoStopMs,
+    };
+  }
+
+  getKind(): EngineKind {
+    return this.kind;
   }
 
   startLiveAnalysis(fen: string): void {
@@ -404,6 +419,7 @@ export class StockfishEngine implements ChessEngine {
     if (data === 'uciok') {
       this.uciReady = true;
       this.setStatus('loading', 66);
+      this.applyEngineOptions();
       this.queue.enqueue('normal', 'isready');
     }
 
@@ -490,6 +506,19 @@ export class StockfishEngine implements ChessEngine {
     const bestMoveUci = parseBestMoveUci(data);
     if (bestMoveUci != null && !this.pending) {
       this.emit({ type: 'bestMove', fen: fenForInfo, bestMoveUci });
+    }
+  }
+
+  private applyEngineOptions(): void {
+    if (this.config.threads != null) {
+      this.queue.enqueue('normal', `setoption name Threads value ${this.config.threads}`);
+    }
+    if (this.config.hashMb != null) {
+      this.queue.enqueue('normal', `setoption name Hash value ${this.config.hashMb}`);
+    }
+    if (this.config.multiPv != null && this.lastMultiPv !== this.config.multiPv) {
+      this.queue.enqueue('normal', `setoption name MultiPV value ${this.config.multiPv}`);
+      this.lastMultiPv = this.config.multiPv;
     }
   }
 

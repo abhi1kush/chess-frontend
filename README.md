@@ -34,6 +34,7 @@ Product Backlog:
 - ⚛️ React
 - 🧠 Redux with Immer
 - 🟦 TypeScript
+- 🖥️ Tauri 2 desktop shell (native Stockfish sidecar)
 - 🧪 Jest / React Testing Library *(if included)*
 - 💅 Tailwind CSS or CSS Modules *(optional, depending on your setup)*
 
@@ -46,7 +47,7 @@ Product Backlog:
 ```
 App
 ├── ConfigProvider
-│   └── EngineProvider          (Stockfish WASM)
+│   └── EngineProvider          (WASM lite in browser, native Stockfish in Tauri)
 │       └── HashRouter
 │           ├── PageViewTracker
 │           └── AppRoutes
@@ -236,7 +237,20 @@ yarn install
 npm run dev
 # or
 yarn dev
-Visit http://localhost:3000 in your browser.
+Visit http://localhost:5173 in your browser.
+
+### 4. Desktop app (native Stockfish)
+
+The GitHub Pages / `npm run dev` build still uses **Stockfish 17 Lite** in a WASM worker (one thread). The Tauri desktop app talks to a **native Stockfish 17.1** process: full NNUE, several threads, 128 MB hash. Review stays at depth 16 so classifications do not change; each ply just finishes faster.
+
+```bash
+npm run stockfish:fetch    # downloads the sidecar into src-tauri/binaries/
+npm run tauri:dev          # reuses Vite on 5173 if it is already running
+```
+
+`tauri:dev` will not start a second Vite server when port 5173 is already taken. `npm run tauri:build` packages the sidecar next to the app.
+
+Stockfish is still analysis-only (Review / Analyse). EngineProvider picks `stockfish-native` inside Tauri and `stockfish-lite` in the browser.
 
 🛠️ Usage
 Click on a square to place or remove a piece.

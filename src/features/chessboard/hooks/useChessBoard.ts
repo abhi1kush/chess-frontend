@@ -68,7 +68,7 @@ export function useBoardEditorAnalysis(
 
     engine.setEnabled(true);
     engine.start();
-    engine.configure({ threads: 1, hashMb: 16, multiPv: 1 });
+    engine.configure({ ...engine.getRecommendedConfig(), multiPv: 1 });
     void engine
       .analyzePosition(fen, { skipCache: true })
       .catch(() => undefined)

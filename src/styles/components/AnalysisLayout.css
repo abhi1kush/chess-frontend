@@ -247,6 +247,16 @@
     width: 100%;
     height: 100%;
   }
+
+  /* WKWebView/Tauri otherwise shows a green copy-badge instead of the piece. */
+  .board img,
+  .board svg,
+  .board [data-piece] {
+    -webkit-user-drag: none;
+    user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
   
   .sidebar {
     overflow: auto;

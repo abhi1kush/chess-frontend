@@ -1,8 +1,9 @@
-// src/components/Settings.js
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTheme, setSound, setPlayMovesDuringReview } from '../redux/settingsActions';
+import { setTheme, setSound, setPlayMovesDuringReview, setEngineKind } from '../redux/settingsActions';
 import { toggleEngine } from '../../engine/redux/engineActions';
+import { isTauriRuntime } from '../../engine/services/EngineManager';
+import type { DesktopEngineKind } from '../redux/settingsSlice';
 import type { RootState } from '../../../app/rootReducer';
 import "../../../styles/components/settings.css";
 
@@ -10,7 +11,7 @@ type SettingsTab = 'appearance' | 'engine';
 
 const Settings = React.memo(() => {
   const dispatch = useDispatch();
-  const { theme, enableSound, playMovesDuringReview } = useSelector(
+  const { theme, enableSound, playMovesDuringReview, engineKind } = useSelector(
     (state: RootState) => state.settings,
   );
   const engineEnabled = useSelector((state: RootState) => state.engine.enabled);
@@ -18,6 +19,9 @@ const Settings = React.memo(() => {
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
   const settingsRef = useRef<HTMLDivElement | null>(null);
   const playThrough = playMovesDuringReview !== false;
+  const selectedEngineKind: DesktopEngineKind =
+    engineKind === 'stockfish-lite' ? 'stockfish-lite' : 'stockfish-native';
+  const desktopApp = isTauriRuntime();
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
@@ -112,6 +116,21 @@ const Settings = React.memo(() => {
                 onChange={() => dispatch(toggleEngine())}
               />
             </div>
+            {desktopApp && (
+              <div className="dropdown-item">
+                <label htmlFor="engineKindSelect">Stockfish engine</label>
+                <select
+                  id="engineKindSelect"
+                  value={selectedEngineKind}
+                  onChange={(event) =>
+                    dispatch(setEngineKind(event.target.value as DesktopEngineKind))
+                  }
+                >
+                  <option value="stockfish-native">Native Stockfish 17.1</option>
+                  <option value="stockfish-lite">Stockfish 17 Lite (WASM)</option>
+                </select>
+              </div>
+            )}
             <div className="checkbox-item">
               <label htmlFor="reviewPlayThroughToggle">Play moves while reviewing</label>
               <input
@@ -121,6 +140,13 @@ const Settings = React.memo(() => {
                 onChange={(event) => dispatch(setPlayMovesDuringReview(event.target.checked))}
               />
             </div>
+            <p className="settings-hint">
+              {desktopApp
+                ? selectedEngineKind === 'stockfish-native'
+                  ? 'Native Stockfish 17.1 uses several threads and 128MB hash. Lite is the same WASM engine as the browser.'
+                  : 'Lite is Stockfish 17 WASM (one thread). Switch to Native Stockfish 17.1 for the full desktop engine.'
+                : 'Browser uses Stockfish 17 Lite (WASM, one thread). Open the desktop app to switch to native Stockfish.'}
+            </p>
             <p className="settings-hint">
               When off, Review analyzes the whole PGN without stepping the board move by move.
             </p>

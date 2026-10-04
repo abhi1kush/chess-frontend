@@ -1,4 +1,4 @@
-// src/components/ChessboardComponent.js
+// src/components/ChessboardBoard.tsx
 import React, {
   forwardRef,
   useMemo,
@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {Chess, Square} from "chess.js"
 import { Chessboard} from 'react-chessboard';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import '../../../styles/themes.css';
 import { getKingPosition } from '../../../shared/utils/helpers';
 import { getLastMoveSquareStylesForAnalysis } from '../../analysis/services/classifyMove';
@@ -18,6 +19,13 @@ import {
 import { FromToSquare, BoardPiece, PromotionPiece} from '../../../shared/types/AnalysisTypes';
 import { Arrow } from 'react-chessboard/dist/chessboard/types';
 import type { CustomSquareStyles } from 'react-chessboard/dist/chessboard/types';
+
+const PIECE_DND_OPTIONS = {
+  enableMouseEvents: true,
+  enableHoverOutsideTarget: true,
+  delayTouchStart: 0,
+  delayMouseStart: 0,
+};
 
 interface MoveBadge { toSquare: string; categoryId: string; } 
 type EndgameKingBadge ={ type: 'winner' | 'loser'; } 
@@ -114,7 +122,7 @@ function promotionFromDrop(
   return undefined;
 }
 
-const AnalysisBoard = ({
+const AnalysisChessBoard = ({
   className,
   handleMove,
   fen,
@@ -152,7 +160,12 @@ const AnalysisBoard = ({
   );
 
   return (
-    <div className={className}>
+    <div
+      className={className}
+      onDragStart={(event) => {
+        event.preventDefault();
+      }}
+    >
       <Chessboard
         position={fen}
         onPieceDrop={handlePieceDrop}
@@ -163,14 +176,16 @@ const AnalysisBoard = ({
         customArrows={customArrows}
         customDarkSquareStyle={{ backgroundColor: 'var(--dark-square)' }}
         customLightSquareStyle={{ backgroundColor: 'var(--light-square)' }}
+        customDndBackend={TouchBackend}
+        customDndBackendOptions={PIECE_DND_OPTIONS}
       />
     </div>
   );
 };
 
-export default AnalysisBoard;
+export default AnalysisChessBoard;
 
-AnalysisBoard.defaultProps = {
+AnalysisChessBoard.defaultProps = {
   isFinalMove: false,
   result: "",
 }

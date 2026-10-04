@@ -4,12 +4,6 @@ import { useChessEngineContext } from '../../engine/hooks/useEngine';
 import { setPgnAnalysisAtIndex } from '../redux/analysisActions';
 import { normalizeFenKey } from '../../engine/services/stockfishFenCache';
 
-const ANALYSIS_ENGINE_CONFIG = {
-  threads: 1,
-  hashMb: 16,
-  multiPv: 1,
-};
-
 type UsePositionAnalysisArgs = {
   position: string;
   currentMoveIndex: number;
@@ -69,7 +63,7 @@ export function usePositionAnalysis({
 
   const setupEngine = useCallback(() => {
     engine.start();
-    engine.configure(ANALYSIS_ENGINE_CONFIG);
+    engine.configure({ ...engine.getRecommendedConfig(), multiPv: 1 });
   }, [engine]);
 
   const cancelManualAnalysis = useCallback(

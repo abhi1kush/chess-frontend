@@ -47,13 +47,15 @@ export type EngineEvent =
   | { type: 'bestMove'; fen: string; bestMoveUci: string }
   | { type: 'error'; error: Error };
 
-export type EngineKind = 'stockfish-lite' | 'stockfish-full';
+export type EngineKind = 'stockfish-lite' | 'stockfish-full' | 'stockfish-native';
 
 export interface ChessEngine {
   start(): void;
   dispose(): void;
   setEnabled(enabled: boolean): void;
   configure(config: EngineConfig): void;
+  getRecommendedConfig(): EngineConfig;
+  getKind(): EngineKind;
   startLiveAnalysis(fen: string): void;
   stopLiveAnalysis(): void;
   /** Current position: progressive depths, interrupts any previous analyzePosition or reviewGame. */
