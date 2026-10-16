@@ -1,0 +1,58 @@
+[Event "World Championship Match-16th game"]
+[Site "Moscow"]
+[Date "1985.??.??"]
+[Round "?"]
+[White "A. Karpov"]
+[Black "G. Kasparov"]
+[Result "0-1"]
+[Link "https://www.chess.com/article/view/the-octopus-knight"]
+
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nc6 5. Nb5 d6 6. c4 Nf6 7. N1c3 a6 8. Na3
+d5 $6 {The mentioned gambit.} 9. cxd5 exd5 10. exd5 Nb4 11. Be2 $1 {Karpov's new
+move, but Kasparov had a suprise waiting. 11 Bc4 Bg4 $1 had lead to a short draw
+in the 12th game of the match.} 11... Bc5 $6 {A fantastic idea lies behind this
+move, as well as a tactical flaw. Better was 11...Nbxd5 12 0-0 Be7 13 Nxd5 Nxd5
+14 Bf3 Be6 15 Nc2.} 12. O-O $6 {12 Be3 $1 Bxe3 13 Qa4+ refutes Black's idea, and
+retains the extra pawn without falling into a bind.} 12... O-O 13. Bf3 {After 13
+Bg5 Nbxd5 14 Nxd5 Qxd5 15 Bxf6 Qxd1 16 Rxfd1 gxf6, black should drasw easily.}
+13... Bf5 $1 {Preventing the knight from returning via c2 and securing d3 for his
+own knight.} 14. Bg5 {14 Be3 Bxe3 15 fxe3 Qb6 was an alternative, and leads to
+an unclear position.} 14... Re8 $1 {Black's plan unfolds smoothly, as he now
+secures the e4-square before playing b5.} 15. Qd2 {White should be returning the
+pawn by now, like with 15 Nc4 $5. Then 15...Bd3 16 a3 Bxc4 17 axb4 Bxb4 18 Re1
+Rxe1+ 19 Qxe1 with complicated play.} 15... b5 $1 {The knight is now denied c4,
+and the pawn fork b4 is now a threat.} 16. Rad1 {Alternatives were 16 Qf4 Bg6 17
+Bxf6 Qxf6 18 Qxf6 gxf6 or 16 d6 Ra7 17 Rad1.} 16... Nd3 $1 17. Nab1 $2 {Karpov
+drifts, not noticing what his position will soon be like. Better was 17 d6,
+although the exchange sacrifice 17...Qxd6 $1 18 Bxa8 Rxa8 is good for black.}
+17... h6 $1 {A good time to nudge the bishop, as it cannot drop back to e3.} 18.
+Bh4 {18 Be3 $6 gives black a choice between 18...Rxe3 $5 19 fxe3 Qb6 or 18...Bxe3
+19 fxe3 Qb6 20 Be2 Rxe3 21 Kh1 Bg6.} 18... b4 $1 {Now that h6 has been gotten in,
+this exiles the knight to a4.} 19. Na4 {Or 19 Ne2 g5 $1 20 Bxg5 Nxf2 21 Rxf2 Bxf2+
+22 Kxf2 hxg5 23 Qxg5+ Bg6 24 Nd2, after which black must play energetically to
+exploit white's position.} 19... Bd6 20. Bg3 {20 Qc2 $2 loses to 20...Rc8 21 Qb3
+Nf4 22 Rc1 Rxc1 23 Rxc1 g5 $1 24 Bg3 g4.} 20... Rc8 $1 {20...Ne4 $2 allows 21 Bxe4
+Bxe4 22 Qe3, when white has no problems.} 21. b3 {Now 22 Nb2 is intended, after
+which white will slowly unravel his pieces.} 21... g5 $3 {The first sign that
+things have gone badly for Karpov. White's pieces will soon have no mobility.}
+22. Bxd6 {22 Nb2 $2 loses to 22...Nxb2 23 Qxb2 g4 24 Be2 Rc2 winning the bishop.}
+22... Qxd6 23. g3 {Now again black is faced with the threat of Nb2.} 23... Nd7 $3
+24. Bg2 {24 Nb2 Qf6 $3 is good for black: 25 Nxd3 Bxd3 26 Bg4 Ne5 $1 gives him a
+large advantage.} 24... Qf6 $1 {Black's masterplan has reduced white to a state of
+helplessness.} 25. a3 a5 26. axb4 axb4 27. Qa2 {Only to bring a knight to d2
+(where it does nothing), this move shows white's helplessness.} 27... Bg6 $1
+{Opening a line to f2 and preventing white's active ideas.} 28. d6 {If white
+does nothing, then black will have no problem finding a way to make progress. 28
+Nd2 Re2 and f2 collapeses.} 28... g4 $1 {Black is not interested in the pawn
+(28...Qxd6 $2 29 Nf2) and nails down the light squares near white's king instead.}
+29. Qd2 {Back again, mission unaccomplished.} 29... Kg7 {There is no rush, white
+can do nothing constructive.} 30. f3 {Short of time, Karpov breaks out to see
+what is in store for him.} 30... Qxd6 {This frees the d7-knight for more active
+service.} 31. fxg4 {31 Qb2+ is more tenacious, but it would not have changed
+anything.} 31... Qd4+ 32. Kh1 Nf6 $1 {Threatening 33...Ne4 or 33...Nxg4.} 33. Rf4
+{33 h3 gives black a choice between 33...Re3 or 33...Ne4.} 33... Ne4 $1 34. Qxd3
+{The knight survived for 18 moves on d3, and played a major role in destroying
+white's position.} 34... Nf2+ 35. Rxf2 {35 Kg1 Nh3++ 36 Kh1 Qxd3 37 Rxd3 Re1+ 38
+Bf1 Nxf4 also loses for white.} 35... Bxd3 36. Rfd2 Qe3 $1 37. Rxd3 Rc1 $1 38. Nb2
+Qf2 $1 39. Nd2 Rxd1+ {39...Re2 $1 actually mates next move.} 40. Nxd1 Re1+ {White
+resigns.} 0-1
