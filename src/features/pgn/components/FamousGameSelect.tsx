@@ -38,7 +38,7 @@ export default function FamousGameSelect() {
   };
 
   return (
-    <label className="famous-game-select-wrap" aria-label="Famous games">
+    <label className="famous-game-select-wrap" aria-label="Famous games" title="Famous games">
       <select
         className="famous-game-select"
         defaultValue=""
@@ -46,7 +46,7 @@ export default function FamousGameSelect() {
         onChange={handleChange}
       >
         <option value="" disabled>
-          {games.length ? 'Famous games' : 'No famous games'}
+          {games.length ? '★ Famous' : 'No games'}
         </option>
         {games.map((game) => (
           <option key={game.id} value={game.file}>

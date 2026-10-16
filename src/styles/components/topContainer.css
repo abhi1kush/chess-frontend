@@ -83,7 +83,7 @@
 
 .famous-game-select {
     height: 2.15rem;
-    max-width: 13.5rem;
+    max-width: 8.5rem;
     border-radius: 0.7rem;
     border: 1px solid rgba(148, 163, 184, 0.5);
     background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.9));
@@ -433,4 +433,68 @@ body.dark-theme .top-bar-brand-subtitle {
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-end;
+}
+.paste-pgn-textarea {
+  min-height: 10rem;
+  max-height: 55vh;
+  font-size: 16px; /* prevents iOS zoom on focus */
+}
+
+.pgn-upload-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 10070;
+  max-width: calc(100vw - 2rem);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  background: #b91c1c;
+  color: #fff;
+  font-size: 0.85rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.3);
+}
+
+.pgn-upload-toast button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .top-bar-actions {
+    max-width: none;
+    flex-shrink: 1;
+    min-width: 0;
+    gap: 0.25rem;
+    padding: 0.22rem 0;
+  }
+
+  .top-bar-actions .top-icon-button {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+  }
+
+  .famous-game-select {
+    height: 2rem;
+    max-width: 5.6rem;
+    padding: 0 0.3rem;
+    font-size: 0.72rem;
+  }
+
+  .fen-overlay-box {
+    max-width: 100%;
+    padding: 0.85rem;
+  }
+
+  .fen-overlay-actions .action-button {
+    flex: 1 1 0;
+    min-height: 2.6rem;
+  }
 }
